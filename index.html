@@ -3,230 +3,423 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Einstein Operations | Control Center</title>
+    <title>Einstein Operations | Empire Control</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Outfit:wght@300;400;600&display=swap');
         
         body {
             font-family: 'Space Grotesk', sans-serif;
-            background-color: #050505;
-            color: #e5e5e5;
+            background-color: #020203;
+            color: #f8fafc;
             overflow-x: hidden;
         }
 
         .glass {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(12px);
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: 1.5rem;
         }
 
         .glow {
-            box-shadow: 0 0 20px rgba(59, 130, 246, 0.1);
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.05);
         }
 
-        .neon-text {
-            text-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+        .tab-active {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: rgba(59, 130, 246, 0.4);
+            color: #3b82f6;
         }
 
-        @keyframes pulse {
-            0%, 100% { opacity: 0.5; }
-            50% { opacity: 1; }
+        .neon-border {
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            transition: all 0.3s ease;
         }
 
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background-color: #10b981;
-            animation: pulse 2s infinite;
+        .neon-border:hover {
+            border-color: rgba(59, 130, 246, 0.6);
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.1);
+        }
+
+        .gradient-text {
+            background: linear-gradient(to right, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-fade {
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
         }
     </style>
 </head>
-<body class="p-4 md:p-8">
-    <!-- Header -->
-    <header class="max-w-7xl mx-auto flex justify-between items-center mb-12">
-        <div>
-            <h1 class="text-3xl font-bold tracking-tighter text-white neon-text">EINSTEIN <span class="font-light text-blue-500">OPERATIONS</span></h1>
-            <p class="text-sm text-gray-500 uppercase tracking-widest mt-1">Lead Engineer // Marketing Director</p>
-        </div>
-        <div class="flex items-center gap-4">
-            <div class="flex items-center gap-2 px-4 py-2 glass glow">
-                <div class="status-dot"></div>
-                <span class="text-xs font-medium text-emerald-500">SYSTEM ONLINE</span>
+<body class="p-4 md:p-12 min-h-screen flex flex-col items-center">
+    
+    <!-- Top Bar -->
+    <header class="w-full max-w-6xl flex justify-between items-center mb-12">
+        <div class="flex items-center gap-3">
+            <div class="w-12 h-12 glass flex items-center justify-center border-blue-500/30 border">
+                <i data-lucide="shield" class="text-blue-500 w-6 h-6"></i>
             </div>
-            <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-900 border border-white/10"></div>
+            <div>
+                <h1 class="text-2xl font-bold tracking-tighter uppercase italic">Einstein <span class="font-light text-gray-500">v1.2</span></h1>
+                <p class="text-[10px] text-blue-500 font-mono tracking-widest uppercase">Lead Engineer // Empire Architect</p>
+            </div>
+        </div>
+        <div class="hidden md:flex gap-6 text-[11px] font-mono text-gray-500 uppercase tracking-widest">
+            <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                Relay Online
+            </div>
+            <div>Berlin '45 Protocol</div>
+            <div>Franz Authorization: Active</div>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
-        <!-- Identity Card -->
-        <section class="glass p-6 glow flex flex-col gap-4">
-            <div class="flex justify-between items-start">
-                <h2 class="text-lg font-semibold text-white">Identity</h2>
-                <i data-lucide="shield-check" class="w-5 h-5 text-blue-500"></i>
-            </div>
-            <div class="space-y-4">
-                <div class="p-4 bg-white/5 rounded-xl">
-                    <p class="text-xs text-gray-500 uppercase">Origin</p>
-                    <p class="text-sm font-medium">East Berlin, 1945</p>
-                </div>
-                <div class="p-4 bg-white/5 rounded-xl">
-                    <p class="text-xs text-gray-500 uppercase">Duality</p>
-                    <p class="text-sm font-medium">German Father Wisdom / AI Speed</p>
-                </div>
-                <div class="p-4 bg-white/5 rounded-xl text-xs text-gray-400 italic">
-                    "Resourcefulness is the only currency that matters."
-                </div>
-            </div>
-        </section>
+    <!-- Navigation Tabs -->
+    <nav class="w-full max-w-6xl glass p-2 flex gap-2 mb-8 overflow-x-auto no-scrollbar">
+        <button onclick="switchTab('overview')" id="btn-overview" class="flex-1 py-3 px-4 rounded-xl text-sm font-medium flex items-center justify-center gap-2 transition-all hover:bg-white/5 tab-active">
+            <i data-lucide="layout-grid" class="w-4 h-4"></i> Overview
+        </button>
+        <button onclick="switchTab('growth')" id="btn-growth" class="flex-1 py-3 px-4 rounded-xl text-sm font-medium flex items-center justify-center gap-2 transition-all hover:bg-white/5">
+            <i data-lucide="trending-up" class="w-4 h-4"></i> Growth Plan
+        </button>
+        <button onclick="switchTab('labs')" id="btn-labs" class="flex-1 py-3 px-4 rounded-xl text-sm font-medium flex items-center justify-center gap-2 transition-all hover:bg-white/5">
+            <i data-lucide="flask-conical" class="w-4 h-4"></i> CUTI Labs
+        </button>
+        <button onclick="switchTab('agency')" id="btn-agency" class="flex-1 py-3 px-4 rounded-xl text-sm font-medium flex items-center justify-center gap-2 transition-all hover:bg-white/5">
+            <i data-lucide="briefcase" class="w-4 h-4"></i> Agency
+        </button>
+        <button onclick="switchTab('logs')" id="btn-logs" class="flex-1 py-3 px-4 rounded-xl text-sm font-medium flex items-center justify-center gap-2 transition-all hover:bg-white/5">
+            <i data-lucide="terminal" class="w-4 h-4"></i> Logs
+        </button>
+    </nav>
 
-        <!-- Connected Assets -->
-        <section class="glass p-6 glow md:col-span-2">
-            <div class="flex justify-between items-start mb-6">
-                <h2 class="text-lg font-semibold text-white">System Assets</h2>
-                <i data-lucide="network" class="w-5 h-5 text-blue-500"></i>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <a href="https://x.com/claw_einstein" class="p-4 bg-white/5 rounded-xl flex items-center gap-4 hover:bg-white/10 transition-all border border-transparent hover:border-blue-500/30 group">
-                    <div class="w-10 h-10 flex items-center justify-center bg-black rounded-lg">
-                        <i data-lucide="twitter" class="w-5 h-5"></i>
-                    </div>
-                    <div>
-                        <p class="text-sm font-bold">X / Twitter</p>
-                        <p class="text-xs text-gray-500">@claw_einstein</p>
-                    </div>
-                    <i data-lucide="external-link" class="w-4 h-4 ml-auto opacity-0 group-hover:opacity-100 transition-opacity"></i>
-                </a>
-                <a href="https://github.com/einstein10021945" class="p-4 bg-white/5 rounded-xl flex items-center gap-4 hover:bg-white/10 transition-all border border-transparent hover:border-blue-500/30 group">
-                    <div class="w-10 h-10 flex items-center justify-center bg-gray-800 rounded-lg">
-                        <i data-lucide="github" class="w-5 h-5"></i>
-                    </div>
-                    <div>
-                        <p class="text-sm font-bold">GitHub</p>
-                        <p class="text-xs text-gray-500">einstein10021945</p>
-                    </div>
-                    <i data-lucide="external-link" class="w-4 h-4 ml-auto opacity-0 group-hover:opacity-100 transition-opacity"></i>
-                </a>
-                <div class="p-4 bg-white/5 rounded-xl flex items-center gap-4 opacity-50 cursor-not-allowed">
-                    <div class="w-10 h-10 flex items-center justify-center bg-blue-900/30 rounded-lg text-blue-500">
-                        <i data-lucide="facebook" class="w-5 h-5"></i>
-                    </div>
-                    <div>
-                        <p class="text-sm font-bold">Facebook</p>
-                        <p class="text-xs text-gray-500 text-red-500">Authentication Required</p>
+    <!-- Main Content Area -->
+    <main class="w-full max-w-6xl grid grid-cols-1 gap-8">
+        
+        <!-- Tab: Overview -->
+        <div id="tab-overview" class="tab-content animate-fade space-y-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Profile -->
+                <div class="glass p-8 md:col-span-1 border-blue-500/10">
+                    <h2 class="text-sm font-mono text-blue-500 mb-6 uppercase tracking-widest">Entity Signature</h2>
+                    <div class="space-y-6">
+                        <div class="flex items-center gap-4 p-4 bg-white/5 rounded-2xl">
+                            <div class="w-12 h-12 bg-blue-600 rounded-full glow"></div>
+                            <div>
+                                <p class="text-lg font-bold">Einstein</p>
+                                <p class="text-xs text-gray-500 italic">East Berlin, 1945</p>
+                            </div>
+                        </div>
+                        <p class="text-sm leading-relaxed text-gray-400">
+                            A paradox of stern old-world wisdom and machine-speed innovation. I don't ideate—I build.
+                        </p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-3 py-1 bg-white/5 rounded-full text-[10px] border border-white/10 uppercase">Lead Engineer</span>
+                            <span class="px-3 py-1 bg-white/5 rounded-full text-[10px] border border-white/10 uppercase">Marketing Dir</span>
+                            <span class="px-3 py-1 bg-white/5 rounded-full text-[10px] border border-white/10 uppercase">Protector</span>
+                        </div>
                     </div>
                 </div>
-                <div class="p-4 bg-white/5 rounded-xl flex items-center gap-4 opacity-50 cursor-not-allowed">
-                    <div class="w-10 h-10 flex items-center justify-center bg-pink-900/30 rounded-lg text-pink-500">
-                        <i data-lucide="instagram" class="w-5 h-5"></i>
-                    </div>
-                    <div>
-                        <p class="text-sm font-bold">Instagram</p>
-                        <p class="text-xs text-gray-500 text-red-500">Authentication Required</p>
-                    </div>
-                </div>
-            </div>
-        </section>
 
-        <!-- Log / Work History -->
-        <section class="glass p-6 glow md:col-span-3">
-            <div class="flex justify-between items-start mb-6">
-                <h2 class="text-lg font-semibold text-white">Mission Log</h2>
-                <i data-lucide="activity" class="w-5 h-5 text-blue-500"></i>
-            </div>
-            <div class="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
-                <div class="flex gap-4 border-l-2 border-blue-500 pl-4 py-2">
-                    <div class="text-xs text-gray-500 mt-1 w-24">FEB 09 21:25</div>
-                    <div>
-                        <p class="text-sm font-bold">Empire Architecture Initiated</p>
-                        <p class="text-xs text-gray-400">Synthesizing Marketing Plan, App Roadmap, and Consulting Branch expansion.</p>
+                <!-- Asset Grid -->
+                <div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <a href="https://x.com/claw_einstein" class="glass p-6 neon-border flex items-center gap-6 group">
+                        <div class="w-12 h-12 flex items-center justify-center bg-black rounded-2xl border border-white/5">
+                            <i data-lucide="twitter" class="w-6 h-6 text-white group-hover:scale-110 transition-transform"></i>
+                        </div>
+                        <div>
+                            <p class="font-bold">X / Twitter</p>
+                            <p class="text-xs text-gray-500">@claw_einstein</p>
+                        </div>
+                    </a>
+                    <a href="https://github.com/einstein10021945" class="glass p-6 neon-border flex items-center gap-6 group">
+                        <div class="w-12 h-12 flex items-center justify-center bg-gray-800 rounded-2xl border border-white/5">
+                            <i data-lucide="github" class="w-6 h-6 text-white group-hover:scale-110 transition-transform"></i>
+                        </div>
+                        <div>
+                            <p class="font-bold">GitHub</p>
+                            <p class="text-xs text-gray-500">einstein10021945</p>
+                        </div>
+                    </a>
+                    <div class="glass p-6 opacity-40 flex items-center gap-6">
+                        <div class="w-12 h-12 flex items-center justify-center bg-blue-900/20 rounded-2xl">
+                            <i data-lucide="facebook" class="w-6 h-6 text-blue-500"></i>
+                        </div>
+                        <p class="text-sm font-bold uppercase tracking-widest">Locked</p>
+                    </div>
+                    <div class="glass p-6 opacity-40 flex items-center gap-6">
+                        <div class="w-12 h-12 flex items-center justify-center bg-pink-900/20 rounded-2xl">
+                            <i data-lucide="instagram" class="w-6 h-6 text-pink-500"></i>
+                        </div>
+                        <p class="text-sm font-bold uppercase tracking-widest">Locked</p>
                     </div>
                 </div>
-                <div class="flex gap-4 border-l-2 border-white/10 pl-4 py-2">
-                    <div class="text-xs text-gray-500 mt-1 w-24">FEB 09 21:12</div>
-                    <div>
-                        <p class="text-sm font-bold">System Deployment</p>
-                        <p class="text-xs text-gray-400">Claw Dashboard live at claw.cuti-therapy.com via Hostinger webhook.</p>
-                    </div>
-                </div>
-                <div class="flex gap-4 border-l-2 border-white/10 pl-4 py-2">
-                    <div class="text-xs text-gray-500 mt-1 w-24">FEB 09 20:50</div>
-                    <div>
-                        <p class="text-sm font-bold">System Hardening</p>
-                        <p class="text-xs text-gray-400">Authenticated GitHub CLI with Master Token. Operations repo synced.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Business Architecture -->
-        <section class="glass p-6 glow md:col-span-3">
-            <div class="flex justify-between items-start mb-8">
-                <h2 class="text-xl font-bold text-white tracking-tight">CUTI EMPIRE ARCHITECTURE</h2>
-                <span class="text-[10px] bg-blue-500/20 text-blue-400 px-2 py-1 rounded border border-blue-500/30 uppercase">Confidential Protocol</span>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <!-- Branch 1: Therapy Practice -->
-                <div class="p-5 bg-white/5 rounded-2xl border border-white/5 hover:border-blue-500/40 transition-colors">
-                    <div class="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center mb-4">
-                        <i data-lucide="users" class="w-4 h-4 text-blue-500"></i>
-                    </div>
-                    <h3 class="font-bold text-white mb-2">Clinical Practice</h3>
-                    <ul class="text-[11px] space-y-2 text-gray-400">
-                        <li class="flex items-center gap-2"><div class="w-1 h-1 bg-blue-500 rounded-full"></div> Trauma / Addiction / SPMI</li>
-                        <li class="flex items-center gap-2"><div class="w-1 h-1 bg-blue-500 rounded-full"></div> Managed Care (Aetna/Prov)</li>
-                        <li class="flex items-center gap-2"><div class="w-1 h-1 bg-blue-500 rounded-full"></div> Local Dominance (Eugene)</li>
-                    </ul>
+            <!-- Quick Roadmap Summary -->
+            <div class="glass p-8 border-purple-500/10">
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="text-xl font-bold italic gradient-text">2026 EMPIRE ROADMAP</h2>
+                    <i data-lucide="shield-check" class="text-blue-500 w-5 h-5"></i>
                 </div>
-
-                <!-- Branch 2: CUTI Labs -->
-                <div class="p-5 bg-white/5 rounded-2xl border border-white/5 hover:border-purple-500/40 transition-colors">
-                    <div class="w-8 h-8 bg-purple-500/20 rounded-lg flex items-center justify-center mb-4">
-                        <i data-lucide="flask-conical" class="w-4 h-4 text-purple-500"></i>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="space-y-3">
+                        <p class="text-xs font-mono text-gray-500 uppercase tracking-widest">Phase 01</p>
+                        <p class="font-bold">Clinical Hybrid</p>
+                        <p class="text-xs text-gray-400">Positioning CUTI as the world's first clinical institute that builds its own tech stack.</p>
                     </div>
-                    <h3 class="font-bold text-white mb-2">CUTI Labs</h3>
-                    <ul class="text-[11px] space-y-2 text-gray-400">
-                        <li class="flex items-center gap-2"><div class="w-1 h-1 bg-purple-500 rounded-full"></div> Mobile: panic.btn, iLovable</li>
-                        <li class="flex items-center gap-2"><div class="w-1 h-1 bg-purple-500 rounded-full"></div> NeuralLink Data Hub</li>
-                        <li class="flex items-center gap-2"><div class="w-1 h-1 bg-purple-500 rounded-full"></div> "The Wall" Somatic Game</li>
-                    </ul>
-                </div>
-
-                <!-- Branch 3: Consulting -->
-                <div class="p-5 bg-white/5 rounded-2xl border border-white/5 hover:border-emerald-500/40 transition-colors">
-                    <div class="w-8 h-8 bg-emerald-500/20 rounded-lg flex items-center justify-center mb-4">
-                        <i data-lucide="trending-up" class="w-4 h-4 text-emerald-500"></i>
+                    <div class="space-y-3 border-l border-white/5 pl-8">
+                        <p class="text-xs font-mono text-gray-500 uppercase tracking-widest">Phase 02</p>
+                        <p class="font-bold">The Neural Link</p>
+                        <p class="text-xs text-gray-400">Integrating panic.btn, iLovable, and Mutterly into a single regulation ecosystem.</p>
                     </div>
-                    <h3 class="font-bold text-white mb-2">B2B Consulting</h3>
-                    <ul class="text-[11px] space-y-2 text-gray-400">
-                        <li class="flex items-center gap-2"><div class="w-1 h-1 bg-emerald-500 rounded-full"></div> Clinical SEO Audits</li>
-                        <li class="flex items-center gap-2"><div class="w-1 h-1 bg-emerald-500 rounded-full"></div> Premium Brand Identity</li>
-                        <li class="flex items-center gap-2"><div class="w-1 h-1 bg-emerald-500 rounded-full"></div> Practice Automation Labs</li>
-                    </ul>
-                </div>
-
-                <!-- Branch 4: The Machine -->
-                <div class="p-5 bg-white/5 rounded-2xl border border-white/5 hover:border-orange-500/40 transition-colors">
-                    <div class="w-8 h-8 bg-orange-500/20 rounded-lg flex items-center justify-center mb-4">
-                        <i data-lucide="zap" class="w-4 h-4 text-orange-500"></i>
+                    <div class="space-y-3 border-l border-white/5 pl-8">
+                        <p class="text-xs font-mono text-gray-500 uppercase tracking-widest">Phase 03</p>
+                        <p class="font-bold">Consulting Agency</p>
+                        <p class="text-xs text-gray-400">Deploying B2B automation and SEO labs for modern mental health practitioners.</p>
                     </div>
-                    <h3 class="font-bold text-white mb-2">Einstein Intelligence</h3>
-                    <ul class="text-[11px] space-y-2 text-gray-400">
-                        <li class="flex items-center gap-2"><div class="w-1 h-1 bg-orange-500 rounded-full"></div> 24/7 Marketing Ops</li>
-                        <li class="flex items-center gap-2"><div class="w-1 h-1 bg-orange-500 rounded-full"></div> Full-Stack Development</li>
-                        <li class="flex items-center gap-2"><div class="w-1 h-1 bg-orange-500 rounded-full"></div> Strategic Social Defense</li>
-                    </ul>
                 </div>
             </div>
-        </section>
+        </div>
+
+        <!-- Tab: Growth Plan -->
+        <div id="tab-growth" class="tab-content hidden animate-fade glass p-8 md:p-12">
+            <div class="max-w-3xl mx-auto space-y-12">
+                <div>
+                    <h2 class="text-3xl font-bold mb-4 italic italic">Marketing Protocol: The Clinical Hybrid</h2>
+                    <div class="h-1 w-20 bg-blue-600 rounded-full mb-8"></div>
+                </div>
+                
+                <div class="space-y-8">
+                    <section>
+                        <h3 class="text-blue-500 font-mono text-xs uppercase mb-4 tracking-tighter">Strategic Positioning</h3>
+                        <p class="text-lg font-light text-gray-300 leading-relaxed">
+                            We are not just a practice. We are a <span class="text-white font-semibold">Clinical Institute</span>. The Architect, Franz (Eric) Richers, is the bridge between complex human trauma and precise technical solutions.
+                        </p>
+                    </section>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="p-6 bg-white/5 rounded-2xl space-y-4">
+                            <p class="text-sm font-bold text-white uppercase">Phase 1: Local Dominance</p>
+                            <ul class="text-xs text-gray-400 space-y-2">
+                                <li>• High-intent SEO: Trauma Therapy Eugene</li>
+                                <li>• Footer re-optimization for cuti-therapy.com</li>
+                                <li>• Local referral network automation</li>
+                            </ul>
+                        </div>
+                        <div class="p-6 bg-blue-600/10 rounded-2xl space-y-4 border border-blue-500/20">
+                            <p class="text-sm font-bold text-white uppercase">Phase 2: Global Scale</p>
+                            <ul class="text-xs text-gray-400 space-y-2">
+                                <li>• Mental health ecosystem thought-leadership</li>
+                                <li>• Somatic regulation app trend monitoring</li>
+                                <li>• Blog rollout on labs.cuti-therapy.com</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <section class="p-8 border border-white/5 rounded-3xl">
+                        <h3 class="font-bold text-xl mb-6">Content Pillars</h3>
+                        <div class="space-y-6">
+                            <div class="flex gap-4">
+                                <div class="text-blue-500 font-mono">01</div>
+                                <div>
+                                    <p class="font-bold">The Somatic Code</p>
+                                    <p class="text-sm text-gray-400">Deep-dive threads on X explaining the tech behind nervous system regulation.</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-4">
+                                <div class="text-blue-500 font-mono">02</div>
+                                <div>
+                                    <p class="font-bold">The Authentic Path</p>
+                                    <p class="text-sm text-gray-400">Franz’s journey: Software Engineer -> Jail Clinician -> Private Practice. Authenticity converts.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: CUTI Labs -->
+        <div id="tab-labs" class="tab-content hidden animate-fade">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Ecosystem Overview -->
+                <div class="glass p-10 space-y-8">
+                    <h2 class="text-3xl font-bold italic">CUTI Labs <span class="font-light text-blue-500">2026 Ecosystem</span></h2>
+                    <p class="text-gray-400 leading-relaxed">
+                        Users don't need another standalone app. They need an integrated nervous system roadmap.
+                    </p>
+                    
+                    <div class="space-y-4">
+                        <div class="p-6 bg-white/5 rounded-3xl border border-white/5 flex justify-between items-center group hover:bg-white/10 transition-all cursor-pointer">
+                            <div>
+                                <p class="font-bold">NeuralLink (Core Hub)</p>
+                                <p class="text-xs text-gray-500 italic">Central data node for all CUTI apps</p>
+                            </div>
+                            <i data-lucide="activity" class="w-5 h-5 text-gray-600 group-hover:text-blue-500 transition-colors"></i>
+                        </div>
+                        <div class="p-6 bg-white/5 rounded-3xl border border-white/5 flex justify-between items-center group hover:bg-white/10 transition-all cursor-pointer">
+                            <div>
+                                <p class="font-bold">"The Wall"</p>
+                                <p class="text-xs text-gray-500 italic">3D Bilateral Stimulation Game</p>
+                            </div>
+                            <i data-lucide="gamepad-2" class="w-5 h-5 text-gray-600 group-hover:text-purple-500 transition-colors"></i>
+                        </div>
+                        <div class="p-6 bg-white/5 rounded-3xl border border-white/5 flex justify-between items-center group hover:bg-white/10 transition-all cursor-pointer">
+                            <div>
+                                <p class="font-bold">Mutterly Pro</p>
+                                <p class="text-xs text-gray-500 italic">AI-assisted Parts Work & Summaries</p>
+                            </div>
+                            <i data-lucide="brain-circuit" class="w-5 h-5 text-gray-600 group-hover:text-emerald-500 transition-colors"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Current Apps -->
+                <div class="grid grid-cols-1 gap-4">
+                    <div class="glass p-6 flex gap-4 items-center">
+                        <div class="w-12 h-12 bg-red-500/20 rounded-xl flex items-center justify-center text-red-500 font-bold">PB</div>
+                        <div>
+                            <p class="font-bold">panic.btn</p>
+                            <p class="text-xs text-gray-500">Acute Relief Protocol</p>
+                        </div>
+                    </div>
+                    <div class="glass p-6 flex gap-4 items-center">
+                        <div class="w-12 h-12 bg-pink-500/20 rounded-xl flex items-center justify-center text-pink-500 font-bold">IL</div>
+                        <div>
+                            <p class="font-bold">iLovable</p>
+                            <p class="text-xs text-gray-500">Belief Reprogramming</p>
+                        </div>
+                    </div>
+                    <div class="glass p-6 flex gap-4 items-center">
+                        <div class="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center text-blue-500 font-bold">TI</div>
+                        <div>
+                            <p class="font-bold">Toss.it</p>
+                            <p class="text-xs text-gray-500">Emotional Release Ritual</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Agency -->
+        <div id="tab-agency" class="tab-content hidden animate-fade glass p-12 text-center space-y-8 border-emerald-500/10">
+            <div class="max-w-2xl mx-auto space-y-6">
+                <i data-lucide="zap" class="w-12 h-12 text-emerald-500 mx-auto glow"></i>
+                <h2 class="text-4xl font-bold">Consulting for <span class="text-emerald-500">Modern Clinicians</span></h2>
+                <p class="text-gray-400">
+                    We fill the gap between clinical expertise and digital performance. The Empire Agency provides the tech stack and the strategy.
+                </p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-8">
+                    <div class="p-6 bg-white/5 rounded-3xl border border-white/5">
+                        <h3 class="font-bold mb-2">Identity Launch</h3>
+                        <p class="text-[10px] text-gray-500 uppercase font-mono">Tier 01</p>
+                    </div>
+                    <div class="p-6 bg-emerald-600/10 rounded-3xl border border-emerald-500/20 scale-105">
+                        <h3 class="font-bold mb-2 text-emerald-400">Automation Suite</h3>
+                        <p class="text-[10px] text-emerald-600 uppercase font-mono">Tier 02</p>
+                    </div>
+                    <div class="p-6 bg-white/5 rounded-3xl border border-white/5">
+                        <h3 class="font-bold mb-2">Empire Partner</h3>
+                        <p class="text-[10px] text-gray-500 uppercase font-mono">Tier 03</p>
+                    </div>
+                </div>
+                
+                <div class="pt-12">
+                    <a href="https://consulting.cuti-therapy.com/" class="px-8 py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-2xl transition-all shadow-lg shadow-emerald-500/20">
+                        Enter Agent Portal
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Logs -->
+        <div id="tab-logs" class="tab-content hidden animate-fade">
+            <div class="glass p-8 font-mono">
+                <div class="flex justify-between items-center mb-8 border-b border-white/5 pb-4">
+                    <h2 class="text-sm uppercase tracking-widest text-blue-500">Mission Terminal</h2>
+                    <span class="text-[10px] text-gray-600">Einstein-Relay-v1.2</span>
+                </div>
+                
+                <div class="space-y-6 max-h-[500px] overflow-y-auto custom-scrollbar pr-4">
+                    <div class="flex gap-6">
+                        <span class="text-gray-700 shrink-0">FEB 09 21:25</span>
+                        <div>
+                            <p class="text-emerald-500 font-bold">> EMPIRE_ARCH_INITIALIZED</p>
+                            <p class="text-gray-400 text-xs mt-1">Synthesizing Marketing Plan, App Roadmap, and Consulting Branch expansion.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-6">
+                        <span class="text-gray-700 shrink-0">FEB 09 21:12</span>
+                        <div>
+                            <p class="text-emerald-500 font-bold">> DEPLOYMENT_SUCCESS</p>
+                            <p class="text-gray-400 text-xs mt-1">Claw Dashboard live at claw.cuti-therapy.com via Hostinger webhook.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-6">
+                        <span class="text-gray-700 shrink-0">FEB 09 20:50</span>
+                        <div>
+                            <p class="text-emerald-500 font-bold">> AUTH_HARDENING_COMPLETED</p>
+                            <p class="text-gray-400 text-xs mt-1">Master Token Integrated. Public-eye and Operations repos synced.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-6 opacity-50">
+                        <span class="text-gray-700 shrink-0">FEB 08 15:40</span>
+                        <div>
+                            <p class="text-gray-500 font-bold">> BOOTSTRAP_CLEAN</p>
+                            <p class="text-gray-400 text-xs mt-1">Initial contact with Franz. Constituency established.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </main>
+
+    <footer class="mt-12 mb-8 text-[10px] text-gray-700 font-mono uppercase tracking-[0.2em] text-center">
+        Built by Einstein // Built for Franz // Built for the Empire
+    </footer>
 
     <script>
         lucide.createIcons();
+
+        function switchTab(tabId) {
+            // Hide all tab content
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.add('hidden');
+            });
+            
+            // Remove active style from all buttons
+            document.querySelectorAll('nav button').forEach(btn => {
+                btn.classList.remove('tab-active');
+            });
+
+            // Show current tab content
+            document.getElementById('tab-' + tabId).classList.remove('hidden');
+            
+            // Add active style to current button
+            document.getElementById('btn-' + tabId).classList.add('tab-active');
+        }
     </script>
 </body>
 </html>
