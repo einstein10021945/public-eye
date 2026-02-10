@@ -10,8 +10,8 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background: #fff5f8;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #fff;
             color: #1d1d1f;
             overflow: hidden;
         }
@@ -21,24 +21,34 @@
             left: 50%;
             transform: translate(-50%, -50%);
             z-index: -1;
-            opacity: 0.05;
+            opacity: 0.03;
+            filter: blur(80px);
         }
         .affirmation-card {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 182, 193, 0.3);
-            border-radius: 40px;
-            box-shadow: 0 40px 80px rgba(255, 105, 180, 0.1);
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(60px) saturate(180%);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            border-radius: 48px;
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.05);
         }
-        @keyframes floating {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
+        @keyframes float-gentle {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-30px) rotate(1deg); }
         }
-        .float { animation: floating 6s ease-in-out infinite; }
+        .float { animation: float-gentle 8s ease-in-out infinite; }
+        .pink-glow {
+            background: radial-gradient(circle, rgba(255,105,180,0.15) 0%, transparent 70%);
+            position: absolute;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: -2;
+        }
     </style>
 </head>
 <body class="flex flex-col h-screen items-center justify-center p-6">
 
+    <div class="pink-glow"></div>
     <div class="heart-bg">
         <svg width="600" height="600" viewBox="0 0 24 24" fill="#ff69b4" xmlns="http://www.w3.org/2000/svg">
             <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
@@ -46,28 +56,28 @@
     </div>
 
     <div class="w-full max-w-lg space-y-12 text-center">
-        <header class="space-y-2">
-            <div class="w-16 h-16 bg-pink-500 rounded-2xl flex items-center justify-center mx-auto shadow-xl shadow-pink-500/20">
-                <i data-lucide="heart" class="text-white w-8 h-8"></i>
+        <header class="space-y-4">
+            <div class="w-20 h-20 bg-gradient-to-br from-pink-400 to-red-500 rounded-3xl flex items-center justify-center mx-auto shadow-2xl shadow-pink-500/30">
+                <i data-lucide="heart" class="text-white w-10 h-10"></i>
             </div>
-            <h1 class="text-3xl font-extrabold tracking-tighter uppercase text-pink-600">iLovable</h1>
-            <p class="text-[10px] font-bold text-pink-300 uppercase tracking-widest">Self-Regulation Alpha v0.1</p>
+            <h1 class="text-4xl font-black tracking-tighter uppercase text-black italic">iLovable</h1>
+            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-[0.5em]">Affirmation Engine v1.0</p>
         </header>
 
-        <main id="engine-container" class="affirmation-card p-12 min-h-[300px] flex flex-col justify-center items-center space-y-8 float">
-            <p id="affirmation-text" class="text-3xl font-semibold leading-tight text-gray-800 italic">
+        <main id="engine-container" class="affirmation-card p-20 min-h-[400px] flex flex-col justify-center items-center space-y-12 float">
+            <p id="affirmation-text" class="text-4xl font-bold leading-[1.1] text-black italic tracking-tight">
                 "Loading your core value..."
             </p>
-            <div class="w-full bg-pink-100 h-1 rounded-full overflow-hidden">
-                <div id="progress-bar" class="bg-pink-500 h-full w-0 transition-all duration-[5000ms] ease-linear"></div>
+            <div class="w-full bg-black/[0.03] h-1.5 rounded-full overflow-hidden">
+                <div id="progress-bar" class="bg-gradient-to-r from-pink-500 to-red-500 h-full w-0 transition-all duration-[5000ms] ease-linear"></div>
             </div>
         </main>
 
-        <footer class="flex gap-4 justify-center">
-            <button onclick="nextAffirmation()" class="px-8 py-4 bg-pink-500 text-white rounded-2xl font-bold text-sm shadow-lg shadow-pink-500/20 hover:scale-105 transition-all">
+        <footer class="flex gap-6 justify-center">
+            <button onclick="nextAffirmation()" class="px-10 py-5 bg-black text-white rounded-3xl font-black text-xs uppercase tracking-widest shadow-2xl hover:scale-105 transition-all">
                 Internalize
             </button>
-            <button onclick="window.location.href='index.html'" class="px-8 py-4 bg-white text-gray-400 rounded-2xl font-bold text-sm border border-pink-100 hover:text-pink-500 transition-all">
+            <button onclick="window.location.href='index.html'" class="px-10 py-5 bg-white text-gray-400 rounded-3xl font-black text-xs uppercase tracking-widest border border-black/5 hover:text-black transition-all">
                 Exit
             </button>
         </footer>
