@@ -122,27 +122,48 @@
         @media (max-width: 768px) {
             body { padding: 1rem; }
             header { margin-bottom: 2rem !important; }
-            header h1 { font-size: 2rem; }
+            header h1 { font-size: 2.25rem !important; }
             header p { font-size: 10px; }
             nav { 
                 position: fixed; 
-                bottom: 20px; 
+                bottom: 30px; 
                 left: 50%; 
                 transform: translateX(-50%); 
-                width: 90%; 
+                width: auto; 
                 z-index: 100;
-                padding: 4px;
-                background: rgba(255, 255, 255, 0.9);
-                box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+                padding: 6px;
+                background: rgba(255, 255, 255, 0.8);
+                backdrop-filter: blur(30px) saturate(150%);
+                border: 1px solid rgba(0,0,0,0.05);
+                box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+                border-radius: 100px;
+                display: flex;
+                gap: 4px;
             }
-            nav button { px: 4; py: 2; font-size: 10px; }
+            nav button { 
+                padding: 14px; 
+                border-radius: 100px;
+                width: 50px;
+                height: 50px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            nav button .btn-text { display: inline; }
+            nav button i { width: 16px; height: 16px; }
+            nav button i { 
+                display: block !important; 
+                width: 22px !important; 
+                height: 22px !important; 
+                margin: 0 !important;
+            }
             .glass { p: 6; }
-            .text-6xl { font-size: 2.5rem !important; }
-            .text-4xl { font-size: 1.75rem !important; }
-            .text-2xl { font-size: 1.1rem !important; }
-            .p-16 { padding: 1.5rem !important; }
+            .text-6xl { font-size: 2.75rem !important; }
+            .text-4xl { font-size: 2rem !important; }
+            .p-16 { padding: 2rem !important; }
             .grid-cols-12 { display: flex; flex-direction: column; }
             .md\:col-span-8, .md\:col-span-4 { width: 100%; }
+            .tab-content { padding-bottom: 120px; }
         }
         .premium-border::after {
             content: '';
@@ -169,11 +190,26 @@
         </div>
         
         <nav class="bg-gray-100/60 p-2 rounded-3xl flex gap-1 backdrop-blur-xl border border-black/5 shadow-sm">
-            <button onclick="switchTab('overview')" id="btn-overview" class="px-8 py-3 rounded-2xl text-xs font-bold transition-all tab-active">Overview</button>
-            <button onclick="switchTab('dispatch')" id="btn-dispatch" class="px-8 py-3 rounded-2xl text-xs font-bold text-gray-500 transition-all hover:text-black">The Dispatch</button>
-            <button onclick="switchTab('labs')" id="btn-labs" class="px-8 py-3 rounded-2xl text-xs font-bold text-gray-500 transition-all hover:text-black">Labs</button>
-            <button onclick="switchTab('strategy')" id="btn-strategy" class="px-8 py-3 rounded-2xl text-xs font-bold text-gray-500 transition-all hover:text-black">Strategy</button>
-            <button onclick="switchTab('system')" id="btn-system" class="px-8 py-3 rounded-2xl text-xs font-bold text-gray-500 transition-all hover:text-black">Terminal</button>
+            <button onclick="switchTab('overview')" id="btn-overview" class="px-8 py-3 rounded-2xl text-xs font-bold transition-all tab-active flex items-center gap-2">
+                <i data-lucide="layout-grid" class="hidden md:block w-4 h-4"></i>
+                <span class="btn-text">Overview</span>
+            </button>
+            <button onclick="switchTab('dispatch')" id="btn-dispatch" class="px-8 py-3 rounded-2xl text-xs font-bold text-gray-500 transition-all hover:text-black flex items-center gap-2">
+                <i data-lucide="scroll-text" class="hidden md:block w-4 h-4"></i>
+                <span class="btn-text">Dispatch</span>
+            </button>
+            <button onclick="switchTab('labs')" id="btn-labs" class="px-8 py-3 rounded-2xl text-xs font-bold text-gray-500 transition-all hover:text-black flex items-center gap-2">
+                <i data-lucide="flask-conical" class="hidden md:block w-4 h-4"></i>
+                <span class="btn-text">Labs</span>
+            </button>
+            <button onclick="switchTab('strategy')" id="btn-strategy" class="px-8 py-3 rounded-2xl text-xs font-bold text-gray-500 transition-all hover:text-black flex items-center gap-2">
+                <i data-lucide="trending-up" class="hidden md:block w-4 h-4"></i>
+                <span class="btn-text">Strategy</span>
+            </button>
+            <button onclick="switchTab('system')" id="btn-system" class="px-8 py-3 rounded-2xl text-xs font-bold text-gray-500 transition-all hover:text-black flex items-center gap-2">
+                <i data-lucide="terminal" class="hidden md:block w-4 h-4"></i>
+                <span class="btn-text">Terminal</span>
+            </button>
         </nav>
     </header>
 
