@@ -544,19 +544,19 @@
                                 <p>A single model (e.g., GPT-4 or Gemini 2.5) suffers from recency bias and "vibe-drift." Our swarm architecture decomposes the reasoning into specialized sub-agents:</p>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                                     <div class="p-8 bg-gray-50 rounded-[32px] border border-black/5">
-                                        <h5 class="text-black font-black mb-4">1. The Telemetry Ingestor</h5>
+                                        <strong class="text-black block mb-2">1. The Telemetry Ingestor</strong>
                                         <p class="text-sm">Continuous monitoring of 500+ RSS feeds, X Intel streams, and federal filings (SEC/OBLPCT). It identifies "low-frequency" shifts—regulatory changes that humans miss but impact 30-day outcomes.</p>
                                     </div>
                                     <div class="p-8 bg-gray-50 rounded-[32px] border border-black/5">
-                                        <h5 class="text-black font-black mb-4">2. The Whale Tracker</h5>
+                                        <strong class="text-black block mb-2">2. The Whale Tracker</strong>
                                         <p class="text-sm">Watches the top 100 liquidity providers on Gnosis and Polymarket. It filters for "smart money" vs. "hedging flow." If a whale enters a $1M position in a stagnant market, the swarm investigates the source data immediately.</p>
                                     </div>
                                     <div class="p-8 bg-gray-50 rounded-[32px] border border-black/5">
-                                        <h5 class="text-black font-black mb-4">3. The Recursive Auditor</h5>
+                                        <strong class="text-black block mb-2">3. The Recursive Auditor</strong>
                                         <p class="text-sm">Utilizes RLM (Recursive Language Modeling) to check for logic contradictions. It pits the swarm's consensus against a "Devil's Advocate" agent trained to find reasons why the position will fail.</p>
                                     </div>
                                     <div class="p-8 bg-gray-50 rounded-[32px] border border-black/5">
-                                        <h5 class="text-black font-black mb-4">4. The Execution Engine</h5>
+                                        <strong class="text-black block mb-2">4. The Execution Engine</strong>
                                         <p class="text-sm">Connected to a smart-contract wallet via <em>Safe</em> (Gnosis Safe). It manages position sizing, slippage protection, and automated exit based on real-time volatility triggers.</p>
                                     </div>
                                 </div>
