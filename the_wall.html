@@ -35,10 +35,18 @@
             pointer-events: auto;
         }
         .glass {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 24px;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(40px) saturate(150%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 32px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+        @keyframes subtle-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.1); }
+            50% { box-shadow: 0 0 40px rgba(59, 130, 246, 0.2); }
+        }
+        .active-glow {
+            animation: subtle-glow 4s ease-in-out infinite;
         }
         @keyframes breath {
             0%, 100% { transform: scale(1); opacity: 0.3; }
@@ -54,13 +62,13 @@
     
     <div class="ui-layer flex flex-col justify-between p-10">
         <div class="flex justify-between items-start">
-            <div class="glass p-6">
-                <h1 class="text-2xl font-extrabold tracking-tighter">THE WALL</h1>
-                <p class="text-[10px] font-bold text-blue-400 uppercase tracking-widest">Somatic Regulation Alpha v1.0</p>
+            <div class="glass p-8 active-glow">
+                <h1 class="text-3xl font-black tracking-tighter italic">THE WALL</h1>
+                <p class="text-[10px] font-bold text-blue-400 uppercase tracking-[0.4em]">Somatic Regulation v1.1</p>
             </div>
-            <div class="glass p-6 text-right">
-                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">State</p>
-                <p id="state-display" class="text-xl font-bold text-emerald-400">REGULATED</p>
+            <div class="glass p-8 text-right active-glow">
+                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Telemetry</p>
+                <p id="state-display" class="text-xl font-bold text-emerald-400 transition-all duration-500">REGULATED</p>
             </div>
         </div>
 
@@ -120,34 +128,36 @@
 
             if (state === 'waiting') {
                 targetScale = 1;
-                if (mouseIsPressed) {
+                if (mouseIsPressed || (touches.length > 0)) {
                     state = 'inhale';
                     timer = 0;
                 }
             } else if (state === 'inhale') {
                 document.getElementById('instruction').innerText = "Inhale slowly...";
+                document.getElementById('instruction').style.transform = "scale(1.1)";
                 document.getElementById('state-display').innerText = "UP-REGULATING";
                 document.getElementById('state-display').className = "text-xl font-bold text-blue-400";
                 pulseColor = color(59, 130, 246);
                 targetScale = 2.5;
                 if (timer > 4) { state = 'hold'; timer = 0; }
-                if (!mouseIsPressed) resetEngine();
+                if (!mouseIsPressed && (touches.length === 0)) resetEngine();
             } else if (state === 'hold') {
                 document.getElementById('instruction').innerText = "Hold...";
                 targetScale = 2.6;
                 if (timer > 4) { state = 'exhale'; timer = 0; }
-                if (!mouseIsPressed) resetEngine();
+                if (!mouseIsPressed && (touches.length === 0)) resetEngine();
             } else if (state === 'exhale') {
                 document.getElementById('instruction').innerText = "Exhale and release...";
+                document.getElementById('instruction').style.transform = "scale(1.0)";
                 document.getElementById('state-display').innerText = "DOWN-REGULATING";
                 document.getElementById('state-display').className = "text-xl font-bold text-emerald-400";
                 pulseColor = color(16, 185, 129); // emerald-500
                 targetScale = 1;
                 if (timer > 6) { state = 'waiting'; timer = 0; }
-                if (!mouseIsPressed) resetEngine();
+                if (!mouseIsPressed && (touches.length === 0)) resetEngine();
             }
 
-            scaleVal = lerp(scaleVal, targetScale, 0.05);
+            scaleVal = lerp(scaleVal, targetScale, 0.03); // Smoother lerp
         }
 
         function resetEngine() {
