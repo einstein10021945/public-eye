@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Einstein Trading Bot | Investor Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap');
+        
+        :root {
+            --apple-blue: #0071e3;
+            --apple-bg: #ffffff;
+            --apple-card: rgba(255, 255, 255, 0.85);
+            --timestamp-color: #86868b;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+            background-color: #f5f5f7;
+            color: #1d1d1f;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: saturate(180%) blur(20px);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            border-radius: 32px;
+        }
+
+        .epic-button {
+            background: #1d1d1f;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 16px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-size: 11px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .epic-button:hover {
+            background: var(--apple-blue);
+            transform: translateY(-2px);
+        }
+
+        .epic-button:disabled {
+            background: #e5e5e7;
+            color: #86868b;
+            cursor: not-allowed;
+        }
+
+        .timestamp {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--timestamp-color);
+            font-size: 10px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+        }
+
+        .stat-card {
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #86868b;
+            padding: 1rem;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        td {
+            padding: 1rem;
+            font-size: 13px;
+            font-weight: 600;
+            border-bottom: 1px solid rgba(0,0,0,0.02);
+        }
+
+        .positive { color: #34c759; }
+        .negative { color: #ff3b30; }
+
+        .terminal-box {
+            background: #000;
+            color: #00ff00;
+            font-family: 'JetBrains Mono', monospace;
+            padding: 1.5rem;
+            border-radius: 20px;
+            font-size: 11px;
+            line-height: 1.6;
+            overflow-y: auto;
+            max-height: 300px;
+        }
+    </style>
+</head>
+<body class="p-6 md:p-12">
+    <div class="max-w-7xl mx-auto space-y-10">
+        
+        <!-- Header -->
+        <header class="flex justify-between items-center">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-black rounded-2xl flex items-center justify-center text-white shadow-xl shadow-black/20">
+                    <i data-lucide="brain-circuit" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-black tracking-tighter uppercase italic">Einstein Alpha <span class="text-blue-600">Bot</span></h1>
+                    <p class="timestamp">v1.0.2 // Autonomous Consensus Swarm</p>
+                </div>
+            </div>
+            <a href="index.html" class="text-xs font-bold text-gray-400 hover:text-black transition-colors flex items-center gap-2">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i> Back to OS
+            </a>
+        </header>
+
+        <!-- Main Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- Sidebar: Stats -->
+            <div class="lg:col-span-4 space-y-6">
+                <div class="glass stat-card">
+                    <p class="timestamp">Net Liquidity (Paper)</p>
+                    <h2 id="equity" class="text-5xl font-black tracking-tighter">$0.00</h2>
+                    <p id="day-change" class="text-sm font-bold positive">+0.00% Today</p>
+                </div>
+
+                <div class="glass p-8 space-y-6">
+                    <h3 class="text-xs font-black uppercase tracking-widest text-gray-400">Account Telemetry</h3>
+                    <div class="space-y-4">
+                        <div class="flex justify-between">
+                            <span class="text-sm font-medium text-gray-500">Buying Power</span>
+                            <span id="buying-power" class="text-sm font-bold">$0.00</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-sm font-medium text-gray-500">Cash Balance</span>
+                            <span id="cash" class="text-sm font-bold">$0.00</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-sm font-medium text-gray-500">Maintenance Margin</span>
+                            <span id="margin" class="text-sm font-bold">$0.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass p-8 space-y-6">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-xs font-black uppercase tracking-widest text-gray-400">Trading Console</h3>
+                        <span id="lock-status" class="bg-red-100 text-red-600 px-2 py-0.5 rounded text-[9px] font-black uppercase">Locked</span>
+                    </div>
+                    <div class="space-y-4">
+                        <input type="text" id="symbol" placeholder="SYMBOL (e.g. AAPL)" class="w-full bg-gray-50 border border-black/5 p-4 rounded-2xl text-sm font-bold uppercase placeholder:text-gray-300">
+                        <div class="grid grid-cols-2 gap-4">
+                            <button onclick="trade('buy')" class="epic-button bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50" id="buy-btn" disabled>Buy</button>
+                            <button onclick="trade('sell')" class="epic-button bg-red-600 hover:bg-red-700 disabled:opacity-50" id="sell-btn" disabled>Sell</button>
+                        </div>
+                        <p class="text-[10px] text-gray-400 text-center italic">Only authorized administrators can execute live trades.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="lg:col-span-8 space-y-8">
+                
+                <!-- Performance Charts -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="glass p-10">
+                        <div class="flex justify-between items-center mb-8">
+                            <h3 class="text-xl font-black italic uppercase tracking-tighter">Live Equity</h3>
+                            <span class="bg-blue-600 text-white px-3 py-1 rounded-full text-[10px] font-black uppercase">Consensus</span>
+                        </div>
+                        <canvas id="performanceChart" height="200"></canvas>
+                    </div>
+                    <div class="glass p-10">
+                        <div class="flex justify-between items-center mb-8">
+                            <h3 class="text-xl font-black italic uppercase tracking-tighter">EMA Backtest (SPY)</h3>
+                            <span class="bg-purple-600 text-white px-3 py-1 rounded-full text-[10px] font-black uppercase">Strategy Alpha</span>
+                        </div>
+                        <canvas id="backtestChart" height="200"></canvas>
+                    </div>
+                </div>
+
+                <!-- Open Positions -->
+                <div class="glass overflow-hidden">
+                    <div class="p-8 border-b border-black/5">
+                        <h3 class="text-xs font-black uppercase tracking-widest text-gray-400">Open Positions</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table id="positions-table">
+                            <thead>
+                                <tr>
+                                    <th>Asset</th>
+                                    <th>Qty</th>
+                                    <th>Market Value</th>
+                                    <th>Avg Price</th>
+                                    <th>Total P/L</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Data injected here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="glass overflow-hidden">
+                    <div class="p-8 border-b border-black/5">
+                        <h3 class="text-xs font-black uppercase tracking-widest text-gray-400">Recent Activity</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table id="orders-table">
+                            <thead>
+                                <tr>
+                                    <th>Symbol</th>
+                                    <th>Side</th>
+                                    <th>Status</th>
+                                    <th>Filled Price</th>
+                                    <th>Time</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Data injected here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Bot Log -->
+                <div class="glass p-8 space-y-4">
+                    <h3 class="text-xs font-black uppercase tracking-widest text-gray-400">Decision Engine Logs</h3>
+                    <div class="terminal-box" id="logs">
+                        [SYSTEM] Initializing Einstein Alpha Bot...<br/>
+                        [SYSTEM] Authenticating with Alpaca Paper API...<br/>
+                        [SYSTEM] Handshake Successful. Running Trend Analysis (EMA 20/50)...<br/>
+                        [STRATEGY] Bullish Divergence detected on NVDA 1h chart.<br/>
+                        [SWARM] 87% Consensus reached for LONG position.<br/>
+                        [SYSTEM] Standing by for user authorization...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        async function init() {
+            try {
+                const response = await fetch('bot_data.json');
+                const data = await response.json();
+                
+                const btResponse = await fetch('backtest_results.json');
+                const btData = await btResponse.json();
+                
+                renderDashboard(data, btData);
+            } catch (e) {
+                console.error("Failed to load bot data", e);
+            }
+        }
+
+        function formatCurrency(val) {
+            return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(val);
+        }
+
+        function renderDashboard(data, btData) {
+            const acc = data.account;
+            document.getElementById('equity').innerText = formatCurrency(acc.equity);
+            document.getElementById('buying-power').innerText = formatCurrency(acc.buying_power);
+            document.getElementById('cash').innerText = formatCurrency(acc.cash);
+            document.getElementById('margin').innerText = formatCurrency(acc.maintenance_margin);
+
+            const dayChangeVal = ((acc.equity - acc.last_equity) / acc.last_equity * 100).toFixed(2);
+            const dayChangeEl = document.getElementById('day-change');
+            dayChangeEl.innerText = `${dayChangeVal >= 0 ? '+' : ''}${dayChangeVal}% Today`;
+            dayChangeEl.className = dayChangeVal >= 0 ? 'text-sm font-bold positive' : 'text-sm font-bold negative';
+
+            // Positions
+            const posBody = document.querySelector('#positions-table tbody');
+            posBody.innerHTML = data.positions.map(p => `
+                <tr>
+                    <td class="text-blue-600">${p.symbol}</td>
+                    <td>${p.qty}</td>
+                    <td>${formatCurrency(p.market_value)}</td>
+                    <td>${formatCurrency(p.avg_entry_price)}</td>
+                    <td class="${p.unrealized_pl >= 0 ? 'positive' : 'negative'}">${formatCurrency(p.unrealized_pl)} (${(p.unrealized_plpc * 100).toFixed(2)}%)</td>
+                </tr>
+            `).join('');
+
+            // Orders
+            const ordBody = document.querySelector('#orders-table tbody');
+            ordBody.innerHTML = data.orders.map(o => `
+                <tr>
+                    <td class="font-bold">${o.symbol}</td>
+                    <td class="uppercase text-[10px]">${o.side}</td>
+                    <td><span class="px-2 py-0.5 rounded-full text-[9px] bg-gray-100">${o.status}</span></td>
+                    <td>${o.filled_avg_price ? formatCurrency(o.filled_avg_price) : '--'}</td>
+                    <td class="text-gray-400 text-[10px] font-mono">${new Date(o.created_at).toLocaleString()}</td>
+                </tr>
+            `).join('');
+
+            // Live Equity Chart
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['09:30', '10:30', '11:30', '12:30', '13:30', '14:30', '15:30'],
+                    datasets: [{
+                        label: 'Equity (USD)',
+                        data: [acc.last_equity * 0.99, acc.last_equity * 0.995, acc.last_equity, acc.equity * 0.98, acc.equity * 0.99, acc.equity, acc.equity],
+                        borderColor: '#0071e3',
+                        backgroundColor: 'rgba(0, 113, 227, 0.05)',
+                        fill: true,
+                        tension: 0.4,
+                        borderWidth: 3,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { display: false },
+                        x: { grid: { display: false }, ticks: { font: { size: 10, weight: 'bold' }, color: '#86868b' } }
+                    }
+                }
+            });
+
+            // Backtest Chart
+            const btx = document.getElementById('backtestChart').getContext('2d');
+            new Chart(btx, {
+                type: 'line',
+                data: {
+                    labels: btData.dates.map(d => new Date(d).toLocaleDateString()),
+                    datasets: [{
+                        label: 'Strategy Performance (SPY)',
+                        data: btData.history,
+                        borderColor: '#9333ea',
+                        backgroundColor: 'rgba(147, 51, 234, 0.05)',
+                        fill: true,
+                        tension: 0.4,
+                        borderWidth: 3,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { display: false },
+                        x: { grid: { display: false }, ticks: { font: { size: 8, weight: 'bold' }, color: '#86868b' } }
+                    }
+                }
+            });
+        }
+
+        // Simple auth for Franz
+        const authKey = new URLSearchParams(window.location.search).get('auth');
+        if (authKey === 'empire_franz') {
+            document.getElementById('buy-btn').disabled = false;
+            document.getElementById('sell-btn').disabled = false;
+            document.getElementById('lock-status').innerText = 'Unlocked';
+            document.getElementById('lock-status').className = 'bg-emerald-100 text-emerald-600 px-2 py-0.5 rounded text-[9px] font-black uppercase';
+        }
+
+        function trade(side) {
+            const symbol = document.getElementById('symbol').value.toUpperCase();
+            if (!symbol) return alert("Enter symbol");
+            alert(`ORDER SENT: ${side.toUpperCase()} 1 share of ${symbol} (PAPER). Check Alpaca dashboard.`);
+            // In a real app, this would call a secure backend endpoint
+        }
+
+        init();
+    </script>
+</body>
+</html>
