@@ -288,11 +288,11 @@
         }
 
         .epic-button:hover {
-            transform: translateY(-8px) scale(1.05);
-            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-6px) scale(1.03);
             box-shadow: 
-                0 30px 60px rgba(0,0,0,0.12),
-                0 0 0 1px rgba(255, 255, 255, 0.2);
+                0 25px 50px rgba(0,0,0,0.1),
+                0 10px 10px rgba(0,0,0,0.05);
+            border-color: rgba(0, 0, 0, 0.1);
         }
 
         .epic-button:hover::before {
@@ -315,20 +315,32 @@
         }
 
         .button-blue { 
-            background: linear-gradient(135deg, rgba(0, 113, 227, 0.8) 0%, rgba(0, 91, 181, 0.8) 100%); 
-            color: white; 
-            border: 1px solid rgba(255,255,255,0.3);
+            background: #0071e3; 
+            color: white !important; 
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .button-blue:hover {
+            background: #005bb5;
+            color: white !important;
         }
         .button-black { 
-            background: linear-gradient(135deg, rgba(29, 29, 31, 0.9) 0%, rgba(0, 0, 0, 0.9) 100%); 
-            color: white; 
-            border: 1px solid rgba(255,255,255,0.15);
+            background: #1d1d1f; 
+            color: white !important; 
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .button-black:hover {
+            background: #000000;
+            color: white !important;
         }
         .button-glass { 
-            background: rgba(255, 255, 255, 0.3); 
+            background: rgba(255, 255, 255, 0.7); 
             backdrop-filter: blur(30px) saturate(200%);
-            color: #1d1d1f; 
-            border: 1px solid rgba(0,0,0,0.08); 
+            color: #1d1d1f !important; 
+            border: 1px solid rgba(0,0,0,0.1); 
+        }
+        .button-glass:hover {
+            background: rgba(245, 245, 247, 1);
+            color: #000000 !important;
         }
 
         /* Magnetic Hover Logic (CSS Component) */
