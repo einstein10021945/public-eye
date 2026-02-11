@@ -265,6 +265,9 @@
         let isSessionActive = false;
         let currentMode = 'client'; 
         let currentVoice = 'piper';
+        let isSpeaking = false;
+        let isThinking = false;
+        let turnTimeout = null;
 
         function setMode(mode) {
             currentMode = mode;
@@ -293,12 +296,8 @@
             document.getElementById('main-btn').innerText = 'End Session';
             document.getElementById('main-btn').classList.remove('bg-black');
             document.getElementById('main-btn').classList.add('bg-red-600');
-            document.getElementById('status-orb').classList.add('listening');
-            document.getElementById('status-text').innerText = 'Listening';
-            document.getElementById('live-caption').innerText = 'Speak naturally...';
+            setUIState('listening');
             addTranscript('SYSTEM', 'Session initialized.');
-            
-            // Web Speech API for low-latency prototype
             startListening();
         }
 
@@ -307,20 +306,36 @@
             document.getElementById('main-btn').innerText = 'Start Conversation';
             document.getElementById('main-btn').classList.add('bg-black');
             document.getElementById('main-btn').classList.remove('bg-red-600');
-            document.getElementById('status-orb').classList.remove('listening');
-            document.getElementById('status-text').innerText = 'Ready';
-            document.getElementById('live-caption').innerText = 'Session paused';
-            
+            setUIState('ready');
             if (recognition) recognition.stop();
+            window.speechSynthesis.cancel();
+        }
+
+        function setUIState(state) {
+            const orb = document.getElementById('status-orb');
+            const text = document.getElementById('status-text');
+            const caption = document.getElementById('live-caption');
+
+            orb.classList.remove('listening', 'thinking');
+            if (state === 'listening') {
+                orb.classList.add('listening');
+                text.innerText = 'Listening';
+            } else if (state === 'thinking') {
+                orb.classList.add('thinking');
+                text.innerText = 'Processing';
+            } else if (state === 'speaking') {
+                orb.classList.add('listening'); // Use pulse for speaking too
+                text.innerText = 'Speaking';
+            } else {
+                text.innerText = 'System Ready';
+                caption.innerText = 'Tap to begin session';
+            }
         }
 
         let recognition;
         function startListening() {
             window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!window.SpeechRecognition) {
-                alert("Speech recognition not supported in this browser.");
-                return;
-            }
+            if (!window.SpeechRecognition) return alert("Speech recognition not supported.");
             
             recognition = new SpeechRecognition();
             recognition.interimResults = true;
@@ -329,11 +344,16 @@
             recognition.onresult = (event) => {
                 let interimTranscript = '';
                 for (let i = event.resultIndex; i < event.results.length; ++i) {
+                    const text = event.results[i][0].transcript.toLowerCase();
+                    
+                    // INTERRUPTION LOGIC
+                    if (isSpeaking && (text.includes('hold on') || text.includes('stop') || text.includes('wait'))) {
+                        interrupt();
+                        return;
+                    }
+
                     if (event.results[i].isFinal) {
-                        const finalTranscript = event.results[i][0].transcript;
-                        if (finalTranscript.trim()) {
-                            processInput(finalTranscript);
-                        }
+                        handleFinalSpeech(event.results[i][0].transcript);
                     } else {
                         interimTranscript += event.results[i][0].transcript;
                     }
@@ -342,84 +362,105 @@
                 if (interimTranscript) {
                     document.getElementById('live-caption').innerText = interimTranscript;
                     simulateSomatic(true);
+                    // Reset turn timeout if user is still talking
+                    if (turnTimeout) clearTimeout(turnTimeout);
                 }
             };
 
-            recognition.onerror = (event) => {
-                console.error("Speech error", event.error);
-                if (event.error === 'no-speech') simulateSomatic(false);
+            recognition.onend = () => {
+                if (isSessionActive && !isSpeaking) recognition.start();
             };
 
             recognition.start();
         }
 
+        function interrupt() {
+            window.speechSynthesis.cancel();
+            isSpeaking = false;
+            setUIState('listening');
+            document.getElementById('live-caption').innerText = "[Interrupted]";
+            addTranscript('SYSTEM', 'Interruption detected.');
+        }
+
+        function handleFinalSpeech(text) {
+            if (!text.trim()) return;
+            
+            // Turn-taking: wait for a beat of silence before responding
+            if (turnTimeout) clearTimeout(turnTimeout);
+            turnTimeout = setTimeout(() => {
+                processInput(text);
+            }, 1200); // 1.2s silence allowed
+        }
+
         function simulateSomatic(active) {
             const level = active ? Math.floor(Math.random() * 60) + 40 : 0;
-            document.getElementById('somatic-level').style.width = level + '%';
+            const el = document.getElementById('somatic-level');
+            if (el) el.style.width = level + '%';
             if (active) {
                 document.getElementById('status-orb').style.transform = `scale(${1 + level/100})`;
             }
         }
 
         async function processInput(text) {
-            if (isSpeaking) return; // Prevent loop during TTS
+            if (isThinking || isSpeaking) return;
             
-            document.getElementById('status-orb').classList.remove('listening');
-            document.getElementById('status-orb').classList.add('thinking');
-            document.getElementById('status-text').innerText = 'Thinking';
+            isThinking = true;
+            setUIState('thinking');
             addTranscript('USER', text);
 
-            // Simulate insight generation
             if (currentMode === 'therapist') {
                 const insights = [
                     "Detected vocal tremor: High sympathetic arousal.",
                     "Rapid speech rate identified: Signs of flight response.",
-                    "Word choice clusters: Focus on external validation."
+                    "Word choice clusters: Focus on external validation.",
+                    "Pattern: Anxious attachment hyperactivation."
                 ];
                 document.getElementById('insight-box').classList.add('active');
                 document.getElementById('insight-text').innerText = insights[Math.floor(Math.random() * insights.length)];
             }
 
             setTimeout(() => {
+                if (!isSessionActive) return;
+                
                 let response = "";
                 if (currentMode === 'client') {
                     const anxiousResponses = [
                         "I... I just feel like you're going to leave eventually. Everyone does. Why would you stay?",
-                        "I saw you were online but didn't reply for two minutes. Are you upset with me?",
-                        "I just need to know you're still there. I feel so small when I'm not talking to you.",
-                        "I tell myself I'm being too much, but the silence feels like a weight.",
-                        "Are you still listening? I feel like I'm boring you."
+                        "I saw you were online but didn't reply for two minutes. Are you upset with me? Did I say something wrong?",
+                        "I just need to know you're still there. I feel so small when I'm not talking to you. Can you promise you won't get bored?",
+                        "I tell myself I'm being too much, but the silence feels like a physical weight. Are we still okay?",
+                        "I find myself constantly checking my phone. It's like I'm waiting for a sign that I still matter to you."
                     ];
                     response = anxiousResponses[Math.floor(Math.random() * anxiousResponses.length)];
                 } else {
-                    response = "I'm right here. I hear the tension in your breath. Let's try to ground that energy together.";
+                    response = "I'm right here. I hear the anxiety in your voice, and I want you to know that I am present with you. Let's explore where that feeling of being 'too much' is living in your body right now.";
                 }
                 
+                isThinking = false;
                 speak(response);
-                addTranscript('ULRICH_AI', response);
-                document.getElementById('live-caption').innerText = response;
-                document.getElementById('status-orb').classList.remove('thinking');
-                document.getElementById('status-orb').classList.add('listening');
-                document.getElementById('status-text').innerText = 'Listening';
-                simulateSomatic(false);
-            }, 1800);
+            }, 1500);
         }
 
-        let isSpeaking = false;
         function speak(text) {
             isSpeaking = true;
-            if (recognition) recognition.stop(); // Stop listening while talking to avoid feedback loop
+            setUIState('speaking');
+            addTranscript('ULRICH_AI', text);
+            document.getElementById('live-caption').innerText = text;
 
             const utterance = new SpeechSynthesisUtterance(text);
-            utterance.rate = 0.85; 
-            utterance.pitch = 1.1; 
+            utterance.rate = 0.82; 
+            utterance.pitch = 1.05; 
+            
             const voices = window.speechSynthesis.getVoices();
-            const femaleVoice = voices.find(v => v.name.includes('Female') || v.name.includes('Google US English') || v.name.includes('Samantha'));
+            const femaleVoice = voices.find(v => v.name.includes('Female') || v.name.includes('Google US English') || v.name.includes('Samantha') || v.name.includes('Natural'));
             if (femaleVoice) utterance.voice = femaleVoice;
             
             utterance.onend = () => {
                 isSpeaking = false;
-                if (isSessionActive) recognition.start(); // Resume listening
+                if (isSessionActive) {
+                    setUIState('listening');
+                    simulateSomatic(false);
+                }
             };
 
             window.speechSynthesis.speak(utterance);
@@ -427,7 +468,8 @@
 
         function addTranscript(role, text) {
             const el = document.createElement('div');
-            el.innerHTML = `<strong>${role}:</strong> ${text}`;
+            el.className = "mb-2 border-l-2 pl-3 " + (role === 'USER' ? 'border-blue-400' : 'border-emerald-400');
+            el.innerHTML = `<span class="opacity-50 text-[10px] block">${role}</span> ${text}`;
             document.getElementById('transcript').appendChild(el);
             document.querySelector('.transcript-container').scrollTop = 9999;
         }
