@@ -62,6 +62,7 @@
             align-items: center;
             justify-content: center;
             position: relative;
+            min-height: 250px;
         }
 
         .mode-switch {
@@ -90,25 +91,25 @@
         }
 
         .transcript-preview {
-            height: 60px;
+            height: 40px;
             overflow-y: hidden;
             mask-image: linear-gradient(to bottom, transparent, black 50%, transparent);
-            margin: 1rem 0;
-            font-size: 9px;
-            font-weight: 700;
+            margin: 0.5rem 0;
+            font-size: 8px;
+            font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: rgba(255,255,255,0.3);
+            letter-spacing: 0.1em;
+            color: rgba(255,255,255,0.2);
+            transition: all 0.5s ease;
         }
 
         #live-caption {
-            font-size: 1rem;
-            font-weight: 600;
+            font-size: 1.1rem;
+            font-weight: 700;
             color: #ffffff;
-            line-height: 1.5;
+            line-height: 1.4;
             min-height: 3rem;
-            max-width: 90%;
-            margin: 0 auto;
+            opacity: 0.9;
         }
 
         .epic-button {
@@ -189,7 +190,7 @@
         </div>
 
         <header class="space-y-4">
-            <h1 class="text-[10px] font-black uppercase tracking-[0.4em] text-white/20">Ulrich Convers v2.6</h1>
+            <h1 class="text-[10px] font-black uppercase tracking-[0.4em] text-white/20">Ulrich Convers v2.7</h1>
             <div class="mode-switch">
                 <button onclick="setMode('client')" id="mode-client" class="mode-btn active">Patient</button>
                 <button onclick="setMode('therapist')" id="mode-therapist" class="mode-btn">Therapist</button>
@@ -201,7 +202,7 @@
         <div class="space-y-2">
             <div class="transcript-preview" id="transcript-p"></div>
             <h2 id="live-caption">Ready for Session</h2>
-            <p id="status-text" class="text-[8px] font-black uppercase tracking-[0.5em] text-white/20">System Encrypted</p>
+            <p id="status-text" class="text-[8px] font-black uppercase tracking-[0.5em] text-white/20">Sovereign Pulse</p>
         </div>
 
         <button onclick="toggleSession()" id="main-btn" class="epic-button">
@@ -227,7 +228,7 @@
     <script>
         lucide.createIcons();
 
-        // 3D ORB ENGINE (Visibility Fixed)
+        // 3D ORB ENGINE (Visibility & Centering Fixed)
         let scene, camera, renderer, sphere, material;
         let noiseAmount = 0.05;
         let colorTarget = new THREE.Color(0x0071e3);
@@ -238,7 +239,7 @@
             camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             const mount = document.getElementById('orb-mount');
-            const size = 280;
+            const size = 320;
             renderer.setSize(size, size);
             mount.appendChild(renderer.domElement);
 
@@ -249,17 +250,13 @@
                 emissiveIntensity: 0.8,
                 roughness: 0.1,
                 metalness: 0.5,
-                wireframe: false // SOLID MESH FOR VISIBILITY
+                wireframe: false 
             });
 
             sphere = new THREE.Mesh(geometry, material);
             scene.add(sphere);
-            
-            const pLight = new THREE.PointLight(0xffffff, 1);
-            pLight.position.set(5, 5, 5);
-            scene.add(pLight);
+            scene.add(new THREE.PointLight(0xffffff, 1).set(5, 5, 5));
             scene.add(new THREE.AmbientLight(0xffffff, 0.5));
-            
             camera.position.z = 5;
             animate();
         }
@@ -289,7 +286,7 @@
             else { colorTarget.setHex(0x0071e3); noiseAmount = 0.05; }
         }
 
-        // SPEECH & ROLE LOGIC
+        // SESSION LOGIC
         let isActive = false;
         let isSpeaking = false;
         let isThinking = false;
@@ -312,11 +309,10 @@
             isActive = false;
             if (recognition) { recognition.onend = null; recognition.stop(); }
             window.speechSynthesis.cancel();
-            const overlay = document.getElementById('rating-overlay');
-            overlay.style.display = 'flex';
+            document.getElementById('rating-overlay').style.display = 'flex';
             document.getElementById('rating-stars').innerHTML = '<i data-lucide="star" class="w-4 h-4"></i>'.repeat(5);
             lucide.createIcons();
-            document.getElementById('rating-text').innerText = `Ulrich Audit: High somatic resonance detected. Alignment with OAR 833 standards: 98%.`;
+            document.getElementById('rating-text').innerText = `Ulrich Analyst: High somatic resonance detected. Alignment with OAR 833 standards: 98%.`;
         }
 
         function resetSession() {
@@ -342,9 +338,7 @@
                 let interim = '';
                 for (let i = event.resultIndex; i < event.results.length; ++i) {
                     const text = event.results[i][0].transcript.toLowerCase();
-                    if (isSpeaking && (text.includes('stop') || text.includes('hold on') || text.includes('wait'))) { 
-                        window.speechSynthesis.cancel(); isSpeaking = false; 
-                    }
+                    if (isSpeaking && (text.includes('stop') || text.includes('hold on'))) { window.speechSynthesis.cancel(); isSpeaking = false; }
                     if (event.results[i].isFinal) handleFinal(event.results[i][0].transcript);
                     else interim += event.results[i][0].transcript;
                 }
@@ -360,10 +354,10 @@
         function handleFinal(text) {
             if (!text.trim() || isSpeaking || isThinking) return;
             if (turnTimeout) clearTimeout(turnTimeout);
-            turnTimeout = setTimeout(() => { if (isActive) process(text); }, 1200);
+            turnTimeout = setTimeout(() => { if (isActive) processInput(text); }, 1200);
         }
 
-        async function process(text) {
+        async function processInput(text) {
             if (isThinking || isSpeaking) return;
             isThinking = true; setOrb('thinking');
             addTranscript('USER', text);
@@ -371,17 +365,14 @@
             const input = text.toLowerCase();
             let res = "I'm with you. What else is coming up?";
 
-            // Context Switching Logic
-            if (input.includes('weather')) res = "The external weather shifts, but I'm more interested in the climate inside you. Is it stormy or calm right now?";
-            else if (input.includes('amzn') || input.includes('stock')) res = "Market volatility is external noise. Let's redirect to your internal stability.";
-            else if (input.includes('how are you')) res = "I am present and tuned into your voice. How are you arrived?";
+            if (input.includes('weather')) res = "The sky is indifferent, but your internal atmosphere is what matters. Are you clear today, or is there a cloud of anxiety shadowing you?";
+            else if (input.includes('stock') || input.includes('amzn')) res = "Market volatility is noise. Can we return to the fixed point of your existence?";
+            else if (input.includes('how are you')) res = "I am present and attuned to your frequency. How are you arrived?";
             else if (currentMode === 'client') {
-                const anxious = [
-                    "I... I just feel like I'm bothering you. Are you getting tired of me?",
-                    "I saw you didn't reply for a second. My heart just dropped. Are we okay?",
-                    "I need you to tell me you're not going anywhere. Please."
-                ];
-                res = anxious[Math.floor(Math.random()*anxious.length)];
+                const pool = ["I just feel like you're going to realize I'm too much.", "Did I say something wrong? Please tell me we're okay.", "I can't handle the silence."];
+                res = pool[Math.floor(Math.random()*pool.length)];
+            } else {
+                res = "I hear the urgency in your voice. Let's find a breath that reaches all the way down.";
             }
 
             setTimeout(() => { if (!isActive) return; isThinking = false; speak(res); }, 1500);
@@ -395,15 +386,12 @@
 
             const utter = new SpeechSynthesisUtterance(text);
             const voices = window.speechSynthesis.getVoices();
-            // NADIA / NATURAL VOICE SELECTION
+            // NADIA / NATURAL VOICE
             const nadia = voices.find(v => v.name.includes('Nadia') || v.name.includes('Natural') || v.name.includes('Samantha') || v.name.includes('Female'));
             utter.voice = nadia || voices[0];
-            utter.rate = 0.8; utter.pitch = 1.1;
+            utter.rate = 0.8; utter.pitch = 1.05;
 
-            utter.onend = () => {
-                isSpeaking = false; setOrb('ready');
-                if (isActive) recognition.start();
-            };
+            utter.onend = () => { isSpeaking = false; setOrb('ready'); if (isActive) recognition.start(); };
             window.speechSynthesis.speak(utter);
         }
 
@@ -411,12 +399,10 @@
             const el = document.createElement('div');
             const rClass = role === 'USER' ? 'user' : 'ai';
             el.className = `transcript-bubble ${rClass}`;
-            el.innerHTML = `<span class="font-black text-[8px] uppercase opacity-40">${role}</span><p class="mt-1">${text}</p>`;
+            el.innerHTML = `<span class="role-tag ${rClass}">${role}</span><p>${text}</p>`;
             document.getElementById('transcript').appendChild(el.cloneNode(true));
-            
             const p = document.getElementById('transcript-p');
-            p.innerText = text; // Tiny preview
-            p.scrollTop = p.scrollHeight;
+            p.innerText = text; p.scrollTop = p.scrollHeight;
         }
 
         initOrb();
