@@ -31,8 +31,20 @@
             justify-content: center;
         }
 
+        #app-container {
+            width: 100%;
+            max-width: 900px; /* CONSTRAINED WIDTH */
+            height: 100%;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
         #orb-mount {
-            position: fixed;
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
@@ -41,6 +53,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            pointer-events: none;
         }
 
         .ui-overlay {
@@ -196,37 +209,39 @@
 <body>
     <div id="system-log">Engine: Boot</div>
     
-    <div id="orb-mount"></div>
+    <div id="app-container">
+        <div id="orb-mount"></div>
 
-    <div class="ui-overlay">
-        <div class="drawer-trigger ui-element" onclick="toggleDrawer()">
-            <i data-lucide="menu" class="w-6 h-6"></i>
-        </div>
-
-        <header class="space-y-6 ui-element">
-            <h1 class="text-[10px] font-black uppercase tracking-[0.6em] text-white/20">Ulrich Convers v4.3</h1>
-            <div class="mode-switch">
-                <button onclick="setMode('client')" id="mode-client" class="mode-btn active">Patient</button>
-                <button onclick="setMode('therapist')" id="mode-therapist" class="mode-btn">Therapist</button>
+        <div class="ui-overlay">
+            <div class="drawer-trigger ui-element" onclick="toggleDrawer()">
+                <i data-lucide="menu" class="w-6 h-6"></i>
             </div>
-        </header>
 
-        <div class="space-y-6 ui-element pb-12">
-            <div class="micro-transcript" id="transcript-p">Handshaking...</div>
-            <h2 id="live-caption">Tap to Begin</h2>
-            <button onclick="handleStart()" id="main-btn" class="epic-button">
-                Initialize Session
-            </button>
-        </div>
+            <header class="space-y-6 ui-element">
+                <h1 class="text-[10px] font-black uppercase tracking-[0.6em] text-white/20">Ulrich Convers v4.4</h1>
+                <div class="mode-switch">
+                    <button onclick="setMode('client')" id="mode-client" class="mode-btn active">Patient</button>
+                    <button onclick="setMode('therapist')" id="mode-therapist" class="mode-btn">Therapist</button>
+                </div>
+            </header>
 
-        <div id="rating-overlay" class="space-y-8">
-            <div class="w-16 h-16 bg-blue-600 rounded-3xl flex items-center justify-center shadow-2xl shadow-blue-600/30">
-                <i data-lucide="activity" class="text-white w-8 h-8"></i>
+            <div class="space-y-6 ui-element pb-12">
+                <div class="micro-transcript" id="transcript-p">Handshaking...</div>
+                <h2 id="live-caption">Tap to Begin</h2>
+                <button onclick="handleStart()" id="main-btn" class="epic-button">
+                    Initialize Session
+                </button>
             </div>
-            <h3 class="text-white text-4xl font-black italic uppercase tracking-tighter">Analysis</h3>
-            <div id="rating-stars" class="flex gap-2 text-yellow-400 scale-125 origin-left"></div>
-            <p id="rating-text" class="text-white/40 text-sm leading-relaxed font-medium max-w-sm"></p>
-            <button onclick="resetSession()" class="epic-button bg-blue-600 text-white">New Session</button>
+
+            <div id="rating-overlay" class="space-y-8">
+                <div class="w-16 h-16 bg-blue-600 rounded-3xl flex items-center justify-center shadow-2xl shadow-blue-600/30">
+                    <i data-lucide="activity" class="text-white w-8 h-8"></i>
+                </div>
+                <h3 class="text-white text-4xl font-black italic uppercase tracking-tighter">Analysis</h3>
+                <div id="rating-stars" class="flex gap-2 text-yellow-400 scale-125 origin-left"></div>
+                <p id="rating-text" class="text-white/40 text-sm leading-relaxed font-medium max-w-sm"></p>
+                <button onclick="resetSession()" class="epic-button bg-blue-600 text-white">New Session</button>
+            </div>
         </div>
     </div>
 
@@ -241,7 +256,7 @@
     <script>
         lucide.createIcons();
 
-        // FULL SCREEN 3D ENGINE
+        // CONSTRAINED 3D ENGINE
         let scene, camera, renderer, sphere, material;
         let noiseAmount = 0.05;
         let colorTarget = new THREE.Color(0x0071e3);
@@ -251,13 +266,17 @@
 
         function initOrb() {
             if (renderer) return; 
-            log("Initializing Fullscreen Matrix...");
+            log("Initializing Constrained Matrix...");
+
+            const container = document.getElementById('app-container');
+            const width = container.clientWidth;
+            const height = container.clientHeight;
 
             scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
             
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
-            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setSize(width, height);
             renderer.setPixelRatio(window.devicePixelRatio);
             document.getElementById('orb-mount').appendChild(renderer.domElement);
 
@@ -276,7 +295,20 @@
             scene.add(new THREE.AmbientLight(0xffffff, 0.8));
 
             camera.position.z = 5.2;
+            
+            // CONSTRAIN ORB SIZE
+            updateOrbScale();
             animate();
+        }
+
+        function updateOrbScale() {
+            if (!sphere) return;
+            const container = document.getElementById('app-container');
+            const minDim = Math.min(container.clientWidth, container.clientHeight);
+            // 90% Constraint: Ensure sphere radius * scale stays within 90% of viewport
+            // The default radius is 2, z=5.2. We want to scale based on screen size.
+            const targetScale = (minDim / 400) * 0.9; 
+            sphere.scale.set(targetScale, targetScale, targetScale);
         }
 
         function animate() {
@@ -383,7 +415,7 @@
             
             let res = "I'm with you. What else is coming up?";
             const low = text.toLowerCase();
-            if (low.includes('amazon') || low.includes('amzn')) res = "Amazon closed today at $204.08. Market's a bloodbath, but your somatic core is solid.";
+            if (low.includes('amazon') || low.includes('amzn')) res = "Amazon closed today at $204.08. Market volatility is noise; stay centered.";
             else if (currentMode === 'client') res = "I just worry you'll realize I'm too much and leave.";
 
             setTimeout(() => { if (!isActive) return; isThinking = false; speak(res); }, 1500);
@@ -413,10 +445,14 @@
         }
 
         window.addEventListener('resize', () => {
+            const container = document.getElementById('app-container');
+            const width = container.clientWidth;
+            const height = container.clientHeight;
             if (renderer) {
-                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.aspect = width / height;
                 camera.updateProjectionMatrix();
-                renderer.setSize(window.innerWidth, window.innerHeight);
+                renderer.setSize(width, height);
+                updateOrbScale();
             }
         });
         window.addEventListener('load', () => { synth.getVoices(); initOrb(); });
