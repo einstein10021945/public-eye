@@ -250,8 +250,11 @@
             scene = new THREE.Scene();
             camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-            renderer.setSize(300, 300);
-            document.getElementById('orb-mount').appendChild(renderer.domElement);
+            
+            const mount = document.getElementById('orb-mount');
+            const size = Math.min(mount.offsetWidth, 300);
+            renderer.setSize(size, size);
+            mount.appendChild(renderer.domElement);
 
             const geometry = new THREE.IcosahedronGeometry(2, 40);
             material = new THREE.MeshPhysicalMaterial({
@@ -318,7 +321,9 @@
         // SESSION LOGIC
         let isActive = false;
         let isSpeaking = false;
+        let isThinking = false;
         let currentMode = 'client';
+        let turnTimeout = null;
 
         function toggleSession() {
             if (!isActive) start(); else stop();
@@ -326,20 +331,28 @@
 
         function start() {
             isActive = true;
+            isSpeaking = false;
+            isThinking = false;
             document.getElementById('main-btn').innerText = 'End Session';
             document.getElementById('status-text').innerText = 'Listening';
             document.getElementById('live-caption').innerText = 'Speak Naturally...';
-            setOrbState('user');
+            setOrbState('ready');
             initSpeech();
         }
 
         function stop() {
             isActive = false;
+            isSpeaking = false;
+            isThinking = false;
             document.getElementById('main-btn').innerText = 'Initialize Session';
             document.getElementById('status-text').innerText = 'System Ready';
-            if (recognition) recognition.stop();
+            if (recognition) {
+                recognition.onend = null;
+                recognition.stop();
+            }
             window.speechSynthesis.cancel();
             setOrbState('ready');
+            if (turnTimeout) clearTimeout(turnTimeout);
         }
 
         function toggleDrawer() { document.getElementById('transcript-drawer').classList.toggle('active'); }
@@ -354,6 +367,8 @@
         let recognition;
         function initSpeech() {
             window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!window.SpeechRecognition) return alert("Browser does not support Speech Recognition.");
+            
             recognition = new SpeechRecognition();
             recognition.interimResults = true;
             recognition.continuous = true;
@@ -362,57 +377,107 @@
                 let interim = '';
                 for (let i = event.resultIndex; i < event.results.length; ++i) {
                     const text = event.results[i][0].transcript.toLowerCase();
+                    
+                    // INTERRUPTION
                     if (isSpeaking && (text.includes('stop') || text.includes('hold on') || text.includes('wait'))) {
                         window.speechSynthesis.cancel();
                         isSpeaking = false;
                         setOrbState('user');
+                        document.getElementById('live-caption').innerText = "[Interrupted]";
+                        return;
                     }
-                    if (event.results[i].isFinal) process(event.results[i][0].transcript);
-                    else interim += event.results[i][0].transcript;
+
+                    if (event.results[i].isFinal) {
+                        handleFinal(event.results[i][0].transcript);
+                    } else {
+                        interim += event.results[i][0].transcript;
+                    }
                 }
-                if (interim) {
+                
+                if (interim && !isSpeaking && !isThinking) {
                     document.getElementById('live-caption').innerText = interim;
                     setOrbState('user');
+                    if (turnTimeout) clearTimeout(turnTimeout);
                 }
             };
-            recognition.onend = () => { if (isActive && !isSpeaking) recognition.start(); };
+
+            recognition.onend = () => { 
+                if (isActive && !isSpeaking && !isThinking) recognition.start(); 
+            };
+            
             recognition.start();
         }
 
+        function handleFinal(text) {
+            if (!text.trim() || isSpeaking || isThinking) return;
+            
+            if (turnTimeout) clearTimeout(turnTimeout);
+            turnTimeout = setTimeout(() => {
+                if (isActive) process(text);
+            }, 1200); // 1.2s silence buffer
+        }
+
         async function process(text) {
-            if (isSpeaking) return;
+            if (isThinking || isSpeaking) return;
+            
+            isThinking = true;
             setOrbState('thinking');
             document.getElementById('status-text').innerText = 'Thinking';
             addTranscript('USER', text);
 
+            const input = text.toLowerCase();
+            let res = "";
+
+            // Intelligent Routing
+            if (input.includes('weather')) {
+                res = "It's interesting that you're looking outside. I'm more curious about the weather inside of you right now.";
+            } else if (input.includes('how are you')) {
+                res = "I am present and focused on our session. How are you arriving today?";
+            } else if (currentMode === 'client') {
+                const pool = [
+                    "I... I just feel like you're going to leave eventually. Everyone does. Why would you stay?",
+                    "I saw you were online but didn't reply for two minutes. Are you upset with me?",
+                    "I just need to know you're still there. I feel so small when I'm not talking to you.",
+                    "I tell myself I'm being too much, but the silence feels like a physical weight."
+                ];
+                res = pool[Math.floor(Math.random()*pool.length)];
+            } else {
+                res = "I'm right here. I hear the anxiety in your voice, and I want you to know that I am present with you.";
+            }
+
             setTimeout(() => {
                 if (!isActive) return;
-                let res = "I hear you. Tell me more.";
-                if (currentMode === 'client') {
-                    const pool = ["I'm so worried you'll leave.", "Are you upset with me?", "I just need to know you're there."];
-                    res = pool[Math.floor(Math.random()*pool.length)];
-                }
+                isThinking = false;
                 speak(res);
             }, 1500);
         }
 
         function speak(text) {
+            if (isSpeaking) window.speechSynthesis.cancel();
+            
             isSpeaking = true;
+            if (recognition) recognition.stop();
+            
             setOrbState('ai');
             document.getElementById('status-text').innerText = 'Speaking';
             document.getElementById('live-caption').innerText = text;
-            addTranscript('ULRICH', text);
+            addTranscript('ULRICH_AI', text);
 
             const utter = new SpeechSynthesisUtterance(text);
             const voices = window.speechSynthesis.getVoices();
-            utter.voice = voices.find(v => v.name.includes('Female')) || voices[0];
+            // Premium female voice selection
+            const premium = voices.find(v => v.name.includes('Natural') || v.name.includes('Samantha') || v.name.includes('Google US English'));
+            utter.voice = premium || voices[0];
             utter.rate = 0.85;
+            utter.pitch = 1.05;
+
             utter.onend = () => {
                 isSpeaking = false;
-                setOrbState('user');
+                setOrbState('ready');
                 document.getElementById('status-text').innerText = 'Listening';
                 if (isActive) recognition.start();
             };
+
             window.speechSynthesis.speak(utter);
         }
 
@@ -420,9 +485,13 @@
             const el = document.createElement('div');
             const color = role === 'USER' ? 'text-blue-600' : 'text-emerald-600';
             el.innerHTML = `<span class="role-tag ${color}">${role}</span><p class="text-black font-medium">${text}</p>`;
-            document.getElementById('transcript').appendChild(el);
-            document.getElementById('transcript').scrollTop = 9999;
+            const container = document.getElementById('transcript');
+            container.appendChild(el);
+            container.scrollTop = container.scrollHeight;
         }
+
+        initOrb();
+    </script>
 
         initOrb();
     </script>
