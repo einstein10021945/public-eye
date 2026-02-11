@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convers | Sovereign Clinical AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap');
+        
+        :root {
+            --apple-blue: #0071e3;
+            --apple-bg: #ffffff;
+            --apple-card: rgba(255, 255, 255, 0.7);
+            --timestamp-color: #86868b;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .glass {
+            background: var(--apple-card);
+            backdrop-filter: blur(40px) saturate(200%);
+            -webkit-backdrop-filter: blur(40px) saturate(200%);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 40px;
+            box-shadow: 0 40px 100px rgba(0,0,0,0.05);
+        }
+
+        .orb {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--apple-blue) 0%, transparent 70%);
+            filter: blur(20px);
+            opacity: 0.3;
+            transition: all 0.5s ease;
+        }
+
+        .orb.listening {
+            transform: scale(1.5);
+            opacity: 0.8;
+            background: radial-gradient(circle, #ff3b30 0%, transparent 70%);
+            animation: pulse 2s infinite;
+        }
+
+        .orb.thinking {
+            background: radial-gradient(circle, #5856d6 0%, transparent 70%);
+            animation: rotate 4s infinite linear;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1.2); opacity: 0.6; }
+            50% { transform: scale(1.8); opacity: 0.9; }
+            100% { transform: scale(1.2); opacity: 0.6; }
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg) scale(1.2); }
+            to { transform: rotate(360deg) scale(1.2); }
+        }
+
+        .mode-switch {
+            background: rgba(0,0,0,0.05);
+            padding: 4px;
+            border-radius: 20px;
+            display: flex;
+            gap: 4px;
+        }
+
+        .mode-btn {
+            padding: 8px 24px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .mode-btn.active {
+            background: white;
+            color: var(--apple-blue);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        .transcript-container {
+            max-height: 200px;
+            overflow-y: auto;
+            mask-image: linear-gradient(to bottom, transparent, black 20%, black 80%, transparent);
+        }
+
+        .epic-button {
+            background: #1d1d1f;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 24px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            font-size: 11px;
+            transition: all 0.4s ease;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .epic-button:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 30px rgba(0,0,0,0.15);
+        }
+        
+        .epic-button:active {
+            transform: scale(0.95);
+        }
+
+    </style>
+</head>
+<body class="p-6">
+    
+    <div class="glass p-12 w-full max-w-2xl text-center space-y-12 relative overflow-hidden">
+        
+        <header class="flex flex-col items-center gap-4">
+            <div class="flex items-center gap-3">
+                <i data-lucide="mic-2" class="text-blue-600 w-5 h-5"></i>
+                <h1 class="text-3xl font-black italic tracking-tighter uppercase">Convers <span class="text-blue-600">AI</span></h1>
+            </div>
+            <div class="mode-switch">
+                <button onclick="setMode('client')" id="mode-client" class="mode-btn active">Client Mode</button>
+                <button onclick="setMode('therapist')" id="mode-therapist" class="mode-btn">Therapist Mode</button>
+            </div>
+        </header>
+
+        <div class="flex justify-center items-center py-10">
+            <div id="status-orb" class="orb"></div>
+            <div class="absolute text-center space-y-2">
+                <p id="status-text" class="text-xs font-black uppercase tracking-[0.3em] text-gray-400">Ready</p>
+                <h2 id="live-caption" class="text-2xl font-bold text-black max-w-sm">Tap to begin session</h2>
+            </div>
+        </div>
+
+        <div class="transcript-container space-y-4 px-6 text-sm text-gray-500 font-medium">
+            <div id="transcript"></div>
+        </div>
+
+        <div class="flex justify-center gap-6">
+            <button onclick="toggleSession()" id="main-btn" class="epic-button">
+                Start Conversation
+            </button>
+        </div>
+
+        <footer class="pt-8 border-t border-black/5">
+            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                Sovereign Model // Powered by Piper & Llama 3
+            </p>
+        </footer>
+    </div>
+
+    <a href="index.html" class="mt-8 text-xs font-bold text-gray-400 hover:text-black transition-colors uppercase tracking-widest flex items-center gap-2">
+        <i data-lucide="arrow-left" class="w-4 h-4"></i> Back to OS
+    </a>
+
+    <script>
+        lucide.createIcons();
+
+        let isSessionActive = false;
+        let currentMode = 'client'; // client (user is patient) or therapist (user is therapist)
+
+        function setMode(mode) {
+            currentMode = mode;
+            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('mode-' + mode).classList.add('active');
+            addTranscript('SYSTEM', 'Switched to ' + (mode === 'client' ? 'Client' : 'Therapist') + ' mode.');
+        }
+
+        function toggleSession() {
+            if (!isSessionActive) {
+                startSession();
+            } else {
+                stopSession();
+            }
+        }
+
+        function startSession() {
+            isSessionActive = true;
+            document.getElementById('main-btn').innerText = 'End Session';
+            document.getElementById('main-btn').classList.remove('bg-black');
+            document.getElementById('main-btn').classList.add('bg-red-600');
+            document.getElementById('status-orb').classList.add('listening');
+            document.getElementById('status-text').innerText = 'Listening';
+            document.getElementById('live-caption').innerText = 'Speak naturally...';
+            addTranscript('SYSTEM', 'Session initialized.');
+            
+            // Web Speech API for low-latency prototype
+            startListening();
+        }
+
+        function stopSession() {
+            isSessionActive = false;
+            document.getElementById('main-btn').innerText = 'Start Conversation';
+            document.getElementById('main-btn').classList.add('bg-black');
+            document.getElementById('main-btn').classList.remove('bg-red-600');
+            document.getElementById('status-orb').classList.remove('listening');
+            document.getElementById('status-text').innerText = 'Ready';
+            document.getElementById('live-caption').innerText = 'Session paused';
+            
+            if (recognition) recognition.stop();
+        }
+
+        let recognition;
+        function startListening() {
+            window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!window.SpeechRecognition) {
+                alert("Speech recognition not supported in this browser.");
+                return;
+            }
+            
+            recognition = new SpeechRecognition();
+            recognition.interimResults = true;
+            recognition.continuous = true;
+
+            recognition.onresult = (event) => {
+                const transcript = Array.from(event.results)
+                    .map(result => result[0])
+                    .map(result => result.transcript)
+                    .join('');
+                
+                document.getElementById('live-caption').innerText = transcript;
+                
+                if (event.results[0].isFinal) {
+                    processInput(transcript);
+                }
+            };
+
+            recognition.start();
+        }
+
+        async function processInput(text) {
+            document.getElementById('status-orb').classList.remove('listening');
+            document.getElementById('status-orb').classList.add('thinking');
+            document.getElementById('status-text').innerText = 'Thinking';
+            addTranscript('USER', text);
+
+            // In a real build, this hits the Python backend. 
+            // For the demo, we simulate a response.
+            setTimeout(() => {
+                let response = "";
+                if (currentMode === 'client') {
+                    response = "I hear you. It sounds like you're carrying a lot of weight today. How does that feel in your body right now?";
+                } else {
+                    response = "I... I just feel like everything is closing in. My job, my relationship. I can't catch my breath.";
+                }
+                
+                speak(response);
+                addTranscript('EINSTEIN', response);
+                document.getElementById('live-caption').innerText = response;
+                document.getElementById('status-orb').classList.remove('thinking');
+                document.getElementById('status-orb').classList.add('listening');
+                document.getElementById('status-text').innerText = 'Listening';
+            }, 1500);
+        }
+
+        function speak(text) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 0.9;
+            utterance.pitch = 1.0;
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function addTranscript(role, text) {
+            const el = document.createElement('div');
+            el.innerHTML = `<strong>${role}:</strong> ${text}`;
+            document.getElementById('transcript').appendChild(el);
+            document.querySelector('.transcript-container').scrollTop = 9999;
+        }
+
+    </script>
+</body>
+</html>

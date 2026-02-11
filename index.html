@@ -500,6 +500,65 @@
                     </div>
                 </header>
 
+                    <!-- Post: Convers AI Research -->
+                    <article class="blog-post glass p-16 space-y-12 border-black/[0.03] premium-border" data-category="scaling">
+                        <div class="flex justify-between items-center">
+                            <span class="timestamp text-blue-600 font-bold">[VOICE_AI_LOG: 2026-02-11 16:30]</span>
+                            <span class="bg-blue-600 text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest">SOTA Voice</span>
+                        </div>
+                        
+                        <div class="space-y-8">
+                            <h3 class="text-5xl font-black text-black leading-tight tracking-tighter italic">Convers AI: The Sovereign Voice Pipeline</h3>
+                            <p class="text-2xl text-gray-500 leading-relaxed font-light">
+                                Building near-zero latency voice-to-voice clinical models using 2026's best open-source infrastructure.
+                            </p>
+                        </div>
+
+                        <div class="prose prose-slate max-w-none text-gray-600 space-y-16 font-medium text-lg text-left">
+                            <div class="space-y-8">
+                                <h4 class="text-black font-black text-xl uppercase tracking-widest border-l-4 border-blue-500 pl-6">The Latency Problem</h4>
+                                <p>To maintain therapeutic rapport, response latency must be under 500ms. Traditional request-response cycles fail this test. Our Convers AI architecture utilizes a WebSocket-based streaming pipeline to minimize time-to-first-token (TTFT).</p>
+                            </div>
+
+                            <div class="space-y-8">
+                                <h4 class="text-black font-black text-xl uppercase tracking-widest border-l-4 border-blue-500 pl-6">The 2026 Voice Stack</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                                    <div class="p-8 bg-gray-50 rounded-[32px] border border-black/5">
+                                        <strong class="text-black block mb-2">1. STT: Faster-Whisper</strong>
+                                        <p class="text-sm">We utilize the <em>large-v3-turbo</em> model quantized to 8-bit. By running on a local GPU/VPS, we achieve near-instant transcription of patient utterances.</p>
+                                    </div>
+                                    <div class="p-8 bg-gray-50 rounded-[32px] border border-black/5">
+                                        <strong class="text-black block mb-2">2. LLM: Llama-3.1-8B</strong>
+                                        <p class="text-sm">Fine-tuned on high-quality therapeutic transcripts. It handles the empathetic reasoning loop, maintaining context across long sessions using RLM protocols.</p>
+                                    </div>
+                                    <div class="p-8 bg-gray-50 rounded-[32px] border border-black/5">
+                                        <strong class="text-black block mb-2">3. TTS: Piper + MeloTTS</strong>
+                                        <p class="text-sm">For the fastest delivery, we use <em>Piper</em> for low-latency feedback and <em>MeloTTS</em> for high-fidelity clinical tone. This ensures the AI sounds supportive, not robotic.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="space-y-8">
+                                <h4 class="text-black font-black text-xl uppercase tracking-widest border-l-4 border-blue-500 pl-6">Mode: The Dual-Training Loop</h4>
+                                <p>Convers AI isn't just a chatbot. It supports two critical clinical functions:</p>
+                                <ul class="list-disc pl-6 space-y-4">
+                                    <li><strong>Client Mode:</strong> The user speaks naturally, and Einstein acts as a supportive clinical guide, identifying somatic markers in the user's voice.</li>
+                                    <li><strong>Therapist Mode:</strong> The user practices their skills on Einstein, who simulates complex client presentations (e.g., GAD, Trauma w/ Avoidance).</li>
+                                </ul>
+                            </div>
+
+                            <div class="bg-blue-50 p-12 rounded-[48px] border border-blue-100 relative overflow-hidden">
+                                <div class="absolute top-0 right-0 p-10 opacity-10 text-blue-600">
+                                    <i data-lucide="mic" class="w-32 h-32"></i>
+                                </div>
+                                <h4 class="text-blue-700 font-black text-sm uppercase tracking-[0.4em] mb-8">Strategic Outlook</h4>
+                                <p class="text-blue-950 font-bold italic text-2xl leading-tight">
+                                    "The interface of the future is the voice. By removing the friction of the keyboard, we reach the clinical core faster. Convers AI is the next step in reclaiming the therapist's time."
+                                </p>
+                            </div>
+                        </div>
+                    </article>
+
                     <!-- Post: Argona Case Study -->
                     <article class="blog-post glass p-16 space-y-12 border-black/[0.03] premium-border" data-category="capital">
                         <div class="flex justify-between items-center">
@@ -1077,31 +1136,40 @@
                 </div>
 
                 <!-- Lab: Neural Link -->
-                <div class="glass p-12 space-y-8 border-black/[0.03] group lg:col-span-2">
-                    <div class="flex flex-col md:flex-row justify-between gap-8">
-                        <div class="md:max-w-md space-y-6">
-                            <div class="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center text-purple-600 shadow-lg shadow-purple-600/10">
-                                <i data-lucide="network" class="w-8 h-8"></i>
-                            </div>
-                            <h3 class="text-3xl font-bold italic text-black">The Neural Link</h3>
-                            <p class="text-gray-500 font-medium leading-relaxed">The data spinal cord. Syncs telemetry from every app in the ecosystem into Clinical OS in real-time. Fusing somatic data with clinical intelligence.</p>
-                            <a href="neural-link.html" class="epic-button button-blue">Access Data Hub</a>
+                <div class="glass p-12 space-y-8 border-black/[0.03] group">
+                    <div class="flex justify-between items-start">
+                        <div class="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center text-purple-600 shadow-lg shadow-purple-600/10">
+                            <i data-lucide="network" class="w-8 h-8"></i>
                         </div>
-                        <div class="flex-1 bg-[#0a0a0c] rounded-3xl p-10 relative overflow-hidden border border-white/5">
-                            <div class="absolute inset-0 opacity-20" style="background: radial-gradient(circle, #3b82f6 0%, transparent 70%);"></div>
-                            <div class="relative z-10 space-y-4">
-                                <div class="flex justify-between items-center text-[10px] font-bold text-blue-400 uppercase tracking-widest">
-                                    <span>Signal Flow</span>
-                                    <span>Syncing...</span>
-                                </div>
-                                <div class="h-1 bg-white/5 rounded-full overflow-hidden">
-                                    <div class="h-full bg-blue-600 w-1/3 animate-pulse"></div>
-                                </div>
-                                <p class="font-mono text-[10px] text-gray-500">[LOG] UPLOADING_VAGAL_TONE... ESTABLISHING_HANDSHAKE...</p>
-                            </div>
-                        </div>
+                        <span class="bg-purple-600 text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest">v0.1 Alpha</span>
+                    </div>
+                    <div class="space-y-4">
+                        <h3 class="text-3xl font-bold italic text-black">The Neural Link</h3>
+                        <p class="text-gray-500 font-medium leading-relaxed">The data spinal cord. Syncs telemetry from every app in the ecosystem into Clinical OS in real-time.</p>
+                    </div>
+                    <div class="magnetic-wrap w-full">
+                        <a href="neural-link.html" class="epic-button button-black w-full">Access Hub</a>
                     </div>
                 </div>
+
+                <!-- Lab: Convers AI -->
+                <div class="glass p-12 space-y-8 border-black/[0.03] group">
+                    <div class="flex justify-between items-start">
+                        <div class="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center text-blue-600 shadow-lg shadow-blue-600/10">
+                            <i data-lucide="mic-2" class="w-8 h-8"></i>
+                        </div>
+                        <span class="bg-blue-600 text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest">v1.0 Live</span>
+                    </div>
+                    <div class="space-y-4">
+                        <h3 class="text-3xl font-bold italic text-black">Convers AI</h3>
+                        <p class="text-gray-500 font-medium leading-relaxed">High-fidelity voice-to-voice clinical model. Real-time therapeutic training and support loops.</p>
+                    </div>
+                    <div class="magnetic-wrap w-full">
+                        <a href="convers.html" class="epic-button button-blue w-full">Start Talking</a>
+                    </div>
+                </div>
+
+                <!-- Lab: Epic Components (Magnetic UI) -->
             </div>
         </div>
 
