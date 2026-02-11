@@ -54,6 +54,7 @@
             background: #e5e5e7;
             color: #86868b;
             cursor: not-allowed;
+            transform: none !important;
         }
 
         .timestamp {
@@ -107,6 +108,19 @@
             overflow-y: auto;
             max-height: 300px;
         }
+
+        /* Login Modal */
+        #login-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(20px) saturate(180%);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        #login-modal.active { display: flex; }
     </style>
 </head>
 <body class="p-6 md:p-12">
@@ -123,9 +137,12 @@
                     <p class="timestamp">v1.0.2 // Autonomous Consensus Swarm</p>
                 </div>
             </div>
-            <a href="index.html" class="text-xs font-bold text-gray-400 hover:text-black transition-colors flex items-center gap-2">
-                <i data-lucide="arrow-left" class="w-4 h-4"></i> Back to OS
-            </a>
+            <div class="flex items-center gap-6">
+                <button onclick="openLogin()" id="admin-login-btn" class="text-xs font-bold text-gray-500 hover:text-black transition-colors">Admin Login</button>
+                <a href="index.html" class="text-xs font-bold text-gray-400 hover:text-black transition-colors flex items-center gap-2">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i> Back to OS
+                </a>
+            </div>
         </header>
 
         <!-- Main Grid -->
@@ -256,6 +273,27 @@
         </div>
     </div>
 
+    <!-- Login Modal -->
+    <div id="login-modal">
+        <div class="glass p-12 w-full max-w-md space-y-8 animate-in fade-in zoom-in duration-300">
+            <div class="text-center space-y-2">
+                <div class="w-16 h-16 bg-black rounded-3xl flex items-center justify-center text-white mx-auto shadow-2xl">
+                    <i data-lucide="lock" class="w-8 h-8"></i>
+                </div>
+                <h2 class="text-2xl font-black italic tracking-tighter uppercase">Admin Portal</h2>
+                <p class="timestamp">Authorized Personnel Only</p>
+            </div>
+            <div class="space-y-4">
+                <div class="space-y-2 text-left">
+                    <label class="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-4">Access Code</label>
+                    <input type="password" id="password-input" class="w-full bg-gray-50 border border-black/5 p-4 rounded-2xl text-center text-xl font-bold tracking-[0.5em] focus:outline-none focus:ring-2 focus:ring-blue-500/20" autofocus>
+                </div>
+                <button onclick="attemptLogin()" class="epic-button w-full py-5">Verify Identity</button>
+                <button onclick="closeLogin()" class="w-full text-[10px] font-bold text-gray-400 uppercase tracking-widest hover:text-black">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         lucide.createIcons();
 
@@ -368,15 +406,45 @@
                     }
                 }
             });
+
+            // Auto-auth check from sessionStorage
+            if (sessionStorage.getItem('empire_auth') === 'true') {
+                unlockAdmin();
+            }
         }
 
-        // Simple auth for Franz
-        const authKey = new URLSearchParams(window.location.search).get('auth');
-        if (authKey === 'empire_franz') {
+        function openLogin() {
+            document.getElementById('login-modal').classList.add('active');
+            document.getElementById('password-input').focus();
+        }
+
+        function closeLogin() {
+            document.getElementById('login-modal').classList.remove('active');
+        }
+
+        function attemptLogin() {
+            const pw = document.getElementById('password-input').value;
+            // Simple check for prototype. In prod, use a secure backend.
+            if (pw === 'empire2026') {
+                unlockAdmin();
+                closeLogin();
+                sessionStorage.setItem('empire_auth', 'true');
+            } else {
+                alert("ACCESS DENIED. Telemetry logged.");
+            }
+        }
+
+        function unlockAdmin() {
             document.getElementById('buy-btn').disabled = false;
             document.getElementById('sell-btn').disabled = false;
             document.getElementById('lock-status').innerText = 'Unlocked';
             document.getElementById('lock-status').className = 'bg-emerald-100 text-emerald-600 px-2 py-0.5 rounded text-[9px] font-black uppercase';
+            document.getElementById('admin-login-btn').innerText = 'Admin Active';
+            document.getElementById('admin-login-btn').className = 'text-xs font-bold text-emerald-600';
+            document.getElementById('admin-login-btn').onclick = () => {
+                sessionStorage.removeItem('empire_auth');
+                location.reload();
+            };
         }
 
         function trade(side) {
