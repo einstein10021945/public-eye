@@ -13,8 +13,7 @@
         :root {
             --apple-blue: #0071e3;
             --apple-yellow: #ffcc00;
-            --apple-bg: #0a0a0c;
-            --apple-card: rgba(25, 25, 30, 0.98);
+            --apple-bg: #000000;
         }
 
         body {
@@ -22,62 +21,56 @@
             background-color: var(--apple-bg);
             height: 100vh;
             overflow: hidden;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            touch-action: none;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            margin: 0;
-            padding: env(safe-area-inset-top) 15px env(safe-area-inset-bottom);
-            box-sizing: border-box;
-            touch-action: none;
         }
 
-        .glass {
-            background: var(--apple-card);
-            backdrop-filter: blur(60px) saturate(210%);
-            -webkit-backdrop-filter: blur(60px) saturate(210%);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 44px;
-            box-shadow: 0 60px 180px rgba(0,0,0,0.9);
+        #orb-mount {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .ui-overlay {
             position: relative;
             z-index: 10;
             width: 100%;
-            max-width: 440px;
-            height: 85vh;
-            padding: 2.5rem;
-            text-align: center;
+            height: 100%;
+            padding: env(safe-area-inset-top) 2rem env(safe-area-inset-bottom);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            animation: reveal 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+            pointer-events: none;
+            text-align: center;
         }
 
-        @keyframes reveal {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .orb-spot {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            min-height: 300px;
-            overflow: visible;
-        }
+        .ui-element { pointer-events: auto; }
 
         .mode-switch {
             background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
             padding: 4px;
             border-radius: 20px;
             display: inline-flex;
             gap: 4px;
             margin: 0 auto;
+            border: 1px solid rgba(255,255,255,0.1);
         }
 
         .mode-btn {
-            padding: 6px 24px;
+            padding: 8px 24px;
             border-radius: 16px;
             font-size: 10px;
             font-weight: 800;
@@ -93,7 +86,7 @@
         }
 
         .micro-transcript {
-            height: 32px;
+            height: 40px;
             overflow: hidden;
             mask-image: linear-gradient(to bottom, transparent, black 40%, black 60%, transparent);
             font-size: 8px;
@@ -102,46 +95,48 @@
             letter-spacing: 0.05em;
             color: rgba(255,255,255,0.2);
             line-height: 1.4;
-            max-width: 85%;
-            margin: 0 auto;
+            max-width: 80%;
+            margin: 0 auto 1rem;
         }
 
         #live-caption {
-            font-size: 1.15rem;
+            font-size: 1.25rem;
             font-weight: 700;
             color: #ffffff;
             line-height: 1.4;
-            min-height: 3.5rem;
-            opacity: 0.95;
-            padding: 0 1rem;
+            min-height: 4rem;
+            margin: 0 1rem;
+            text-shadow: 0 4px 30px rgba(0,0,0,0.8);
         }
 
         .epic-button {
             background: #ffffff;
             color: #000000;
-            padding: 1.3rem 2.5rem;
-            border-radius: 32px;
+            padding: 1.3rem 3rem;
+            border-radius: 40px;
             font-weight: 900;
             text-transform: uppercase;
             letter-spacing: 0.3em;
             font-size: 11px;
-            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-            width: 100%;
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            width: auto;
+            min-width: 250px;
             border: none;
             cursor: pointer;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
             -webkit-tap-highlight-color: transparent;
         }
 
-        .epic-button:hover { background: var(--apple-blue); color: white; }
+        .epic-button:hover { background: var(--apple-blue); color: white; transform: scale(1.05); }
 
         .drawer-trigger {
             position: absolute;
-            top: 1.5rem;
-            right: 1.5rem;
-            color: rgba(255,255,255,0.2);
+            top: 2rem;
+            right: 2rem;
+            color: rgba(255,255,255,0.4);
             cursor: pointer;
             padding: 10px;
+            pointer-events: auto;
         }
 
         #transcript-drawer {
@@ -149,141 +144,144 @@
             top: 0;
             right: -100%;
             width: 100%;
-            max-width: 400px;
+            max-width: 450px;
             height: 100%;
-            background: rgba(8, 8, 10, 0.99);
+            background: rgba(0, 0, 0, 0.95);
             backdrop-filter: blur(60px);
             z-index: 100;
-            transition: right 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-            padding: 4rem 2rem;
-            border-left: 1px solid rgba(255,255,255,0.05);
+            transition: right 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+            padding: 5rem 3rem;
+            border-left: 1px solid rgba(255,255,255,0.1);
         }
         #transcript-drawer.active { right: 0; }
 
         .bubble {
             padding: 1.25rem;
-            border-radius: 20px;
-            margin-bottom: 1rem;
-            font-size: 13px;
+            border-radius: 24px;
+            margin-bottom: 1.5rem;
+            font-size: 14px;
             text-align: left;
-            border-left: 3px solid transparent;
+            border-left: 4px solid transparent;
         }
-        .bubble.user { background: rgba(255, 204, 0, 0.05); border-left-color: var(--apple-yellow); color: var(--apple-yellow); }
-        .bubble.ai { background: rgba(0, 113, 227, 0.05); border-left-color: var(--apple-blue); color: var(--apple-blue); }
+        .bubble.user { background: rgba(255, 204, 0, 0.08); border-left-color: var(--apple-yellow); color: var(--apple-yellow); }
+        .bubble.ai { background: rgba(0, 113, 227, 0.08); border-left-color: var(--apple-blue); color: var(--apple-blue); }
 
         #rating-overlay {
             display: none;
-            position: absolute;
+            position: fixed;
             inset: 0;
             background: rgba(0,0,0,0.98);
-            z-index: 50;
-            border-radius: 44px;
-            padding: 3rem;
+            z-index: 200;
+            padding: 4rem;
             flex-direction: column;
             justify-content: center;
             text-align: left;
-            backdrop-filter: blur(20px);
+            backdrop-filter: blur(30px);
+            pointer-events: auto;
         }
 
-        #debug-log {
+        #system-log {
             position: fixed;
-            bottom: 10px;
-            left: 10px;
+            bottom: 20px;
+            left: 20px;
             font-family: 'JetBrains Mono', monospace;
-            font-size: 7px;
-            color: rgba(255,255,255,0.05);
+            font-size: 8px;
+            color: rgba(255,255,255,0.1);
             text-transform: uppercase;
             pointer-events: none;
+            z-index: 5;
         }
     </style>
 </head>
 <body>
-    <div id="debug-log">System: Ready</div>
+    <div id="system-log">Engine: Boot</div>
+    
+    <div id="orb-mount"></div>
 
-    <div class="glass">
-        <div class="drawer-trigger" onclick="toggleDrawer()">
+    <div class="ui-overlay">
+        <div class="drawer-trigger ui-element" onclick="toggleDrawer()">
             <i data-lucide="menu" class="w-6 h-6"></i>
         </div>
 
-        <header class="space-y-4">
-            <h1 class="text-[10px] font-black uppercase tracking-[0.5em] text-white/10">Ulrich Convers v4.2</h1>
+        <header class="space-y-6 ui-element">
+            <h1 class="text-[10px] font-black uppercase tracking-[0.6em] text-white/20">Ulrich Convers v4.3</h1>
             <div class="mode-switch">
                 <button onclick="setMode('client')" id="mode-client" class="mode-btn active">Patient</button>
                 <button onclick="setMode('therapist')" id="mode-therapist" class="mode-btn">Therapist</button>
             </div>
         </header>
 
-        <div class="orb-spot" id="orb-mount">
-            <!-- CANVAS PERSISTENCE -->
+        <div class="space-y-6 ui-element pb-12">
+            <div class="micro-transcript" id="transcript-p">Handshaking...</div>
+            <h2 id="live-caption">Tap to Begin</h2>
+            <button onclick="handleStart()" id="main-btn" class="epic-button">
+                Initialize Session
+            </button>
         </div>
 
-        <div class="space-y-2">
-            <div class="micro-transcript" id="transcript-p">System Synchronizing...</div>
-            <h2 id="live-caption">Tap to Begin Session</h2>
-            <p id="status-text" class="text-[8px] font-black uppercase tracking-[0.6em] text-white/10">Synchronized Somatics</p>
-        </div>
-
-        <button onclick="handleStart()" id="main-btn" class="epic-button">
-            Initialize Session
-        </button>
-
-        <div id="rating-overlay" class="space-y-6">
-            <h3 class="text-white text-3xl font-black italic uppercase tracking-tighter">Analysis</h3>
-            <div id="rating-stars" class="flex gap-1 text-yellow-400"></div>
-            <p id="rating-text" class="text-white/40 text-xs leading-relaxed font-medium"></p>
-            <button onclick="resetSession()" class="epic-button bg-blue-600 text-white">Continue</button>
+        <div id="rating-overlay" class="space-y-8">
+            <div class="w-16 h-16 bg-blue-600 rounded-3xl flex items-center justify-center shadow-2xl shadow-blue-600/30">
+                <i data-lucide="activity" class="text-white w-8 h-8"></i>
+            </div>
+            <h3 class="text-white text-4xl font-black italic uppercase tracking-tighter">Analysis</h3>
+            <div id="rating-stars" class="flex gap-2 text-yellow-400 scale-125 origin-left"></div>
+            <p id="rating-text" class="text-white/40 text-sm leading-relaxed font-medium max-w-sm"></p>
+            <button onclick="resetSession()" class="epic-button bg-blue-600 text-white">New Session</button>
         </div>
     </div>
 
     <div id="transcript-drawer">
         <div class="flex justify-between items-center mb-10">
-            <h3 class="text-white text-sm font-black uppercase tracking-[0.3em]">Imperial Log</h3>
-            <button onclick="toggleDrawer()" class="text-white/20 hover:text-white"><i data-lucide="x"></i></button>
+            <h3 class="text-white text-lg font-black uppercase tracking-[0.4em]">Sovereign Log</h3>
+            <button onclick="toggleDrawer()" class="text-white/20 hover:text-white"><i data-lucide="x" class="w-8 h-8"></i></button>
         </div>
-        <div id="transcript" class="overflow-y-auto h-[85%] space-y-4 pr-2 scrollbar-hide"></div>
+        <div id="transcript" class="overflow-y-auto h-[85%] space-y-4 pr-2"></div>
     </div>
 
     <script>
         lucide.createIcons();
 
-        // 3D ORB PERSISTENCE ENGINE
+        // FULL SCREEN 3D ENGINE
         let scene, camera, renderer, sphere, material;
         let noiseAmount = 0.05;
         let colorTarget = new THREE.Color(0x0071e3);
         let time = 0;
 
-        function log(msg) { document.getElementById('debug-log').innerText = "System: " + msg; console.log(msg); }
+        function log(msg) { document.getElementById('system-log').innerText = "Engine: " + msg; }
 
         function initOrb() {
             if (renderer) return; 
-            log("Initializing WebGL Engine...");
-            const mount = document.getElementById('orb-mount');
-            const size = Math.min(mount.offsetWidth, 320);
+            log("Initializing Fullscreen Matrix...");
 
             scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
-            renderer.setSize(size, size);
+            renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(window.devicePixelRatio);
-            mount.appendChild(renderer.domElement);
+            document.getElementById('orb-mount').appendChild(renderer.domElement);
 
             const geometry = new THREE.IcosahedronGeometry(2, 64);
             material = new THREE.MeshPhongMaterial({
                 color: 0x0071e3, emissive: 0x0071e3, emissiveIntensity: 1.0,
-                shininess: 120, transparent: false
+                shininess: 150, transparent: false
             });
 
             sphere = new THREE.Mesh(geometry, material);
             scene.add(sphere);
-            scene.add(new THREE.PointLight(0xffffff, 1.8).set(5, 5, 5));
-            scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+
+            const pLight = new THREE.PointLight(0xffffff, 2);
+            pLight.position.set(5, 5, 5);
+            scene.add(pLight);
+            scene.add(new THREE.AmbientLight(0xffffff, 0.8));
+
             camera.position.z = 5.2;
             animate();
         }
 
         function animate() {
             requestAnimationFrame(animate);
-            time += 0.025;
+            time += 0.02;
             if (sphere) {
                 const pos = sphere.geometry.attributes.position;
                 const vec = new THREE.Vector3();
@@ -304,30 +302,23 @@
         }
 
         function setOrb(state) {
-            if (state === 'user') { colorTarget.setHex(0xffcc00); noiseAmount = 0.4; }
-            else if (state === 'ai') { colorTarget.setHex(0x0071e3); noiseAmount = 0.25; }
+            if (state === 'user') { colorTarget.setHex(0xffcc00); noiseAmount = 0.45; }
+            else if (state === 'ai') { colorTarget.setHex(0x0071e3); noiseAmount = 0.28; }
             else if (state === 'thinking') { colorTarget.setHex(0x5856d6); noiseAmount = 0.7; }
             else { colorTarget.setHex(0x0071e3); noiseAmount = 0.05; }
         }
 
-        // PERSISTENT SPEECH CORE
+        // SPEECH CORE
         let isActive = false, isSpeaking = false, isThinking = false, currentMode = 'client', turnTimeout = null;
         let synth = window.speechSynthesis, recognition;
 
         async function handleStart() {
-            log("Unlocking Audio Context...");
             const unlock = new SpeechSynthesisUtterance("");
             synth.speak(unlock);
-            
-            // Persist Mic Access (request once)
             try {
-                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw new Error("Mic not supported");
                 await navigator.mediaDevices.getUserMedia({ audio: true });
-                log("Mic Permission Persistent");
-            } catch (e) {
-                log("Mic Error: " + e.message);
-            }
-
+            } catch (e) { log("Mic Error"); }
+            
             initOrb();
             if (!isActive) start(); else end();
         }
@@ -345,14 +336,14 @@
             if (recognition) { recognition.onend = null; recognition.stop(); }
             synth.cancel();
             document.getElementById('rating-overlay').style.display = 'flex';
-            document.getElementById('rating-stars').innerHTML = '<i data-lucide="star" class="w-4 h-4"></i>'.repeat(5);
+            document.getElementById('rating-stars').innerHTML = '<i data-lucide="star"></i>'.repeat(5);
             lucide.createIcons();
-            document.getElementById('rating-text').innerText = `Ulrich Swarm Audit: High somatic resonance. Clinical alignment: 99%. Strength: Premium Voice Fidelity.`;
+            document.getElementById('rating-text').innerText = `Ulrich Audit: High somatic resonance. Best practice alignment: 99%.`;
         }
 
         function resetSession() {
             document.getElementById('rating-overlay').style.display = 'none';
-            document.getElementById('main-btn').innerText = 'Initialize';
+            document.getElementById('main-btn').innerText = 'Initialize Session';
             document.getElementById('live-caption').innerText = 'Tap to Begin';
             setOrb('ready');
         }
@@ -389,10 +380,12 @@
             if (isThinking || isSpeaking) return;
             isThinking = true; setOrb('thinking');
             addTranscript('USER', text);
-            let res = "I hear you. Tell me more.";
+            
+            let res = "I'm with you. What else is coming up?";
             const low = text.toLowerCase();
-            if (low.includes('amazon') || low.includes('amzn')) res = "Amazon is currently at $204.08. Market volatility is noise; stay grounded.";
-            else if (currentMode === 'client') res = "I just feel like you're going to realize I'm not worth the tokens.";
+            if (low.includes('amazon') || low.includes('amzn')) res = "Amazon closed today at $204.08. Market's a bloodbath, but your somatic core is solid.";
+            else if (currentMode === 'client') res = "I just worry you'll realize I'm too much and leave.";
+
             setTimeout(() => { if (!isActive) return; isThinking = false; speak(res); }, 1500);
         }
 
@@ -404,16 +397,10 @@
 
             const utter = new SpeechSynthesisUtterance(text);
             const voices = synth.getVoices();
-            
-            // PREMIUM IPHONE VOICE HARDENING
-            const premium = voices.find(v => v.name.includes('Premium') || v.name.includes('Natural') || v.name.includes('Samantha') || v.name.includes('Enhanced'));
+            const premium = voices.find(v => v.name.includes('Nadia') || v.name.includes('Natural') || v.name.includes('Samantha'));
             utter.voice = premium || voices[0];
-            utter.rate = 0.82; utter.pitch = 1.05;
-
-            utter.onend = () => {
-                isSpeaking = false; setOrb('ready');
-                if (isActive) recognition.start();
-            };
+            utter.rate = 0.82;
+            utter.onend = () => { isSpeaking = false; setOrb('ready'); if (isActive) recognition.start(); };
             synth.speak(utter);
         }
 
@@ -425,7 +412,14 @@
             document.getElementById('transcript-p').innerText = text;
         }
 
-        window.addEventListener('load', () => { initOrb(); synth.getVoices(); });
+        window.addEventListener('resize', () => {
+            if (renderer) {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            }
+        });
+        window.addEventListener('load', () => { synth.getVoices(); initOrb(); });
     </script>
 </body>
 </html>
