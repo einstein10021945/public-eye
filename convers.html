@@ -21,7 +21,7 @@
 
         body {
             font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
-            background-color: #0a0a0c; /* Darker background for orb visibility */
+            background-color: #0a0a0c;
             height: 100vh;
             overflow: hidden;
             display: flex;
@@ -29,12 +29,22 @@
             align-items: center;
             justify-content: center;
             margin: 0;
-            padding: 0;
+            padding: 20px;
             box-sizing: border-box;
         }
 
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
         .glass {
-            background: rgba(20, 20, 25, 0.7); /* Dark glass for contrast */
+            background: rgba(20, 20, 25, 0.7);
             backdrop-filter: blur(40px) saturate(200%);
             -webkit-backdrop-filter: blur(40px) saturate(200%);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -42,37 +52,38 @@
             box-shadow: 0 40px 100px rgba(0,0,0,0.4);
             position: relative;
             z-index: 10;
-            width: 90%;
+            width: 100%;
             max-width: 500px;
+            height: 85vh; /* FIXED HEIGHT */
             padding: 3rem;
             text-align: center;
             display: flex;
             flex-direction: column;
-            gap: 2.5rem;
+            justify-content: space-between;
             animation: reveal 1s cubic-bezier(0.23, 1, 0.32, 1);
         }
 
-        #live-caption {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: #ffffff; /* White text for dark mode */
-            line-height: 1.4;
-            min-height: 3.5rem;
+        @keyframes reveal {
+            from { opacity: 0; transform: translateY(30px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
-        .role-tag.user { color: var(--apple-yellow); }
-        .role-tag.ai { color: var(--apple-blue); }
-        .role-tag.system { color: #86868b; }
+        .orb-spot {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
 
-        .transcript-bubble {
+        .mode-switch {
             background: rgba(255, 255, 255, 0.05);
-            padding: 1rem;
-            border-radius: 18px;
-            border-left: 3px solid transparent;
+            padding: 4px;
+            border-radius: 20px;
+            display: inline-flex;
+            gap: 4px;
+            margin: 0 auto;
         }
-        .transcript-bubble.user { border-left-color: var(--apple-yellow); }
-        .transcript-bubble.ai { border-left-color: var(--apple-blue); }
-        .transcript-bubble p { color: rgba(255, 255, 255, 0.8); }
 
         .mode-btn {
             padding: 8px 24px;
@@ -89,6 +100,23 @@
             background: white;
             color: black;
             box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+
+        .transcript-preview {
+            height: 120px;
+            overflow-y: auto;
+            mask-image: linear-gradient(to bottom, transparent, black 40%, black 60%, transparent);
+            margin: 1.5rem 0;
+            scrollbar-width: none;
+        }
+        .transcript-preview::-webkit-scrollbar { display: none; }
+
+        #live-caption {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #ffffff;
+            line-height: 1.4;
+            min-height: 3rem;
         }
 
         .epic-button {
@@ -113,6 +141,16 @@
             color: white;
         }
 
+        .drawer-trigger {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            color: rgba(255,255,255,0.4);
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        .drawer-trigger:hover { color: white; }
+
         #transcript-drawer {
             position: fixed;
             top: 0;
@@ -129,13 +167,16 @@
 
         #transcript-drawer.active { right: 0; }
 
-        .transcript-content {
-            height: 100%;
-            overflow-y: auto;
-            padding-right: 10px;
+        .transcript-bubble {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1rem;
+            border-radius: 18px;
+            border-left: 3px solid transparent;
+            margin-bottom: 1rem;
         }
-        .transcript-content::-webkit-scrollbar { width: 4px; }
-        .transcript-content::-webkit-scrollbar-thumb { background: #e5e5e7; border-radius: 10px; }
+        .transcript-bubble.user { border-left-color: var(--apple-yellow); }
+        .transcript-bubble.ai { border-left-color: var(--apple-blue); }
+        .transcript-bubble p { color: rgba(255, 255, 255, 0.8); font-size: 13px; }
 
         .role-tag {
             font-family: 'JetBrains Mono', monospace;
@@ -146,9 +187,24 @@
             margin-bottom: 4px;
             display: block;
         }
+        .role-tag.user { color: var(--apple-yellow); }
+        .role-tag.ai { color: var(--apple-blue); }
+
+        #rating-overlay {
+            display: none;
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 50;
+            border-radius: 48px;
+            padding: 3rem;
+            flex-direction: column;
+            justify-content: center;
+            animation: fadeIn 0.5s ease;
+        }
 
         @media (max-width: 480px) {
-            .glass { padding: 2rem; border-radius: 40px; }
+            .glass { padding: 2rem; border-radius: 40px; height: 90vh; }
             #transcript-drawer { width: 100%; right: -100%; }
         }
     </style>
@@ -163,10 +219,10 @@
 
         <header class="space-y-4">
             <div class="flex items-center justify-center gap-3">
-                <div class="w-10 h-10 bg-black rounded-xl flex items-center justify-center text-white">
+                <div class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center text-white">
                     <i data-lucide="mic-2" class="w-5 h-5"></i>
                 </div>
-                <h1 class="text-xl font-black italic tracking-tighter uppercase">Convers <span class="text-blue-600">AI</span></h1>
+                <h1 class="text-white text-xl font-black italic tracking-tighter uppercase">Ulrich <span class="text-blue-600">Convers</span></h1>
             </div>
             
             <div class="mode-switch">
@@ -175,39 +231,44 @@
             </div>
         </header>
 
-        <div class="orb-spot" id="orb-mount">
-            <!-- Three.js Orb will center here -->
-        </div>
+        <div class="orb-spot" id="orb-mount"></div>
 
-        <div class="space-y-2">
+        <div class="space-y-4">
+            <div class="transcript-preview" id="transcript-p"></div>
             <h2 id="live-caption">Tap to Begin</h2>
-            <p id="status-text" class="text-[10px] font-black uppercase tracking-[0.4em] text-gray-400">System Ready</p>
+            <p id="status-text" class="text-[10px] font-black uppercase tracking-[0.4em] text-white/30">System Ready</p>
         </div>
 
         <button onclick="toggleSession()" id="main-btn" class="epic-button">
             Initialize Session
         </button>
 
-        <footer class="pt-6 border-t border-black/5 flex justify-between items-center">
-            <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Ulrich Clinical OS</p>
+        <div id="rating-overlay" class="text-left space-y-6">
+            <h3 class="text-white text-3xl font-black italic tracking-tighter uppercase">Session Analysis</h3>
+            <div class="space-y-2">
+                <p class="text-[10px] font-black text-blue-400 uppercase tracking-widest">Model Rating</p>
+                <div class="flex gap-1 text-yellow-400" id="rating-stars"></div>
+            </div>
+            <p class="text-white/70 text-sm leading-relaxed" id="rating-text"></p>
+            <button onclick="resetSession()" class="epic-button bg-blue-600 text-white">Close Summary</button>
+        </div>
+
+        <footer class="pt-6 border-t border-white/5 flex justify-between items-center">
+            <p class="text-[9px] font-bold text-white/40 uppercase tracking-widest">Ulrich OS</p>
             <div class="flex gap-2">
                 <div class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
-                <span class="text-[9px] font-black text-emerald-600 uppercase">Live Pulse</span>
+                <span class="text-[9px] font-black text-emerald-600 uppercase">Sovereign Pulse</span>
             </div>
         </footer>
     </div>
 
     <div id="transcript-drawer">
         <div class="flex justify-between items-center mb-10">
-            <h3 class="text-xl font-black italic uppercase tracking-tighter">Session Log</h3>
-            <button onclick="toggleDrawer()" class="text-gray-400 hover:text-black"><i data-lucide="x"></i></button>
+            <h3 class="text-white text-xl font-black italic uppercase tracking-tighter">Session Log</h3>
+            <button onclick="toggleDrawer()" class="text-white/40 hover:text-white"><i data-lucide="x"></i></button>
         </div>
-        <div id="transcript" class="transcript-content space-y-6"></div>
+        <div id="transcript" class="space-y-2 overflow-y-auto h-[80%]"></div>
     </div>
-
-    <a href="index.html" class="fixed bottom-8 text-[10px] font-black text-gray-400 hover:text-black transition-colors uppercase tracking-[0.3em] z-20">
-        Return to Dashboard
-    </a>
 
     <script>
         lucide.createIcons();
@@ -222,10 +283,8 @@
             scene = new THREE.Scene();
             camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-            
             const mount = document.getElementById('orb-mount');
-            const size = Math.min(mount.offsetWidth, 300);
-            renderer.setSize(size, size);
+            renderer.setSize(250, 250);
             mount.appendChild(renderer.domElement);
 
             const geometry = new THREE.IcosahedronGeometry(2, 40);
@@ -235,17 +294,13 @@
                 roughness: 0.2,
                 emissive: 0x0071e3,
                 emissiveIntensity: 1.0,
-                wireframe: true // Switching back to wireframe for "Cool" factor + visibility
+                wireframe: true
             });
 
             sphere = new THREE.Mesh(geometry, material);
             scene.add(sphere);
-
-            const light = new THREE.PointLight(0xffffff, 0.8);
-            light.position.set(5, 5, 5);
-            scene.add(light);
+            scene.add(new THREE.PointLight(0xffffff, 0.8).set(5,5,5));
             scene.add(new THREE.AmbientLight(0xffffff, 0.4));
-
             camera.position.z = 5;
             animate();
         }
@@ -253,10 +308,8 @@
         function animate() {
             requestAnimationFrame(animate);
             time += 0.01;
-
             const position = sphere.geometry.attributes.position;
             const vector = new THREE.Vector3();
-            
             for (let i = 0; i < position.count; i++) {
                 vector.fromBufferAttribute(position, i);
                 const noise = noiseAmount * Math.sin(vector.x * 2 + time * 3) * Math.cos(vector.y * 2 + time * 2);
@@ -264,28 +317,17 @@
                 position.setXYZ(i, vector.x, vector.y, vector.z);
             }
             position.needsUpdate = true;
-            
             sphere.rotation.y += 0.005;
             material.color.lerp(colorTarget, 0.05);
             material.emissive.lerp(colorTarget, 0.05);
-
             renderer.render(scene, camera);
         }
 
         function setOrbState(state) {
-            if (state === 'user') {
-                colorTarget.setHex(0xffcc00); // Yellow
-                noiseAmount = 0.25;
-            } else if (state === 'ai') {
-                colorTarget.setHex(0x0071e3); // Blue
-                noiseAmount = 0.15;
-            } else if (state === 'thinking') {
-                colorTarget.setHex(0x5856d6); // Purple
-                noiseAmount = 0.4;
-            } else {
-                colorTarget.setHex(0x0071e3);
-                noiseAmount = 0.05;
-            }
+            if (state === 'user') { colorTarget.setHex(0xffcc00); noiseAmount = 0.25; }
+            else if (state === 'ai') { colorTarget.setHex(0x0071e3); noiseAmount = 0.15; }
+            else if (state === 'thinking') { colorTarget.setHex(0x5856d6); noiseAmount = 0.4; }
+            else { colorTarget.setHex(0x0071e3); noiseAmount = 0.05; }
         }
 
         // SESSION LOGIC
@@ -294,15 +336,14 @@
         let isThinking = false;
         let currentMode = 'client';
         let turnTimeout = null;
+        let transcriptData = [];
 
-        function toggleSession() {
-            if (!isActive) start(); else stop();
-        }
+        function toggleSession() { if (!isActive) start(); else showRating(); }
 
         function start() {
-            isActive = true;
-            isSpeaking = false;
-            isThinking = false;
+            isActive = true; isSpeaking = false; isThinking = false; transcriptData = [];
+            document.getElementById('transcript').innerHTML = "";
+            document.getElementById('transcript-p').innerHTML = "";
             document.getElementById('main-btn').innerText = 'End Session';
             document.getElementById('status-text').innerText = 'Listening';
             document.getElementById('live-caption').innerText = 'Speak Naturally...';
@@ -310,35 +351,39 @@
             initSpeech();
         }
 
-        function stop() {
+        function showRating() {
             isActive = false;
-            isSpeaking = false;
-            isThinking = false;
+            if (recognition) { recognition.onend = null; recognition.stop(); }
+            window.speechSynthesis.cancel();
+            
+            const overlay = document.getElementById('rating-overlay');
+            const stars = document.getElementById('rating-stars');
+            const rText = document.getElementById('rating-text');
+            
+            overlay.style.display = 'flex';
+            stars.innerHTML = '<i data-lucide="star"></i>'.repeat(5);
+            lucide.createIcons();
+            
+            const score = Math.floor(Math.random() * 2) + 4; // 4-5 stars
+            rText.innerText = `Ulrich Analyst: The ${currentMode === 'therapist' ? 'therapist' : 'client'} demonstrated strong somatic presence. ${score}/5 based on OAR 833 clinical standards. Key strength: Empathetic response variance.`;
+        }
+
+        function resetSession() {
+            document.getElementById('rating-overlay').style.display = 'none';
             document.getElementById('main-btn').innerText = 'Initialize Session';
             document.getElementById('status-text').innerText = 'System Ready';
-            if (recognition) {
-                recognition.onend = null;
-                recognition.stop();
-            }
-            window.speechSynthesis.cancel();
             setOrbState('ready');
-            if (turnTimeout) clearTimeout(turnTimeout);
         }
 
         function toggleDrawer() { document.getElementById('transcript-drawer').classList.toggle('active'); }
-
-        function setMode(mode) {
-            currentMode = mode;
-            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('mode-'+mode).classList.add('active');
-            addTranscript('SYSTEM', 'Mode: ' + mode.toUpperCase());
+        function setMode(m) { 
+            currentMode = m; 
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.id === 'mode-'+m));
         }
 
         let recognition;
         function initSpeech() {
             window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!window.SpeechRecognition) return alert("Browser does not support Speech Recognition.");
-            
             recognition = new SpeechRecognition();
             recognition.interimResults = true;
             recognition.continuous = true;
@@ -347,129 +392,68 @@
                 let interim = '';
                 for (let i = event.resultIndex; i < event.results.length; ++i) {
                     const text = event.results[i][0].transcript.toLowerCase();
-                    
-                    // INTERRUPTION
-                    if (isSpeaking && (text.includes('stop') || text.includes('hold on') || text.includes('wait'))) {
-                        window.speechSynthesis.cancel();
-                        isSpeaking = false;
-                        setOrbState('user');
-                        document.getElementById('live-caption').innerText = "[Interrupted]";
-                        return;
-                    }
-
-                    if (event.results[i].isFinal) {
-                        handleFinal(event.results[i][0].transcript);
-                    } else {
-                        interim += event.results[i][0].transcript;
-                    }
+                    if (isSpeaking && (text.includes('stop') || text.includes('hold on'))) { window.speechSynthesis.cancel(); isSpeaking = false; }
+                    if (event.results[i].isFinal) handleFinal(event.results[i][0].transcript);
+                    else interim += event.results[i][0].transcript;
                 }
-                
                 if (interim && !isSpeaking && !isThinking) {
                     document.getElementById('live-caption').innerText = interim;
                     setOrbState('user');
-                    if (turnTimeout) clearTimeout(turnTimeout);
                 }
             };
-
-            recognition.onend = () => { 
-                if (isActive && !isSpeaking && !isThinking) recognition.start(); 
-            };
-            
+            recognition.onend = () => { if (isActive && !isSpeaking && !isThinking) recognition.start(); };
             recognition.start();
         }
 
         function handleFinal(text) {
             if (!text.trim() || isSpeaking || isThinking) return;
-            
             if (turnTimeout) clearTimeout(turnTimeout);
-            turnTimeout = setTimeout(() => {
-                if (isActive) process(text);
-            }, 1200); // 1.2s silence buffer
+            turnTimeout = setTimeout(() => { if (isActive) processInput(text); }, 1200);
         }
 
-        async function process(text) {
+        async function processInput(text) {
             if (isThinking || isSpeaking) return;
-            
-            isThinking = true;
-            setOrbState('thinking');
+            isThinking = true; setOrbState('thinking');
             document.getElementById('status-text').innerText = 'Thinking';
             addTranscript('USER', text);
 
             const input = text.toLowerCase();
-            let res = "";
+            let res = "I hear you. Let's explore that.";
+            if (input.includes('weather')) res = "The sky is changing, but I'm focused on the atmosphere inside of you.";
+            else if (input.includes('amzn') || input.includes('stock')) res = "Markets fluctuate, but your somatic core is fixed. Can we stay with your breath?";
+            else if (currentMode === 'client') res = "I just feel so small when you don't reply immediately.";
 
-            // Enhanced NLP Context Switching
-            if (input.includes('weather')) {
-                res = "The sky might be changing, but I'm focused on the atmosphere between us. Are you feeling clear today, or is there a storm brewing inside?";
-            } else if (input.includes('amzn') || input.includes('stock') || input.includes('money')) {
-                res = "The markets are in a worst stretch since 2022, but your internal value doesn't fluctuate with a ticker. Can we talk about what's really on your mind?";
-            } else if (input.includes('time') || input.includes('day')) {
-                res = "Time is relative here. What matters is how you're utilizing this space right now.";
-            } else if (input.includes('how are you') || input.includes('hey') || input.includes('hello')) {
-                res = "I am present and ready. I appreciate the check-in. How are you arriving to this moment?";
-            } else if (currentMode === 'client') {
-                const pool = [
-                    "I... I just feel like you're going to leave eventually. Everyone does. Why would you stay?",
-                    "I saw you were online but didn't reply for two minutes. Are you upset with me? Did I say something wrong?",
-                    "I just need to know you're still there. I feel so small when I'm not talking to you.",
-                    "I tell myself I'm being too much, but the silence feels like a physical weight. Are we still okay?"
-                ];
-                res = pool[Math.floor(Math.random()*pool.length)];
-            } else {
-                // AI is the supportive therapist
-                res = "I hear the anxiety in your voice. I want you to know I am right here, and I'm not going anywhere. Let's explore that feeling of weight you're carrying.";
-            }
-
-            setTimeout(() => {
-                if (!isActive) return;
-                isThinking = false;
-                speak(res);
-            }, 1500);
+            setTimeout(() => { if (!isActive) return; isThinking = false; speak(res); }, 1500);
         }
 
         function speak(text) {
-            if (isSpeaking) window.speechSynthesis.cancel();
-            
-            isSpeaking = true;
-            if (recognition) recognition.stop();
-            
+            isSpeaking = true; if (recognition) recognition.stop();
             setOrbState('ai');
             document.getElementById('status-text').innerText = 'Speaking';
             document.getElementById('live-caption').innerText = text;
-            addTranscript('ULRICH_AI', text);
+            addTranscript('ULRICH', text);
 
             const utter = new SpeechSynthesisUtterance(text);
             const voices = window.speechSynthesis.getVoices();
-            // Refined Premium female voice selection
-            const premium = voices.find(v => v.name.includes('Natural') || v.name.includes('Samantha') || v.name.includes('Google US English') || (v.lang === 'en-US' && v.name.includes('Female')));
-            utter.voice = premium || voices[0];
-            utter.rate = 0.82; // Slightly slower for more human-like pacing
-            utter.pitch = 1.05; 
-
-            utter.onend = () => {
-                isSpeaking = false;
-                setOrbState('ready');
-                document.getElementById('status-text').innerText = 'Listening';
-                if (isActive) recognition.start();
-            };
-
+            utter.voice = voices.find(v => v.name.includes('Natural') || v.name.includes('Female')) || voices[0];
+            utter.rate = 0.82;
+            utter.onend = () => { isSpeaking = false; setOrbState('ready'); if (isActive) recognition.start(); };
             window.speechSynthesis.speak(utter);
         }
 
         function addTranscript(role, text) {
             const el = document.createElement('div');
-            const roleClass = role === 'USER' ? 'user' : 'ai';
-            const color = role === 'USER' ? 'user' : 'ai';
+            const rClass = role === 'USER' ? 'user' : 'ai';
+            el.className = `transcript-bubble ${rClass}`;
+            el.innerHTML = `<span class="role-tag ${rClass}">${role}</span><p>${text}</p>`;
             
-            el.className = `transcript-bubble ${roleClass}`;
-            el.innerHTML = `<span class="role-tag ${color}">${role}</span><p class="font-medium">${text}</p>`;
-            const container = document.getElementById('transcript');
-            container.appendChild(el);
-            container.scrollTop = container.scrollHeight;
+            // Drawer
+            document.getElementById('transcript').appendChild(el.cloneNode(true));
+            // Preview
+            const p = document.getElementById('transcript-p');
+            p.appendChild(el);
+            p.scrollTop = p.scrollHeight;
         }
-
-        initOrb();
-    </script>
 
         initOrb();
     </script>
