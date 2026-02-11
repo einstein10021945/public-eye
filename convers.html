@@ -98,7 +98,16 @@
             margin: 0 auto;
         }
 
-        .mode-btn {
+        .voice-selector {
+            background: rgba(0,0,0,0.05);
+            padding: 4px;
+            border-radius: 20px;
+            display: flex;
+            gap: 4px;
+            margin: 0 auto;
+        }
+
+        .mode-btn, .voice-btn {
             padding: 10px 20px;
             border-radius: 20px;
             font-size: 11px;
@@ -109,7 +118,7 @@
             color: #86868b;
         }
 
-        .mode-btn.active {
+        .mode-btn.active, .voice-btn.active {
             background: white;
             color: var(--apple-blue);
             box-shadow: 0 8px 16px rgba(0,0,0,0.06);
@@ -173,6 +182,12 @@
                 <button onclick="setMode('client')" id="mode-client" class="mode-btn active">Patient</button>
                 <button onclick="setMode('therapist')" id="mode-therapist" class="mode-btn">Therapist</button>
             </div>
+
+            <div class="voice-selector">
+                <button onclick="setVoice('piper')" id="voice-piper" class="voice-btn active">Piper (Fast)</button>
+                <button onclick="setVoice('nemotron')" id="voice-nemotron" class="voice-btn">NVIDIA Nemotron</button>
+                <button onclick="setVoice('riva')" id="voice-riva" class="voice-btn">Riva SOTA</button>
+            </div>
         </header>
 
         <div class="orb-container">
@@ -208,13 +223,21 @@
         lucide.createIcons();
 
         let isSessionActive = false;
-        let currentMode = 'client'; // client (user is patient) or therapist (user is therapist)
+        let currentMode = 'client'; 
+        let currentVoice = 'piper';
 
         function setMode(mode) {
             currentMode = mode;
             document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
             document.getElementById('mode-' + mode).classList.add('active');
-            addTranscript('SYSTEM', 'Switched to ' + (mode === 'client' ? 'Client' : 'Therapist') + ' mode.');
+            addTranscript('SYSTEM', 'Switched to ' + (mode === 'client' ? 'Patient' : 'Therapist') + ' mode.');
+        }
+
+        function setVoice(voice) {
+            currentVoice = voice;
+            document.querySelectorAll('.voice-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('voice-' + voice).classList.add('active');
+            addTranscript('SYSTEM', 'Using ' + voice.toUpperCase() + ' voice engine.');
         }
 
         function toggleSession() {
