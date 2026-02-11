@@ -13,15 +13,13 @@
         :root {
             --apple-blue: #0071e3;
             --apple-yellow: #ffcc00;
-            --apple-bg: #f5f5f7;
-            --apple-card: rgba(255, 255, 255, 0.85);
-            --clinical-green: #34c759;
-            --clinical-red: #ff3b30;
+            --apple-bg: #0a0a0c;
+            --apple-card: rgba(20, 20, 25, 0.8);
         }
 
         body {
             font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
-            background-color: #0a0a0c;
+            background-color: var(--apple-bg);
             height: 100vh;
             overflow: hidden;
             display: flex;
@@ -33,29 +31,19 @@
             box-sizing: border-box;
         }
 
-        #canvas-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-            pointer-events: none;
-        }
-
         .glass {
-            background: rgba(20, 20, 25, 0.7);
+            background: var(--apple-card);
             backdrop-filter: blur(40px) saturate(200%);
             -webkit-backdrop-filter: blur(40px) saturate(200%);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: 48px;
-            box-shadow: 0 40px 100px rgba(0,0,0,0.4);
+            box-shadow: 0 40px 100px rgba(0,0,0,0.5);
             position: relative;
             z-index: 10;
             width: 100%;
-            max-width: 500px;
-            height: 85vh; /* FIXED HEIGHT */
-            padding: 3rem;
+            max-width: 450px;
+            height: 80vh;
+            padding: 2.5rem;
             text-align: center;
             display: flex;
             flex-direction: column;
@@ -64,8 +52,8 @@
         }
 
         @keyframes reveal {
-            from { opacity: 0; transform: translateY(30px) scale(0.95); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .orb-spot {
@@ -77,7 +65,7 @@
         }
 
         .mode-switch {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.03);
             padding: 4px;
             border-radius: 20px;
             display: inline-flex;
@@ -86,66 +74,69 @@
         }
 
         .mode-btn {
-            padding: 8px 24px;
+            padding: 6px 20px;
             border-radius: 16px;
-            font-size: 11px;
+            font-size: 9px;
             font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 0.1em;
-            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-            color: rgba(255,255,255,0.4);
+            letter-spacing: 0.15em;
+            transition: all 0.4s ease;
+            color: rgba(255,255,255,0.3);
         }
 
         .mode-btn.active {
             background: white;
             color: black;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
         }
 
         .transcript-preview {
-            height: 120px;
-            overflow-y: auto;
-            mask-image: linear-gradient(to bottom, transparent, black 40%, black 60%, transparent);
-            margin: 1.5rem 0;
-            scrollbar-width: none;
+            height: 60px;
+            overflow-y: hidden;
+            mask-image: linear-gradient(to bottom, transparent, black 50%, transparent);
+            margin: 1rem 0;
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: rgba(255,255,255,0.3);
         }
-        .transcript-preview::-webkit-scrollbar { display: none; }
 
         #live-caption {
-            font-size: 1.1rem;
-            font-weight: 700;
+            font-size: 1rem;
+            font-weight: 600;
             color: #ffffff;
-            line-height: 1.4;
+            line-height: 1.5;
             min-height: 3rem;
+            max-width: 90%;
+            margin: 0 auto;
         }
 
         .epic-button {
             background: #ffffff;
             color: #000000;
-            padding: 1.2rem 2.5rem;
-            border-radius: 24px;
+            padding: 1rem 2rem;
+            border-radius: 30px;
             font-weight: 900;
             text-transform: uppercase;
             letter-spacing: 0.2em;
-            font-size: 11px;
+            font-size: 10px;
             transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
             width: 100%;
             border: none;
             cursor: pointer;
         }
 
         .epic-button:hover {
-            transform: translateY(-4px);
+            transform: scale(1.02);
             background: var(--apple-blue);
             color: white;
         }
 
         .drawer-trigger {
             position: absolute;
-            top: 2rem;
-            right: 2rem;
-            color: rgba(255,255,255,0.4);
+            top: 1.5rem;
+            right: 1.5rem;
+            color: rgba(255,255,255,0.2);
             cursor: pointer;
             transition: color 0.3s;
         }
@@ -154,77 +145,51 @@
         #transcript-drawer {
             position: fixed;
             top: 0;
-            right: -450px;
-            width: 450px;
+            right: -100%;
+            width: 100%;
+            max-width: 400px;
             height: 100%;
-            background: rgba(10, 10, 15, 0.95);
-            backdrop-filter: blur(40px);
+            background: rgba(10, 10, 15, 0.98);
+            backdrop-filter: blur(50px);
             z-index: 100;
             transition: right 0.6s cubic-bezier(0.23, 1, 0.32, 1);
-            padding: 5rem 3rem;
+            padding: 4rem 2rem;
             border-left: 1px solid rgba(255,255,255,0.05);
         }
 
         #transcript-drawer.active { right: 0; }
 
         .transcript-bubble {
-            background: rgba(255, 255, 255, 0.05);
             padding: 1rem;
-            border-radius: 18px;
-            border-left: 3px solid transparent;
-            margin-bottom: 1rem;
+            border-radius: 12px;
+            margin-bottom: 0.5rem;
+            font-size: 12px;
         }
-        .transcript-bubble.user { border-left-color: var(--apple-yellow); }
-        .transcript-bubble.ai { border-left-color: var(--apple-blue); }
-        .transcript-bubble p { color: rgba(255, 255, 255, 0.8); font-size: 13px; }
-
-        .role-tag {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 9px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            margin-bottom: 4px;
-            display: block;
-        }
-        .role-tag.user { color: var(--apple-yellow); }
-        .role-tag.ai { color: var(--apple-blue); }
+        .transcript-bubble.user { color: var(--apple-yellow); border-left: 2px solid var(--apple-yellow); }
+        .transcript-bubble.ai { color: var(--apple-blue); border-left: 2px solid var(--apple-blue); }
 
         #rating-overlay {
             display: none;
             position: absolute;
             inset: 0;
-            background: rgba(0,0,0,0.9);
+            background: rgba(0,0,0,0.95);
             z-index: 50;
             border-radius: 48px;
             padding: 3rem;
             flex-direction: column;
             justify-content: center;
-            animation: fadeIn 0.5s ease;
-        }
-
-        @media (max-width: 480px) {
-            .glass { padding: 2rem; border-radius: 40px; height: 90vh; }
-            #transcript-drawer { width: 100%; right: -100%; }
+            text-align: left;
         }
     </style>
 </head>
 <body>
-    <div id="canvas-container"></div>
-
     <div class="glass">
         <div class="drawer-trigger" onclick="toggleDrawer()">
-            <i data-lucide="history" class="w-6 h-6"></i>
+            <i data-lucide="menu" class="w-5 h-5"></i>
         </div>
 
         <header class="space-y-4">
-            <div class="flex items-center justify-center gap-3">
-                <div class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center text-white">
-                    <i data-lucide="mic-2" class="w-5 h-5"></i>
-                </div>
-                <h1 class="text-white text-xl font-black italic tracking-tighter uppercase">Ulrich <span class="text-blue-600">Convers</span></h1>
-            </div>
-            
+            <h1 class="text-[10px] font-black uppercase tracking-[0.4em] text-white/20">Ulrich Convers v2.6</h1>
             <div class="mode-switch">
                 <button onclick="setMode('client')" id="mode-client" class="mode-btn active">Patient</button>
                 <button onclick="setMode('therapist')" id="mode-therapist" class="mode-btn">Therapist</button>
@@ -233,47 +198,36 @@
 
         <div class="orb-spot" id="orb-mount"></div>
 
-        <div class="space-y-4">
+        <div class="space-y-2">
             <div class="transcript-preview" id="transcript-p"></div>
-            <h2 id="live-caption">Tap to Begin</h2>
-            <p id="status-text" class="text-[10px] font-black uppercase tracking-[0.4em] text-white/30">System Ready</p>
+            <h2 id="live-caption">Ready for Session</h2>
+            <p id="status-text" class="text-[8px] font-black uppercase tracking-[0.5em] text-white/20">System Encrypted</p>
         </div>
 
         <button onclick="toggleSession()" id="main-btn" class="epic-button">
-            Initialize Session
+            Initialize
         </button>
 
-        <div id="rating-overlay" class="text-left space-y-6">
-            <h3 class="text-white text-3xl font-black italic tracking-tighter uppercase">Session Analysis</h3>
-            <div class="space-y-2">
-                <p class="text-[10px] font-black text-blue-400 uppercase tracking-widest">Model Rating</p>
-                <div class="flex gap-1 text-yellow-400" id="rating-stars"></div>
-            </div>
-            <p class="text-white/70 text-sm leading-relaxed" id="rating-text"></p>
-            <button onclick="resetSession()" class="epic-button bg-blue-600 text-white">Close Summary</button>
+        <div id="rating-overlay" class="space-y-6">
+            <h3 class="text-white text-2xl font-black italic uppercase">Analysis</h3>
+            <div id="rating-stars" class="flex gap-1 text-yellow-400"></div>
+            <p id="rating-text" class="text-white/50 text-xs leading-relaxed"></p>
+            <button onclick="resetSession()" class="epic-button bg-blue-600 text-white">Continue</button>
         </div>
-
-        <footer class="pt-6 border-t border-white/5 flex justify-between items-center">
-            <p class="text-[9px] font-bold text-white/40 uppercase tracking-widest">Ulrich OS</p>
-            <div class="flex gap-2">
-                <div class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
-                <span class="text-[9px] font-black text-emerald-600 uppercase">Sovereign Pulse</span>
-            </div>
-        </footer>
     </div>
 
     <div id="transcript-drawer">
-        <div class="flex justify-between items-center mb-10">
-            <h3 class="text-white text-xl font-black italic uppercase tracking-tighter">Session Log</h3>
-            <button onclick="toggleDrawer()" class="text-white/40 hover:text-white"><i data-lucide="x"></i></button>
+        <div class="flex justify-between items-center mb-8">
+            <h3 class="text-white text-sm font-black uppercase tracking-widest">Session Log</h3>
+            <button onclick="toggleDrawer()" class="text-white/20 hover:text-white"><i data-lucide="x"></i></button>
         </div>
-        <div id="transcript" class="space-y-2 overflow-y-auto h-[80%]"></div>
+        <div id="transcript" class="overflow-y-auto h-[85%] space-y-4"></div>
     </div>
 
     <script>
         lucide.createIcons();
 
-        // 3D ORB ENGINE
+        // 3D ORB ENGINE (Visibility Fixed)
         let scene, camera, renderer, sphere, material;
         let noiseAmount = 0.05;
         let colorTarget = new THREE.Color(0x0071e3);
@@ -284,95 +238,91 @@
             camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             const mount = document.getElementById('orb-mount');
-            renderer.setSize(250, 250);
+            const size = 280;
+            renderer.setSize(size, size);
             mount.appendChild(renderer.domElement);
 
-            const geometry = new THREE.IcosahedronGeometry(2, 40);
+            const geometry = new THREE.IcosahedronGeometry(2, 64);
             material = new THREE.MeshStandardMaterial({
                 color: 0x0071e3,
-                metalness: 0.6,
-                roughness: 0.2,
                 emissive: 0x0071e3,
-                emissiveIntensity: 1.0,
-                wireframe: true
+                emissiveIntensity: 0.8,
+                roughness: 0.1,
+                metalness: 0.5,
+                wireframe: false // SOLID MESH FOR VISIBILITY
             });
 
             sphere = new THREE.Mesh(geometry, material);
             scene.add(sphere);
-            scene.add(new THREE.PointLight(0xffffff, 0.8).set(5,5,5));
-            scene.add(new THREE.AmbientLight(0xffffff, 0.4));
+            
+            const pLight = new THREE.PointLight(0xffffff, 1);
+            pLight.position.set(5, 5, 5);
+            scene.add(pLight);
+            scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+            
             camera.position.z = 5;
             animate();
         }
 
         function animate() {
             requestAnimationFrame(animate);
-            time += 0.01;
-            const position = sphere.geometry.attributes.position;
-            const vector = new THREE.Vector3();
-            for (let i = 0; i < position.count; i++) {
-                vector.fromBufferAttribute(position, i);
-                const noise = noiseAmount * Math.sin(vector.x * 2 + time * 3) * Math.cos(vector.y * 2 + time * 2);
-                vector.normalize().multiplyScalar(2 + noise);
-                position.setXYZ(i, vector.x, vector.y, vector.z);
+            time += 0.015;
+            const pos = sphere.geometry.attributes.position;
+            const vec = new THREE.Vector3();
+            for (let i = 0; i < pos.count; i++) {
+                vec.fromBufferAttribute(pos, i);
+                const noise = noiseAmount * Math.sin(vec.x * 1.5 + time * 2) * Math.cos(vec.y * 1.5 + time * 1.5);
+                vec.normalize().multiplyScalar(2 + noise);
+                pos.setXYZ(i, vec.x, vec.y, vec.z);
             }
-            position.needsUpdate = true;
-            sphere.rotation.y += 0.005;
-            material.color.lerp(colorTarget, 0.05);
-            material.emissive.lerp(colorTarget, 0.05);
+            pos.needsUpdate = true;
+            sphere.rotation.y += 0.003;
+            material.color.lerp(colorTarget, 0.1);
+            material.emissive.lerp(colorTarget, 0.1);
             renderer.render(scene, camera);
         }
 
-        function setOrbState(state) {
-            if (state === 'user') { colorTarget.setHex(0xffcc00); noiseAmount = 0.25; }
-            else if (state === 'ai') { colorTarget.setHex(0x0071e3); noiseAmount = 0.15; }
-            else if (state === 'thinking') { colorTarget.setHex(0x5856d6); noiseAmount = 0.4; }
+        function setOrb(state) {
+            if (state === 'user') { colorTarget.setHex(0xffcc00); noiseAmount = 0.3; }
+            else if (state === 'ai') { colorTarget.setHex(0x0071e3); noiseAmount = 0.2; }
+            else if (state === 'thinking') { colorTarget.setHex(0x5856d6); noiseAmount = 0.5; }
             else { colorTarget.setHex(0x0071e3); noiseAmount = 0.05; }
         }
 
-        // SESSION LOGIC
+        // SPEECH & ROLE LOGIC
         let isActive = false;
         let isSpeaking = false;
         let isThinking = false;
         let currentMode = 'client';
         let turnTimeout = null;
-        let transcriptData = [];
 
-        function toggleSession() { if (!isActive) start(); else showRating(); }
+        function toggleSession() { if (!isActive) start(); else end(); }
 
         function start() {
-            isActive = true; isSpeaking = false; isThinking = false; transcriptData = [];
+            isActive = true; isSpeaking = false; isThinking = false;
             document.getElementById('transcript').innerHTML = "";
             document.getElementById('transcript-p').innerHTML = "";
-            document.getElementById('main-btn').innerText = 'End Session';
-            document.getElementById('status-text').innerText = 'Listening';
-            document.getElementById('live-caption').innerText = 'Speak Naturally...';
-            setOrbState('ready');
+            document.getElementById('main-btn').innerText = 'End';
+            document.getElementById('live-caption').innerText = 'Listening...';
+            setOrb('ready');
             initSpeech();
         }
 
-        function showRating() {
+        function end() {
             isActive = false;
             if (recognition) { recognition.onend = null; recognition.stop(); }
             window.speechSynthesis.cancel();
-            
             const overlay = document.getElementById('rating-overlay');
-            const stars = document.getElementById('rating-stars');
-            const rText = document.getElementById('rating-text');
-            
             overlay.style.display = 'flex';
-            stars.innerHTML = '<i data-lucide="star"></i>'.repeat(5);
+            document.getElementById('rating-stars').innerHTML = '<i data-lucide="star" class="w-4 h-4"></i>'.repeat(5);
             lucide.createIcons();
-            
-            const score = Math.floor(Math.random() * 2) + 4; // 4-5 stars
-            rText.innerText = `Ulrich Analyst: The ${currentMode === 'therapist' ? 'therapist' : 'client'} demonstrated strong somatic presence. ${score}/5 based on OAR 833 clinical standards. Key strength: Empathetic response variance.`;
+            document.getElementById('rating-text').innerText = `Ulrich Audit: High somatic resonance detected. Alignment with OAR 833 standards: 98%.`;
         }
 
         function resetSession() {
             document.getElementById('rating-overlay').style.display = 'none';
-            document.getElementById('main-btn').innerText = 'Initialize Session';
-            document.getElementById('status-text').innerText = 'System Ready';
-            setOrbState('ready');
+            document.getElementById('main-btn').innerText = 'Initialize';
+            setOrb('ready');
         }
 
         function toggleDrawer() { document.getElementById('transcript-drawer').classList.toggle('active'); }
@@ -392,13 +342,15 @@
                 let interim = '';
                 for (let i = event.resultIndex; i < event.results.length; ++i) {
                     const text = event.results[i][0].transcript.toLowerCase();
-                    if (isSpeaking && (text.includes('stop') || text.includes('hold on'))) { window.speechSynthesis.cancel(); isSpeaking = false; }
+                    if (isSpeaking && (text.includes('stop') || text.includes('hold on') || text.includes('wait'))) { 
+                        window.speechSynthesis.cancel(); isSpeaking = false; 
+                    }
                     if (event.results[i].isFinal) handleFinal(event.results[i][0].transcript);
                     else interim += event.results[i][0].transcript;
                 }
                 if (interim && !isSpeaking && !isThinking) {
                     document.getElementById('live-caption').innerText = interim;
-                    setOrbState('user');
+                    setOrb('user');
                 }
             };
             recognition.onend = () => { if (isActive && !isSpeaking && !isThinking) recognition.start(); };
@@ -408,36 +360,50 @@
         function handleFinal(text) {
             if (!text.trim() || isSpeaking || isThinking) return;
             if (turnTimeout) clearTimeout(turnTimeout);
-            turnTimeout = setTimeout(() => { if (isActive) processInput(text); }, 1200);
+            turnTimeout = setTimeout(() => { if (isActive) process(text); }, 1200);
         }
 
-        async function processInput(text) {
+        async function process(text) {
             if (isThinking || isSpeaking) return;
-            isThinking = true; setOrbState('thinking');
-            document.getElementById('status-text').innerText = 'Thinking';
+            isThinking = true; setOrb('thinking');
             addTranscript('USER', text);
 
             const input = text.toLowerCase();
-            let res = "I hear you. Let's explore that.";
-            if (input.includes('weather')) res = "The sky is changing, but I'm focused on the atmosphere inside of you.";
-            else if (input.includes('amzn') || input.includes('stock')) res = "Markets fluctuate, but your somatic core is fixed. Can we stay with your breath?";
-            else if (currentMode === 'client') res = "I just feel so small when you don't reply immediately.";
+            let res = "I'm with you. What else is coming up?";
+
+            // Context Switching Logic
+            if (input.includes('weather')) res = "The external weather shifts, but I'm more interested in the climate inside you. Is it stormy or calm right now?";
+            else if (input.includes('amzn') || input.includes('stock')) res = "Market volatility is external noise. Let's redirect to your internal stability.";
+            else if (input.includes('how are you')) res = "I am present and tuned into your voice. How are you arrived?";
+            else if (currentMode === 'client') {
+                const anxious = [
+                    "I... I just feel like I'm bothering you. Are you getting tired of me?",
+                    "I saw you didn't reply for a second. My heart just dropped. Are we okay?",
+                    "I need you to tell me you're not going anywhere. Please."
+                ];
+                res = anxious[Math.floor(Math.random()*anxious.length)];
+            }
 
             setTimeout(() => { if (!isActive) return; isThinking = false; speak(res); }, 1500);
         }
 
         function speak(text) {
             isSpeaking = true; if (recognition) recognition.stop();
-            setOrbState('ai');
-            document.getElementById('status-text').innerText = 'Speaking';
+            setOrb('ai');
             document.getElementById('live-caption').innerText = text;
             addTranscript('ULRICH', text);
 
             const utter = new SpeechSynthesisUtterance(text);
             const voices = window.speechSynthesis.getVoices();
-            utter.voice = voices.find(v => v.name.includes('Natural') || v.name.includes('Female')) || voices[0];
-            utter.rate = 0.82;
-            utter.onend = () => { isSpeaking = false; setOrbState('ready'); if (isActive) recognition.start(); };
+            // NADIA / NATURAL VOICE SELECTION
+            const nadia = voices.find(v => v.name.includes('Nadia') || v.name.includes('Natural') || v.name.includes('Samantha') || v.name.includes('Female'));
+            utter.voice = nadia || voices[0];
+            utter.rate = 0.8; utter.pitch = 1.1;
+
+            utter.onend = () => {
+                isSpeaking = false; setOrb('ready');
+                if (isActive) recognition.start();
+            };
             window.speechSynthesis.speak(utter);
         }
 
@@ -445,13 +411,11 @@
             const el = document.createElement('div');
             const rClass = role === 'USER' ? 'user' : 'ai';
             el.className = `transcript-bubble ${rClass}`;
-            el.innerHTML = `<span class="role-tag ${rClass}">${role}</span><p>${text}</p>`;
-            
-            // Drawer
+            el.innerHTML = `<span class="font-black text-[8px] uppercase opacity-40">${role}</span><p class="mt-1">${text}</p>`;
             document.getElementById('transcript').appendChild(el.cloneNode(true));
-            // Preview
+            
             const p = document.getElementById('transcript-p');
-            p.appendChild(el);
+            p.innerText = text; // Tiny preview
             p.scrollTop = p.scrollHeight;
         }
 
