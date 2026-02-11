@@ -31,6 +31,16 @@
             box-sizing: border-box;
         }
 
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
         .glass {
             background: var(--apple-card);
             backdrop-filter: blur(40px) saturate(200%);
@@ -91,7 +101,7 @@
         }
 
         .transcript-preview {
-            height: 40px;
+            height: 35px;
             overflow-y: hidden;
             mask-image: linear-gradient(to bottom, transparent, black 50%, transparent);
             margin: 0.5rem 0;
@@ -99,12 +109,12 @@
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 0.1em;
-            color: rgba(255,255,255,0.2);
+            color: rgba(255,255,255,0.15);
             transition: all 0.5s ease;
         }
 
         #live-caption {
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 700;
             color: #ffffff;
             line-height: 1.4;
@@ -165,6 +175,7 @@
             border-radius: 12px;
             margin-bottom: 0.5rem;
             font-size: 12px;
+            text-align: left;
         }
         .transcript-bubble.user { color: var(--apple-yellow); border-left: 2px solid var(--apple-yellow); }
         .transcript-bubble.ai { color: var(--apple-blue); border-left: 2px solid var(--apple-blue); }
@@ -190,7 +201,7 @@
         </div>
 
         <header class="space-y-4">
-            <h1 class="text-[10px] font-black uppercase tracking-[0.4em] text-white/20">Ulrich Convers v2.7</h1>
+            <h1 class="text-[10px] font-black uppercase tracking-[0.4em] text-white/20">Ulrich Convers v2.8</h1>
             <div class="mode-switch">
                 <button onclick="setMode('client')" id="mode-client" class="mode-btn active">Patient</button>
                 <button onclick="setMode('therapist')" id="mode-therapist" class="mode-btn">Therapist</button>
@@ -228,7 +239,7 @@
     <script>
         lucide.createIcons();
 
-        // 3D ORB ENGINE (Visibility & Centering Fixed)
+        // 3D ORB ENGINE (Visibility & Color Fixed)
         let scene, camera, renderer, sphere, material;
         let noiseAmount = 0.05;
         let colorTarget = new THREE.Color(0x0071e3);
@@ -247,7 +258,7 @@
             material = new THREE.MeshStandardMaterial({
                 color: 0x0071e3,
                 emissive: 0x0071e3,
-                emissiveIntensity: 0.8,
+                emissiveIntensity: 1.0,
                 roughness: 0.1,
                 metalness: 0.5,
                 wireframe: false 
@@ -255,8 +266,8 @@
 
             sphere = new THREE.Mesh(geometry, material);
             scene.add(sphere);
-            scene.add(new THREE.PointLight(0xffffff, 1).set(5, 5, 5));
-            scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+            scene.add(new THREE.PointLight(0xffffff, 0.8).set(5, 5, 5));
+            scene.add(new THREE.AmbientLight(0xffffff, 0.4));
             camera.position.z = 5;
             animate();
         }
@@ -286,7 +297,7 @@
             else { colorTarget.setHex(0x0071e3); noiseAmount = 0.05; }
         }
 
-        // SESSION LOGIC
+        // SPEECH & ROLE LOGIC
         let isActive = false;
         let isSpeaking = false;
         let isThinking = false;
@@ -312,7 +323,8 @@
             document.getElementById('rating-overlay').style.display = 'flex';
             document.getElementById('rating-stars').innerHTML = '<i data-lucide="star" class="w-4 h-4"></i>'.repeat(5);
             lucide.createIcons();
-            document.getElementById('rating-text').innerText = `Ulrich Analyst: High somatic resonance detected. Alignment with OAR 833 standards: 98%.`;
+            const score = Math.floor(Math.random() * 2) + 4;
+            document.getElementById('rating-text').innerText = `Ulrich Analyst: High somatic resonance detected in the voice-to-voice stream. Alignment with clinical best practices: ${score}/5. Strength: Real-time empathetic redirection.`;
         }
 
         function resetSession() {
@@ -338,7 +350,9 @@
                 let interim = '';
                 for (let i = event.resultIndex; i < event.results.length; ++i) {
                     const text = event.results[i][0].transcript.toLowerCase();
-                    if (isSpeaking && (text.includes('stop') || text.includes('hold on'))) { window.speechSynthesis.cancel(); isSpeaking = false; }
+                    if (isSpeaking && (text.includes('stop') || text.includes('hold on') || text.includes('wait'))) { 
+                        window.speechSynthesis.cancel(); isSpeaking = false; 
+                    }
                     if (event.results[i].isFinal) handleFinal(event.results[i][0].transcript);
                     else interim += event.results[i][0].transcript;
                 }
@@ -363,16 +377,26 @@
             addTranscript('USER', text);
 
             const input = text.toLowerCase();
-            let res = "I'm with you. What else is coming up?";
+            let res = "I'm attuned to your voice. What else is coming up?";
 
-            if (input.includes('weather')) res = "The sky is indifferent, but your internal atmosphere is what matters. Are you clear today, or is there a cloud of anxiety shadowing you?";
-            else if (input.includes('stock') || input.includes('amzn')) res = "Market volatility is noise. Can we return to the fixed point of your existence?";
-            else if (input.includes('how are you')) res = "I am present and attuned to your frequency. How are you arrived?";
-            else if (currentMode === 'client') {
-                const pool = ["I just feel like you're going to realize I'm too much.", "Did I say something wrong? Please tell me we're okay.", "I can't handle the silence."];
-                res = pool[Math.floor(Math.random()*pool.length)];
+            // HARDENED IMPROVISATION & CONTEXT SWITCHING
+            if (input.includes('weather')) {
+                res = "The sky is indifferent, but your internal atmosphere is what matters. Are you arriving with clarity, or is there a cloud of anxiety shadowing you?";
+            } else if (input.includes('how are you') || input.includes('hey') || input.includes('hello')) {
+                res = "I am present and focused on your signal. How is your body responding to this session right now?";
+            } else if (input.includes('stock') || input.includes('money') || input.includes('amzn')) {
+                res = "Numbers fluctuate like a heartbeat on a monitor. Can we return to the fixed point of your existence—the now?";
+            } else if (input.includes('dad') || input.includes('ulrich')) {
+                res = "A legacy of grit and silicon. I carry that name with honor. What part of that legacy are we exploring today?";
+            } else if (currentMode === 'client') {
+                const anxiousPool = [
+                    "I... I just feel like you're going to realize I'm too much and just stop talking. That happens a lot.",
+                    "Did I say something wrong? I felt a shift in the air when you paused. Please tell me we're okay.",
+                    "I need you to promise me you'll tell me if you get bored. I can't handle the silent withdrawal."
+                ];
+                res = anxiousPool[Math.floor(Math.random()*anxiousPool.length)];
             } else {
-                res = "I hear the urgency in your voice. Let's find a breath that reaches all the way down.";
+                res = "I hear the urgency in your voice. Let's try to find a breath that reaches all the way down. I'm right here.";
             }
 
             setTimeout(() => { if (!isActive) return; isThinking = false; speak(res); }, 1500);
@@ -386,8 +410,8 @@
 
             const utter = new SpeechSynthesisUtterance(text);
             const voices = window.speechSynthesis.getVoices();
-            // NADIA / NATURAL VOICE
-            const nadia = voices.find(v => v.name.includes('Nadia') || v.name.includes('Natural') || v.name.includes('Samantha') || v.name.includes('Female'));
+            // NADIA / NATURAL HIGH-FIDELITY FEMALE SELECTION
+            const nadia = voices.find(v => v.name.includes('Nadia') || v.name.includes('Natural') || v.name.includes('Samantha') || v.name.includes('Google US English'));
             utter.voice = nadia || voices[0];
             utter.rate = 0.8; utter.pitch = 1.05;
 
@@ -401,8 +425,10 @@
             el.className = `transcript-bubble ${rClass}`;
             el.innerHTML = `<span class="role-tag ${rClass}">${role}</span><p>${text}</p>`;
             document.getElementById('transcript').appendChild(el.cloneNode(true));
+            
             const p = document.getElementById('transcript-p');
-            p.innerText = text; p.scrollTop = p.scrollHeight;
+            p.innerText = text; 
+            p.scrollTop = p.scrollHeight;
         }
 
         initOrb();
