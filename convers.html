@@ -1,3 +1,11 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convers | Sovereign Clinical AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap');
@@ -5,13 +13,13 @@
         :root {
             --apple-blue: #0071e3;
             --apple-yellow: #ffcc00;
-            --apple-bg: #ffffff;
-            --apple-card: rgba(255, 255, 255, 0.7);
+            --apple-bg: #f5f5f7;
+            --apple-card: rgba(255, 255, 255, 0.8);
         }
 
         body {
             font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
-            background: #000;
+            background-color: var(--apple-bg);
             height: 100vh;
             overflow: hidden;
             display: flex;
@@ -30,162 +38,163 @@
             width: 100%;
             height: 100%;
             z-index: 1;
-        }
-
-        .ui-layer {
-            position: relative;
-            z-index: 10;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: space-between;
-            padding: 40px 20px;
             pointer-events: none;
         }
 
-        .glass-header {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
-            padding: 12px 24px;
-            border-radius: 30px;
-            border: 1px solid rgba(255,255,255,0.1);
+        .glass {
+            background: var(--apple-card);
+            backdrop-filter: blur(40px) saturate(200%);
+            -webkit-backdrop-filter: blur(40px) saturate(200%);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 48px;
+            box-shadow: 0 40px 100px rgba(0,0,0,0.05);
+            position: relative;
+            z-index: 10;
+            width: 90%;
+            max-width: 500px;
+            padding: 3rem;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 2.5rem;
+            animation: reveal 1s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        @keyframes reveal {
+            from { opacity: 0; transform: translateY(30px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .orb-spot {
+            height: 200px;
+            width: 100%;
             display: flex;
             align-items: center;
-            gap: 12px;
-            pointer-events: auto;
+            justify-content: center;
+            position: relative;
         }
 
         .mode-switch {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(0,0,0,0.03);
             padding: 4px;
             border-radius: 20px;
-            display: flex;
+            display: inline-flex;
             gap: 4px;
-            pointer-events: auto;
+            margin: 0 auto;
         }
 
         .mode-btn {
-            padding: 6px 16px;
+            padding: 8px 24px;
             border-radius: 16px;
-            font-size: 10px;
+            font-size: 11px;
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 0.1em;
-            transition: all 0.3s ease;
-            color: rgba(255,255,255,0.4);
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            color: #86868b;
         }
 
         .mode-btn.active {
             background: white;
-            color: black;
-        }
-
-        .status-area {
-            text-align: center;
-            margin-bottom: 40px;
+            color: var(--apple-blue);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.05);
         }
 
         #live-caption {
-            color: white;
-            font-size: 1.5rem;
+            font-size: 1.25rem;
             font-weight: 700;
-            max-width: 80%;
-            margin: 20px auto;
-            text-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            color: #1d1d1f;
+            line-height: 1.4;
+            min-height: 3.5rem;
         }
 
         .epic-button {
-            background: white;
-            color: black;
-            padding: 1.2rem 3rem;
-            border-radius: 40px;
+            background: #1d1d1f;
+            color: white;
+            padding: 1.2rem 2.5rem;
+            border-radius: 24px;
             font-weight: 900;
             text-transform: uppercase;
-            letter-spacing: 0.3em;
+            letter-spacing: 0.2em;
             font-size: 11px;
-            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-            pointer-events: auto;
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            width: 100%;
             border: none;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            cursor: pointer;
         }
 
         .epic-button:hover {
-            transform: scale(1.05);
+            transform: translateY(-4px);
+            box-shadow: 0 25px 40px rgba(0,0,0,0.15);
             background: var(--apple-blue);
-            color: white;
         }
 
-        /* Drawer Logic */
         .drawer-trigger {
-            position: fixed;
-            top: 40px;
-            right: 40px;
-            z-index: 100;
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(10px);
-            width: 50px;
-            height: 50px;
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            pointer-events: auto;
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            color: #86868b;
             cursor: pointer;
-            border: 1px solid rgba(255,255,255,0.1);
+            transition: color 0.3s;
         }
+        .drawer-trigger:hover { color: var(--apple-blue); }
 
         #transcript-drawer {
             position: fixed;
             top: 0;
-            right: -400px;
-            width: 400px;
+            right: -450px;
+            width: 450px;
             height: 100%;
-            background: rgba(0,0,0,0.85);
-            backdrop-filter: blur(30px);
-            z-index: 90;
-            transition: right 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-            padding: 100px 40px 40px;
-            border-left: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(40px);
+            z-index: 100;
+            transition: right 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+            padding: 5rem 3rem;
+            border-left: 1px solid rgba(0,0,0,0.05);
+            box-shadow: -20px 0 50px rgba(0,0,0,0.02);
         }
 
-        #transcript-drawer.active {
-            right: 0;
-        }
+        #transcript-drawer.active { right: 0; }
 
         .transcript-content {
             height: 100%;
             overflow-y: auto;
-            color: rgba(255,255,255,0.6);
-            font-size: 13px;
-            line-height: 1.8;
+            padding-right: 10px;
+        }
+        .transcript-content::-webkit-scrollbar { width: 4px; }
+        .transcript-content::-webkit-scrollbar-thumb { background: #e5e5e7; border-radius: 10px; }
+
+        .role-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 4px;
+            display: block;
         }
 
         @media (max-width: 480px) {
-            #transcript-drawer { width: 85%; right: -85%; }
-            #live-caption { font-size: 1.1rem; }
+            .glass { padding: 2rem; border-radius: 40px; }
+            #transcript-drawer { width: 100%; right: -100%; }
         }
     </style>
 </head>
 <body>
     <div id="canvas-container"></div>
 
-    <div class="drawer-trigger" onclick="toggleDrawer()">
-        <i data-lucide="list"></i>
-    </div>
+    <div class="glass">
+        <div class="drawer-trigger" onclick="toggleDrawer()">
+            <i data-lucide="history" class="w-6 h-6"></i>
+        </div>
 
-    <div id="transcript-drawer">
-        <h3 class="text-white font-black uppercase tracking-widest text-xs mb-8">Session Log</h3>
-        <div id="transcript" class="transcript-content space-y-4"></div>
-    </div>
-
-    <div class="ui-layer">
-        <header class="flex flex-col items-center gap-6">
-            <div class="glass-header">
-                <i data-lucide="mic-2" class="text-white w-4 h-4"></i>
-                <h1 class="text-white font-black text-sm uppercase tracking-widest">Ulrich Convers</h1>
+        <header class="space-y-4">
+            <div class="flex items-center justify-center gap-3">
+                <div class="w-10 h-10 bg-black rounded-xl flex items-center justify-center text-white">
+                    <i data-lucide="mic-2" class="w-5 h-5"></i>
+                </div>
+                <h1 class="text-xl font-black italic tracking-tighter uppercase">Convers <span class="text-blue-600">AI</span></h1>
             </div>
             
             <div class="mode-switch">
@@ -194,67 +203,85 @@
             </div>
         </header>
 
-        <div class="status-area">
-            <h2 id="live-caption">Ready</h2>
-            <p id="status-text" class="text-[10px] font-black uppercase tracking-[0.5em] text-white/40">Tap to begin</p>
+        <div class="orb-spot" id="orb-mount">
+            <!-- Three.js Orb will center here -->
         </div>
 
-        <div class="pb-12">
-            <button onclick="toggleSession()" id="main-btn" class="epic-button">
-                Start Session
-            </button>
+        <div class="space-y-2">
+            <h2 id="live-caption">Tap to Begin</h2>
+            <p id="status-text" class="text-[10px] font-black uppercase tracking-[0.4em] text-gray-400">System Ready</p>
         </div>
+
+        <button onclick="toggleSession()" id="main-btn" class="epic-button">
+            Initialize Session
+        </button>
+
+        <footer class="pt-6 border-t border-black/5 flex justify-between items-center">
+            <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Ulrich Clinical OS</p>
+            <div class="flex gap-2">
+                <div class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
+                <span class="text-[9px] font-black text-emerald-600 uppercase">Live Pulse</span>
+            </div>
+        </footer>
     </div>
+
+    <div id="transcript-drawer">
+        <div class="flex justify-between items-center mb-10">
+            <h3 class="text-xl font-black italic uppercase tracking-tighter">Session Log</h3>
+            <button onclick="toggleDrawer()" class="text-gray-400 hover:text-black"><i data-lucide="x"></i></button>
+        </div>
+        <div id="transcript" class="transcript-content space-y-6"></div>
+    </div>
+
+    <a href="index.html" class="fixed bottom-8 text-[10px] font-black text-gray-400 hover:text-black transition-colors uppercase tracking-[0.3em] z-20">
+        Return to Dashboard
+    </a>
 
     <script>
         lucide.createIcons();
 
-        // THREE.JS ORB LOGIC
+        // 3D ORB ENGINE
         let scene, camera, renderer, sphere, material;
-        let noiseAmount = 0.1;
-        let colorTarget = new THREE.Color(0x0071e3); // Blue default
-        let isSessionActive = false;
-        let isSpeaking = false;
-        let isThinking = false;
-        let turnTimeout = null;
-        let currentMode = 'client';
+        let noiseAmount = 0.05;
+        let colorTarget = new THREE.Color(0x0071e3);
+        let time = 0;
 
-        function initThree() {
+        function initOrb() {
             scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            document.getElementById('canvas-container').appendChild(renderer.domElement);
+            renderer.setSize(300, 300);
+            document.getElementById('orb-mount').appendChild(renderer.domElement);
 
-            const geometry = new THREE.IcosahedronGeometry(2, 30); // High res for smooth undulating
-            material = new THREE.MeshPhongMaterial({
-                color: 0x0071e3,
-                wireframe: true,
-                transparent: true,
-                opacity: 0.8,
+            const geometry = new THREE.IcosahedronGeometry(2, 40);
+            material = new THREE.MeshPhysicalMaterial({
+                color: 0xffffff,
+                metalness: 0.1,
+                roughness: 0.1,
+                transmission: 0.9,
+                thickness: 0.5,
+                ior: 1.5,
                 emissive: 0x0071e3,
-                emissiveIntensity: 0.5
+                emissiveIntensity: 0.6,
+                wireframe: false
             });
 
             sphere = new THREE.Mesh(geometry, material);
             scene.add(sphere);
 
-            const light = new THREE.PointLight(0xffffff, 1, 100);
-            light.position.set(10, 10, 10);
+            const light = new THREE.PointLight(0xffffff, 1.5);
+            light.position.set(5, 5, 5);
             scene.add(light);
-            scene.add(new THREE.AmbientLight(0x404040));
+            scene.add(new THREE.AmbientLight(0xffffff, 0.5));
 
-            camera.position.z = 6;
-
+            camera.position.z = 5;
             animate();
         }
 
         function animate() {
             requestAnimationFrame(animate);
-            
-            const time = Date.now() * 0.001;
-            
-            // Sphere Undulation
+            time += 0.01;
+
             const position = sphere.geometry.attributes.position;
             const vector = new THREE.Vector3();
             
@@ -267,71 +294,65 @@
             position.needsUpdate = true;
             
             sphere.rotation.y += 0.005;
-            sphere.rotation.x += 0.003;
-
-            // Color Lerp
-            material.color.lerp(colorTarget, 0.05);
             material.emissive.lerp(colorTarget, 0.05);
 
             renderer.render(scene, camera);
         }
 
-        function updateOrb(state, intensity = 0) {
+        function setOrbState(state) {
             if (state === 'user') {
                 colorTarget.setHex(0xffcc00); // Yellow
-                noiseAmount = 0.2 + (intensity * 0.5);
+                noiseAmount = 0.25;
             } else if (state === 'ai') {
                 colorTarget.setHex(0x0071e3); // Blue
-                noiseAmount = 0.3;
+                noiseAmount = 0.15;
             } else if (state === 'thinking') {
                 colorTarget.setHex(0x5856d6); // Purple
-                noiseAmount = 0.5;
+                noiseAmount = 0.4;
             } else {
-                colorTarget.setHex(0xffffff); // White/Ready
+                colorTarget.setHex(0x0071e3);
                 noiseAmount = 0.05;
             }
         }
 
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
-
         // SESSION LOGIC
-        function toggleDrawer() {
-            document.getElementById('transcript-drawer').classList.toggle('active');
+        let isActive = false;
+        let isSpeaking = false;
+        let currentMode = 'client';
+
+        function toggleSession() {
+            if (!isActive) start(); else stop();
         }
+
+        function start() {
+            isActive = true;
+            document.getElementById('main-btn').innerText = 'End Session';
+            document.getElementById('status-text').innerText = 'Listening';
+            document.getElementById('live-caption').innerText = 'Speak Naturally...';
+            setOrbState('user');
+            initSpeech();
+        }
+
+        function stop() {
+            isActive = false;
+            document.getElementById('main-btn').innerText = 'Initialize Session';
+            document.getElementById('status-text').innerText = 'System Ready';
+            if (recognition) recognition.stop();
+            window.speechSynthesis.cancel();
+            setOrbState('ready');
+        }
+
+        function toggleDrawer() { document.getElementById('transcript-drawer').classList.toggle('active'); }
 
         function setMode(mode) {
             currentMode = mode;
-            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById('mode-' + mode).classList.add('active');
-            addTranscript('SYSTEM', 'Switched to ' + mode.toUpperCase() + ' mode.');
-        }
-
-        function toggleSession() {
-            if (!isSessionActive) startSession(); else stopSession();
-        }
-
-        function startSession() {
-            isSessionActive = true;
-            document.getElementById('main-btn').innerText = 'End';
-            document.getElementById('status-text').innerText = 'Active';
-            initListening();
-        }
-
-        function stopSession() {
-            isSessionActive = false;
-            document.getElementById('main-btn').innerText = 'Start';
-            document.getElementById('status-text').innerText = 'Ready';
-            if (recognition) recognition.stop();
-            window.speechSynthesis.cancel();
-            updateOrb('ready');
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('mode-'+mode).classList.add('active');
+            addTranscript('SYSTEM', 'Mode: ' + mode.toUpperCase());
         }
 
         let recognition;
-        function initListening() {
+        function initSpeech() {
             window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             recognition = new SpeechRecognition();
             recognition.interimResults = true;
@@ -341,63 +362,69 @@
                 let interim = '';
                 for (let i = event.resultIndex; i < event.results.length; ++i) {
                     const text = event.results[i][0].transcript.toLowerCase();
-                    if (isSpeaking && (text.includes('stop') || text.includes('hold on'))) {
+                    if (isSpeaking && (text.includes('stop') || text.includes('hold on') || text.includes('wait'))) {
                         window.speechSynthesis.cancel();
                         isSpeaking = false;
+                        setOrbState('user');
                     }
-                    if (event.results[i].isFinal) handleFinal(event.results[i][0].transcript);
+                    if (event.results[i].isFinal) process(event.results[i][0].transcript);
                     else interim += event.results[i][0].transcript;
                 }
                 if (interim) {
                     document.getElementById('live-caption').innerText = interim;
-                    updateOrb('user', 0.5);
+                    setOrbState('user');
                 }
             };
-
-            recognition.onend = () => { if (isSessionActive && !isSpeaking) recognition.start(); };
+            recognition.onend = () => { if (isActive && !isSpeaking) recognition.start(); };
             recognition.start();
         }
 
-        function handleFinal(text) {
-            if (!text.trim()) return;
-            if (turnTimeout) clearTimeout(turnTimeout);
-            turnTimeout = setTimeout(() => process(text), 1000);
-        }
-
         async function process(text) {
-            if (isThinking || isSpeaking) return;
-            isThinking = true;
-            updateOrb('thinking');
+            if (isSpeaking) return;
+            setOrbState('thinking');
+            document.getElementById('status-text').innerText = 'Thinking';
             addTranscript('USER', text);
 
             setTimeout(() => {
-                let response = "I hear you. Let's stay with that.";
-                if (currentMode === 'client') response = "I feel like you're going to leave me.";
-                isThinking = false;
-                speak(response);
+                if (!isActive) return;
+                let res = "I hear you. Tell me more.";
+                if (currentMode === 'client') {
+                    const pool = ["I'm so worried you'll leave.", "Are you upset with me?", "I just need to know you're there."];
+                    res = pool[Math.floor(Math.random()*pool.length)];
+                }
+                speak(res);
             }, 1500);
         }
 
         function speak(text) {
             isSpeaking = true;
-            updateOrb('ai');
-            addTranscript('ULRICH', text);
+            setOrbState('ai');
+            document.getElementById('status-text').innerText = 'Speaking';
             document.getElementById('live-caption').innerText = text;
+            addTranscript('ULRICH', text);
+
             const utter = new SpeechSynthesisUtterance(text);
             const voices = window.speechSynthesis.getVoices();
             utter.voice = voices.find(v => v.name.includes('Female')) || voices[0];
-            utter.onend = () => { isSpeaking = false; updateOrb('ready'); if (isSessionActive) recognition.start(); };
+            utter.rate = 0.85;
+            utter.onend = () => {
+                isSpeaking = false;
+                setOrbState('user');
+                document.getElementById('status-text').innerText = 'Listening';
+                if (isActive) recognition.start();
+            };
             window.speechSynthesis.speak(utter);
         }
 
         function addTranscript(role, text) {
             const el = document.createElement('div');
-            el.innerHTML = `<span class="font-black text-[10px] block opacity-50">${role}</span> ${text}`;
+            const color = role === 'USER' ? 'text-blue-600' : 'text-emerald-600';
+            el.innerHTML = `<span class="role-tag ${color}">${role}</span><p class="text-black font-medium">${text}</p>`;
             document.getElementById('transcript').appendChild(el);
             document.getElementById('transcript').scrollTop = 9999;
         }
 
-        initThree();
+        initOrb();
     </script>
 </body>
 </html>
