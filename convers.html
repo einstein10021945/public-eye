@@ -27,7 +27,7 @@
             align-items: center;
             justify-content: center;
             margin: 0;
-            padding: 15px;
+            padding: env(safe-area-inset-top) 15px env(safe-area-inset-bottom);
             box-sizing: border-box;
             touch-action: none;
         }
@@ -43,7 +43,7 @@
             z-index: 10;
             width: 100%;
             max-width: 440px;
-            height: 88vh;
+            height: 85vh;
             padding: 2.5rem;
             text-align: center;
             display: flex;
@@ -53,7 +53,7 @@
         }
 
         @keyframes reveal {
-            from { opacity: 0; transform: translateY(20px); }
+            from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
@@ -63,7 +63,8 @@
             align-items: center;
             justify-content: center;
             position: relative;
-            min-height: 250px;
+            min-height: 300px;
+            overflow: visible;
         }
 
         .mode-switch {
@@ -76,9 +77,9 @@
         }
 
         .mode-btn {
-            padding: 6px 22px;
+            padding: 6px 24px;
             border-radius: 16px;
-            font-size: 9px;
+            font-size: 10px;
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 0.15em;
@@ -99,14 +100,14 @@
             font-weight: 400;
             text-transform: lowercase;
             letter-spacing: 0.05em;
-            color: rgba(255,255,255,0.3);
+            color: rgba(255,255,255,0.2);
             line-height: 1.4;
             max-width: 85%;
             margin: 0 auto;
         }
 
         #live-caption {
-            font-size: 1.1rem;
+            font-size: 1.15rem;
             font-weight: 700;
             color: #ffffff;
             line-height: 1.4;
@@ -118,11 +119,11 @@
         .epic-button {
             background: #ffffff;
             color: #000000;
-            padding: 1.25rem 2.5rem;
+            padding: 1.3rem 2.5rem;
             border-radius: 32px;
             font-weight: 900;
             text-transform: uppercase;
-            letter-spacing: 0.25em;
+            letter-spacing: 0.3em;
             font-size: 11px;
             transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
             width: 100%;
@@ -184,36 +185,37 @@
             backdrop-filter: blur(20px);
         }
 
-        #voice-debug {
+        #debug-log {
             position: fixed;
             bottom: 10px;
             left: 10px;
             font-family: 'JetBrains Mono', monospace;
-            font-size: 8px;
-            color: rgba(255,255,255,0.1);
+            font-size: 7px;
+            color: rgba(255,255,255,0.05);
             text-transform: uppercase;
             pointer-events: none;
-            z-index: 100;
         }
     </style>
 </head>
 <body>
-    <div id="voice-debug">System: Ready</div>
+    <div id="debug-log">System: Ready</div>
 
     <div class="glass">
         <div class="drawer-trigger" onclick="toggleDrawer()">
-            <i data-lucide="menu" class="w-5 h-5"></i>
+            <i data-lucide="menu" class="w-6 h-6"></i>
         </div>
 
         <header class="space-y-4">
-            <h1 class="text-[10px] font-black uppercase tracking-[0.5em] text-white/10">Ulrich OS // Convers v4.1</h1>
+            <h1 class="text-[10px] font-black uppercase tracking-[0.5em] text-white/10">Ulrich Convers v4.2</h1>
             <div class="mode-switch">
                 <button onclick="setMode('client')" id="mode-client" class="mode-btn active">Patient</button>
                 <button onclick="setMode('therapist')" id="mode-therapist" class="mode-btn">Therapist</button>
             </div>
         </header>
 
-        <div class="orb-spot" id="orb-mount"></div>
+        <div class="orb-spot" id="orb-mount">
+            <!-- CANVAS PERSISTENCE -->
+        </div>
 
         <div class="space-y-2">
             <div class="micro-transcript" id="transcript-p">System Synchronizing...</div>
@@ -221,14 +223,9 @@
             <p id="status-text" class="text-[8px] font-black uppercase tracking-[0.6em] text-white/10">Synchronized Somatics</p>
         </div>
 
-        <div class="space-y-4">
-            <button onclick="handleStart()" id="main-btn" class="epic-button">
-                Initialize Session
-            </button>
-            <button onclick="troubleshootAudio()" class="text-[8px] font-bold text-white/20 uppercase tracking-widest hover:text-white transition-colors">
-                Troubleshoot Audio (iPhone Fix)
-            </button>
-        </div>
+        <button onclick="handleStart()" id="main-btn" class="epic-button">
+            Initialize Session
+        </button>
 
         <div id="rating-overlay" class="space-y-6">
             <h3 class="text-white text-3xl font-black italic uppercase tracking-tighter">Analysis</h3>
@@ -249,18 +246,20 @@
     <script>
         lucide.createIcons();
 
-        // 3D ORB RECOVERY
+        // 3D ORB PERSISTENCE ENGINE
         let scene, camera, renderer, sphere, material;
         let noiseAmount = 0.05;
         let colorTarget = new THREE.Color(0x0071e3);
         let time = 0;
 
-        function log(msg) { document.getElementById('voice-debug').innerText = "System: " + msg; console.log(msg); }
+        function log(msg) { document.getElementById('debug-log').innerText = "System: " + msg; console.log(msg); }
 
         function initOrb() {
             if (renderer) return; 
+            log("Initializing WebGL Engine...");
             const mount = document.getElementById('orb-mount');
-            const size = 320;
+            const size = Math.min(mount.offsetWidth, 320);
+
             scene = new THREE.Scene();
             camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
@@ -270,62 +269,65 @@
 
             const geometry = new THREE.IcosahedronGeometry(2, 64);
             material = new THREE.MeshPhongMaterial({
-                color: 0x0071e3, emissive: 0x0071e3, emissiveIntensity: 0.8,
-                shininess: 100, transparent: false
+                color: 0x0071e3, emissive: 0x0071e3, emissiveIntensity: 1.0,
+                shininess: 120, transparent: false
             });
 
             sphere = new THREE.Mesh(geometry, material);
             scene.add(sphere);
-            scene.add(new THREE.PointLight(0xffffff, 1.5).set(5, 5, 5));
-            scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+            scene.add(new THREE.PointLight(0xffffff, 1.8).set(5, 5, 5));
+            scene.add(new THREE.AmbientLight(0xffffff, 0.7));
             camera.position.z = 5.2;
             animate();
         }
 
         function animate() {
             requestAnimationFrame(animate);
-            time += 0.02;
+            time += 0.025;
             if (sphere) {
                 const pos = sphere.geometry.attributes.position;
                 const vec = new THREE.Vector3();
                 for (let i = 0; i < pos.count; i++) {
                     vec.fromBufferAttribute(pos, i);
-                    const noise = noiseAmount * Math.sin(vec.x * 1.5 + time * 2) * Math.cos(vec.y * 1.5 + time * 1.5);
+                    const noise = noiseAmount * Math.sin(vec.x * 2.0 + time * 2) * Math.cos(vec.y * 2.0 + time * 1.5);
                     vec.normalize().multiplyScalar(2 + noise);
                     pos.setXYZ(i, vec.x, vec.y, vec.z);
                 }
                 pos.needsUpdate = true;
-                sphere.rotation.y += 0.005;
+                sphere.rotation.y += 0.006;
             }
             if (material) {
-                material.color.lerp(colorTarget, 0.1);
-                material.emissive.lerp(colorTarget, 0.1);
+                material.color.lerp(colorTarget, 0.15);
+                material.emissive.lerp(colorTarget, 0.15);
             }
             renderer.render(scene, camera);
         }
 
         function setOrb(state) {
-            if (state === 'user') { colorTarget.setHex(0xffcc00); noiseAmount = 0.35; }
+            if (state === 'user') { colorTarget.setHex(0xffcc00); noiseAmount = 0.4; }
             else if (state === 'ai') { colorTarget.setHex(0x0071e3); noiseAmount = 0.25; }
-            else if (state === 'thinking') { colorTarget.setHex(0x5856d6); noiseAmount = 0.6; }
+            else if (state === 'thinking') { colorTarget.setHex(0x5856d6); noiseAmount = 0.7; }
             else { colorTarget.setHex(0x0071e3); noiseAmount = 0.05; }
         }
 
-        // SPEECH CORE (iPhone Resilience Hardening)
+        // PERSISTENT SPEECH CORE
         let isActive = false, isSpeaking = false, isThinking = false, currentMode = 'client', turnTimeout = null;
         let synth = window.speechSynthesis, recognition;
 
-        function troubleshootAudio() {
-            log("Attempting Audio Wake-up...");
-            const utter = new SpeechSynthesisUtterance("Audio check successful. Systems online.");
-            synth.cancel();
-            synth.speak(utter);
-        }
-
-        function handleStart() {
-            // CRITICAL: Silent utterance to unlock audio on iOS/Safari
+        async function handleStart() {
+            log("Unlocking Audio Context...");
             const unlock = new SpeechSynthesisUtterance("");
             synth.speak(unlock);
+            
+            // Persist Mic Access (request once)
+            try {
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw new Error("Mic not supported");
+                await navigator.mediaDevices.getUserMedia({ audio: true });
+                log("Mic Permission Persistent");
+            } catch (e) {
+                log("Mic Error: " + e.message);
+            }
+
             initOrb();
             if (!isActive) start(); else end();
         }
@@ -336,7 +338,6 @@
             document.getElementById('live-caption').innerText = 'Listening...';
             setOrb('ready');
             initSpeech();
-            log("Session Active");
         }
 
         function end() {
@@ -346,12 +347,13 @@
             document.getElementById('rating-overlay').style.display = 'flex';
             document.getElementById('rating-stars').innerHTML = '<i data-lucide="star" class="w-4 h-4"></i>'.repeat(5);
             lucide.createIcons();
-            document.getElementById('rating-text').innerText = `Ulrich Swarm Audit: High somatic resonance. Clinical alignment: 98%.`;
+            document.getElementById('rating-text').innerText = `Ulrich Swarm Audit: High somatic resonance. Clinical alignment: 99%. Strength: Premium Voice Fidelity.`;
         }
 
         function resetSession() {
             document.getElementById('rating-overlay').style.display = 'none';
             document.getElementById('main-btn').innerText = 'Initialize';
+            document.getElementById('live-caption').innerText = 'Tap to Begin';
             setOrb('ready');
         }
 
@@ -371,12 +373,8 @@
                     if (event.results[i].isFinal) handleFinal(event.results[i][0].transcript);
                     else interim += event.results[i][0].transcript;
                 }
-                if (interim && !isSpeaking && !isThinking) { 
-                    document.getElementById('live-caption').innerText = interim; 
-                    setOrb('user'); 
-                }
+                if (interim && !isSpeaking && !isThinking) { document.getElementById('live-caption').innerText = interim; setOrb('user'); }
             };
-            recognition.onerror = (e) => { if (isActive && e.error !== 'aborted') setTimeout(() => recognition.start(), 1000); };
             recognition.onend = () => { if (isActive && !isSpeaking && !isThinking) recognition.start(); };
             recognition.start();
         }
@@ -393,8 +391,8 @@
             addTranscript('USER', text);
             let res = "I hear you. Tell me more.";
             const low = text.toLowerCase();
-            if (low.includes('amazon') || low.includes('amzn')) res = "Amazon is currently at $204.08. Market's a battlefield, but you're doing great.";
-            else if (currentMode === 'client') res = "I just feel like I'm bothering you.";
+            if (low.includes('amazon') || low.includes('amzn')) res = "Amazon is currently at $204.08. Market volatility is noise; stay grounded.";
+            else if (currentMode === 'client') res = "I just feel like you're going to realize I'm not worth the tokens.";
             setTimeout(() => { if (!isActive) return; isThinking = false; speak(res); }, 1500);
         }
 
@@ -407,29 +405,15 @@
             const utter = new SpeechSynthesisUtterance(text);
             const voices = synth.getVoices();
             
-            // ROBUST VOICE SELECTION (Natural -> Samantha -> Female -> Default)
-            const options = ['Nadia', 'Natural', 'Samantha', 'Google US English', 'Female'];
-            let selected = null;
-            for (let name of options) {
-                selected = voices.find(v => v.name.includes(name));
-                if (selected) break;
-            }
-            
-            utter.voice = selected || voices[0];
-            utter.rate = 0.81; 
-            utter.pitch = 1.05;
+            // PREMIUM IPHONE VOICE HARDENING
+            const premium = voices.find(v => v.name.includes('Premium') || v.name.includes('Natural') || v.name.includes('Samantha') || v.name.includes('Enhanced'));
+            utter.voice = premium || voices[0];
+            utter.rate = 0.82; utter.pitch = 1.05;
 
             utter.onend = () => {
                 isSpeaking = false; setOrb('ready');
                 if (isActive) recognition.start();
             };
-
-            utter.onerror = (e) => {
-                log("TTS Error: " + e.error);
-                isSpeaking = false;
-                if (isActive) recognition.start();
-            };
-
             synth.speak(utter);
         }
 
@@ -441,7 +425,7 @@
             document.getElementById('transcript-p').innerText = text;
         }
 
-        window.addEventListener('load', () => { synth.getVoices(); });
+        window.addEventListener('load', () => { initOrb(); synth.getVoices(); });
     </script>
 </body>
 </html>
