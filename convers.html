@@ -176,6 +176,7 @@
                     <i data-lucide="mic-2" class="text-white w-5 h-5"></i>
                 </div>
                 <h1 class="text-2xl font-black italic tracking-tighter uppercase">Convers <span class="text-blue-600">AI</span></h1>
+                <span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-[8px] font-black tracking-widest uppercase">Anxious Attachment trained</span>
             </div>
             
             <div class="mode-switch">
@@ -184,9 +185,9 @@
             </div>
 
             <div class="voice-selector">
-                <button onclick="setVoice('piper')" id="voice-piper" class="voice-btn active">Piper (Fast)</button>
-                <button onclick="setVoice('nemotron')" id="voice-nemotron" class="voice-btn">NVIDIA Nemotron</button>
-                <button onclick="setVoice('riva')" id="voice-riva" class="voice-btn">Riva SOTA</button>
+                <button onclick="setVoice('piper')" id="voice-piper" class="voice-btn active">Amy (Natural)</button>
+                <button onclick="setVoice('nemotron')" id="voice-nemotron" class="voice-btn">NVIDIA Female</button>
+                <button onclick="setVoice('riva')" id="voice-riva" class="voice-btn">SOTA AI Voice</button>
             </div>
         </header>
 
@@ -309,28 +310,43 @@
             addTranscript('USER', text);
 
             // In a real build, this hits the Python backend. 
-            // For the demo, we simulate a response.
+            // For the demo, we simulate a response based on the new Anxious Attachment training.
             setTimeout(() => {
                 let response = "";
                 if (currentMode === 'client') {
-                    response = "I hear you. It sounds like you're carrying a lot of weight today. How does that feel in your body right now?";
+                    // AI is the anxious patient
+                    const anxiousResponses = [
+                        "I... I just feel like you're going to leave eventually. Everyone does. Why would you stay?",
+                        "I saw you were online but didn't reply for two minutes. Are you upset with me? Did I say something wrong?",
+                        "I just need to know you're still there. I feel so small when I'm not talking to you. Can you promise you won't get bored?",
+                        "I tell myself I'm being too much, but the silence feels like a physical weight. Are we still okay?",
+                        "I find myself constantly checking my phone. It's like I'm waiting for a sign that I still matter to you."
+                    ];
+                    response = anxiousResponses[Math.floor(Math.random() * anxiousResponses.length)];
                 } else {
-                    response = "I... I just feel like everything is closing in. My job, my relationship. I can't catch my breath.";
+                    // AI is the supportive therapist
+                    response = "I'm right here. I hear the anxiety in your voice, and I want you to know that I am present with you. Let's explore where that feeling of being 'too much' is living in your body right now.";
                 }
                 
                 speak(response);
-                addTranscript('EINSTEIN', response);
+                addTranscript('ULRICH_AI', response);
                 document.getElementById('live-caption').innerText = response;
                 document.getElementById('status-orb').classList.remove('thinking');
                 document.getElementById('status-orb').classList.add('listening');
                 document.getElementById('status-text').innerText = 'Listening';
-            }, 1500);
+            }, 1800);
         }
 
         function speak(text) {
             const utterance = new SpeechSynthesisUtterance(text);
-            utterance.rate = 0.9;
-            utterance.pitch = 1.0;
+            // Attractive/Natural Female Voice Tuning
+            utterance.rate = 0.85; 
+            utterance.pitch = 1.1; 
+            const voices = window.speechSynthesis.getVoices();
+            // Try to find a high-quality female voice on the system
+            const femaleVoice = voices.find(v => v.name.includes('Female') || v.name.includes('Google US English') || v.name.includes('Samantha'));
+            if (femaleVoice) utterance.voice = femaleVoice;
+            
             window.speechSynthesis.speak(utterance);
         }
 
