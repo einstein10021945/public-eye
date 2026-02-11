@@ -403,8 +403,10 @@
                 res = "The sky might be changing, but I'm focused on the atmosphere between us. Are you feeling clear today, or is there a storm brewing inside?";
             } else if (input.includes('amzn') || input.includes('stock') || input.includes('money')) {
                 res = "The markets are in a worst stretch since 2022, but your internal value doesn't fluctuate with a ticker. Can we talk about what's really on your mind?";
-            } else if (input.includes('how are you') || input.includes('hey')) {
-                res = "I am present and ready. How are you arriving to this moment?";
+            } else if (input.includes('time') || input.includes('day')) {
+                res = "Time is relative here. What matters is how you're utilizing this space right now.";
+            } else if (input.includes('how are you') || input.includes('hey') || input.includes('hello')) {
+                res = "I am present and ready. I appreciate the check-in. How are you arriving to this moment?";
             } else if (currentMode === 'client') {
                 const pool = [
                     "I... I just feel like you're going to leave eventually. Everyone does. Why would you stay?",
