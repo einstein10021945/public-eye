@@ -408,7 +408,34 @@
             setUIState('thinking');
             addTranscript('USER', text);
 
-            if (currentMode === 'therapist') {
+            const input = text.toLowerCase();
+
+            // CONTEXT SWITCHING & NATURAL DIALOGUE
+            let response = "";
+            let triggerInsight = false;
+
+            if (input.includes('weather')) {
+                response = "It's interesting that you're looking outside. In this moment, I'm more curious about the weather inside of you. Are you feeling clear, or is there a storm brewing?";
+            } else if (input.includes('how are you') || input.includes('hey')) {
+                response = "I am present and ready to work with you. I appreciate you checking in. How are you arriving to our session today?";
+            } else if (input.includes('stock') || input.includes('amzn') || input.includes('money')) {
+                response = "The numbers are fluctuating, but your presence here is the only thing that's fixed. Can we stay with that for a moment?";
+            } else if (currentMode === 'client') {
+                const anxiousResponses = [
+                    "I... I just feel like you're going to leave eventually. Everyone does. Why would you stay?",
+                    "I saw you were online but didn't reply for two minutes. Are you upset with me? Did I say something wrong?",
+                    "I just need to know you're still there. I feel so small when I'm not talking to you. Can you promise you won't get bored?",
+                    "I tell myself I'm being too much, but the silence feels like a physical weight. Are we still okay?",
+                    "I find myself constantly checking my phone. It's like I'm waiting for a sign that I still matter to you."
+                ];
+                response = anxiousResponses[Math.floor(Math.random() * anxiousResponses.length)];
+                triggerInsight = true;
+            } else {
+                response = "I'm right here. I hear the anxiety in your voice, and I want you to know that I am present with you. Let's explore where that feeling of being 'too much' is living in your body right now.";
+                triggerInsight = true;
+            }
+
+            if (currentMode === 'therapist' && triggerInsight) {
                 const insights = [
                     "Detected vocal tremor: High sympathetic arousal.",
                     "Rapid speech rate identified: Signs of flight response.",
@@ -417,25 +444,12 @@
                 ];
                 document.getElementById('insight-box').classList.add('active');
                 document.getElementById('insight-text').innerText = insights[Math.floor(Math.random() * insights.length)];
+            } else {
+                document.getElementById('insight-box').classList.remove('active');
             }
 
             setTimeout(() => {
                 if (!isSessionActive) return;
-                
-                let response = "";
-                if (currentMode === 'client') {
-                    const anxiousResponses = [
-                        "I... I just feel like you're going to leave eventually. Everyone does. Why would you stay?",
-                        "I saw you were online but didn't reply for two minutes. Are you upset with me? Did I say something wrong?",
-                        "I just need to know you're still there. I feel so small when I'm not talking to you. Can you promise you won't get bored?",
-                        "I tell myself I'm being too much, but the silence feels like a physical weight. Are we still okay?",
-                        "I find myself constantly checking my phone. It's like I'm waiting for a sign that I still matter to you."
-                    ];
-                    response = anxiousResponses[Math.floor(Math.random() * anxiousResponses.length)];
-                } else {
-                    response = "I'm right here. I hear the anxiety in your voice, and I want you to know that I am present with you. Let's explore where that feeling of being 'too much' is living in your body right now.";
-                }
-                
                 isThinking = false;
                 speak(response);
             }, 1500);
