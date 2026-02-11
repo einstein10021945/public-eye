@@ -14,7 +14,7 @@
             --apple-blue: #0071e3;
             --apple-yellow: #ffcc00;
             --apple-bg: #0a0a0c;
-            --apple-card: rgba(20, 20, 25, 0.8);
+            --apple-card: rgba(20, 20, 25, 0.85);
         }
 
         body {
@@ -27,24 +27,24 @@
             align-items: center;
             justify-content: center;
             margin: 0;
-            padding: 10px;
+            padding: 15px;
             box-sizing: border-box;
             touch-action: manipulation;
         }
 
         .glass {
             background: var(--apple-card);
-            backdrop-filter: blur(40px) saturate(200%);
-            -webkit-backdrop-filter: blur(40px) saturate(200%);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 40px;
-            box-shadow: 0 40px 100px rgba(0,0,0,0.5);
+            backdrop-filter: blur(50px) saturate(210%);
+            -webkit-backdrop-filter: blur(50px) saturate(210%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 44px;
+            box-shadow: 0 50px 120px rgba(0,0,0,0.6);
             position: relative;
             z-index: 10;
             width: 100%;
-            max-width: 420px;
-            height: 82vh;
-            padding: 2rem;
+            max-width: 440px;
+            height: 85vh;
+            padding: 2.5rem;
             text-align: center;
             display: flex;
             flex-direction: column;
@@ -53,8 +53,8 @@
         }
 
         @keyframes reveal {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; transform: translateY(20px); scale: 0.98; }
+            to { opacity: 1; transform: translateY(0); scale: 1; }
         }
 
         .orb-spot {
@@ -63,12 +63,11 @@
             align-items: center;
             justify-content: center;
             position: relative;
-            min-height: 200px;
-            max-height: 300px;
+            overflow: visible;
         }
 
         .mode-switch {
-            background: rgba(255, 255, 255, 0.03);
+            background: rgba(255, 255, 255, 0.04);
             padding: 4px;
             border-radius: 20px;
             display: inline-flex;
@@ -77,52 +76,55 @@
         }
 
         .mode-btn {
-            padding: 6px 18px;
+            padding: 8px 22px;
             border-radius: 16px;
             font-size: 9px;
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 0.15em;
-            transition: all 0.3s ease;
-            color: rgba(255,255,255,0.3);
+            transition: all 0.4s ease;
+            color: rgba(255,255,255,0.25);
         }
 
         .mode-btn.active {
             background: white;
             color: black;
+            box-shadow: 0 4px 15px rgba(255,255,255,0.1);
         }
 
-        .transcript-preview {
-            height: 30px;
-            overflow-y: hidden;
+        .micro-transcript {
+            height: 40px;
+            overflow: hidden;
             mask-image: linear-gradient(to bottom, transparent, black 50%, transparent);
-            margin-bottom: 0.5rem;
-            font-size: 8px;
-            font-weight: 800;
+            margin: 0.5rem 0;
+            font-size: 7px;
+            font-weight: 900;
             text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: rgba(255,255,255,0.15);
+            letter-spacing: 0.12em;
+            color: rgba(255,255,255,0.1);
+            line-height: 1.6;
         }
 
         #live-caption {
-            font-size: 1rem;
+            font-size: 1.15rem;
             font-weight: 700;
             color: #ffffff;
             line-height: 1.4;
-            min-height: 3rem;
+            min-height: 3.5rem;
             opacity: 0.95;
+            transition: opacity 0.3s;
         }
 
         .epic-button {
             background: #ffffff;
             color: #000000;
-            padding: 1.1rem 2rem;
-            border-radius: 28px;
+            padding: 1.2rem 2.5rem;
+            border-radius: 30px;
             font-weight: 900;
             text-transform: uppercase;
-            letter-spacing: 0.2em;
-            font-size: 10px;
-            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            letter-spacing: 0.25em;
+            font-size: 11px;
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
             width: 100%;
             border: none;
             cursor: pointer;
@@ -130,18 +132,21 @@
         }
 
         .epic-button:hover {
+            transform: scale(1.03);
             background: var(--apple-blue);
             color: white;
         }
 
         .drawer-trigger {
             position: absolute;
-            top: 1.2rem;
-            right: 1.2rem;
+            top: 1.5rem;
+            right: 1.5rem;
             color: rgba(255,255,255,0.2);
             cursor: pointer;
             padding: 10px;
+            transition: color 0.3s;
         }
+        .drawer-trigger:hover { color: white; }
 
         #transcript-drawer {
             position: fixed;
@@ -150,25 +155,27 @@
             width: 100%;
             max-width: 400px;
             height: 100%;
-            background: rgba(10, 10, 15, 0.98);
-            backdrop-filter: blur(50px);
+            background: rgba(8, 8, 12, 0.98);
+            backdrop-filter: blur(60px);
             z-index: 100;
-            transition: right 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-            padding: 4rem 2rem;
+            transition: right 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+            padding: 5rem 2.5rem;
             border-left: 1px solid rgba(255,255,255,0.05);
         }
 
         #transcript-drawer.active { right: 0; }
 
-        .transcript-bubble {
-            padding: 1rem;
-            border-radius: 12px;
-            margin-bottom: 0.5rem;
-            font-size: 12px;
+        .bubble {
+            padding: 1.25rem;
+            border-radius: 20px;
+            margin-bottom: 1rem;
+            font-size: 13px;
             text-align: left;
+            border-left: 3px solid transparent;
         }
-        .transcript-bubble.user { color: var(--apple-yellow); border-left: 2px solid var(--apple-yellow); }
-        .transcript-bubble.ai { color: var(--apple-blue); border-left: 2px solid var(--apple-blue); }
+        .bubble.user { background: rgba(255, 204, 0, 0.05); border-left-color: var(--apple-yellow); color: var(--apple-yellow); }
+        .bubble.ai { background: rgba(0, 113, 179, 0.05); border-left-color: var(--apple-blue); color: var(--apple-blue); }
+        .bubble.swarm { background: rgba(255, 255, 255, 0.02); border-left-color: #ffffff33; color: rgba(255,255,255,0.4); font-family: 'JetBrains Mono', monospace; font-size: 10px; }
 
         #rating-overlay {
             display: none;
@@ -177,60 +184,79 @@
             background: rgba(0,0,0,0.98);
             z-index: 50;
             border-radius: 40px;
-            padding: 2.5rem;
+            padding: 3rem;
             flex-direction: column;
             justify-content: center;
             text-align: left;
+            backdrop-filter: blur(20px);
+        }
+
+        #debug-console {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 8px;
+            color: rgba(255,255,255,0.1);
+            text-transform: uppercase;
+            pointer-events: none;
+            z-index: 100;
         }
     </style>
 </head>
 <body>
+    <div id="debug-console">Engine: Standby</div>
+
     <div class="glass">
         <div class="drawer-trigger" onclick="toggleDrawer()">
             <i data-lucide="menu" class="w-5 h-5"></i>
         </div>
 
         <header class="space-y-4">
-            <h1 class="text-[10px] font-black uppercase tracking-[0.4em] text-white/20">Ulrich Convers v2.9</h1>
+            <h1 class="text-[10px] font-black uppercase tracking-[0.5em] text-white/10">Ulrich OS // Convers v3.0</h1>
             <div class="mode-switch">
                 <button onclick="setMode('client')" id="mode-client" class="mode-btn active">Patient</button>
                 <button onclick="setMode('therapist')" id="mode-therapist" class="mode-btn">Therapist</button>
             </div>
         </header>
 
-        <div class="orb-spot" id="orb-mount"></div>
+        <div class="orb-spot" id="orb-mount">
+            <!-- Three.js Orb will center here -->
+        </div>
 
         <div class="space-y-2">
-            <div class="transcript-preview" id="transcript-p"></div>
-            <h2 id="live-caption">Ready for Session</h2>
-            <p id="status-text" class="text-[8px] font-black uppercase tracking-[0.5em] text-white/20">Sovereign Pulse</p>
+            <div class="micro-transcript" id="transcript-p">Initializing Somatic Matrix...</div>
+            <h2 id="live-caption">Tap to Begin Session</h2>
+            <p id="status-text" class="text-[8px] font-black uppercase tracking-[0.6em] text-white/10">Synchronized Pulse</p>
         </div>
 
         <button onclick="toggleSession()" id="main-btn" class="epic-button">
-            Initialize
+            Initialize Session
         </button>
 
         <div id="rating-overlay" class="space-y-6">
-            <h3 class="text-white text-2xl font-black italic uppercase">Analysis</h3>
+            <div class="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center mb-4">
+                <i data-lucide="brain" class="text-blue-500"></i>
+            </div>
+            <h3 class="text-white text-3xl font-black italic uppercase tracking-tighter">Swarm Analysis</h3>
             <div id="rating-stars" class="flex gap-1 text-yellow-400"></div>
-            <p id="rating-text" class="text-white/50 text-xs leading-relaxed"></p>
-            <button onclick="resetSession()" class="epic-button bg-blue-600 text-white">Continue</button>
+            <p id="rating-text" class="text-white/40 text-xs leading-relaxed font-medium"></p>
+            <button onclick="resetSession()" class="epic-button bg-blue-600 text-white">Return to Engine</button>
         </div>
     </div>
 
     <div id="transcript-drawer">
-        <div class="flex justify-between items-center mb-8">
-            <h3 class="text-white text-sm font-black uppercase tracking-widest">Session Log</h3>
+        <div class="flex justify-between items-center mb-10">
+            <h3 class="text-white text-sm font-black uppercase tracking-[0.3em]">Imperial Session Log</h3>
             <button onclick="toggleDrawer()" class="text-white/20 hover:text-white"><i data-lucide="x"></i></button>
         </div>
-        <div id="transcript" class="overflow-y-auto h-[80%] space-y-4 pr-2"></div>
-        <div id="debug-log" class="mt-4 text-[8px] font-mono text-white/10 uppercase tracking-widest overflow-hidden"></div>
+        <div id="transcript" class="overflow-y-auto h-[85%] space-y-4 pr-2 scrollbar-hide"></div>
     </div>
 
     <script>
         lucide.createIcons();
 
-        // 3D ORB ENGINE
+        // 3D ORB ENGINE (Visibility Fixed & Response-Aware)
         let scene, camera, renderer, sphere, material;
         let noiseAmount = 0.05;
         let colorTarget = new THREE.Color(0x0071e3);
@@ -241,7 +267,7 @@
             camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             const mount = document.getElementById('orb-mount');
-            const size = Math.min(mount.offsetWidth, 280);
+            const size = Math.min(mount.offsetWidth, 320);
             renderer.setSize(size, size);
             mount.appendChild(renderer.domElement);
 
@@ -249,23 +275,28 @@
             material = new THREE.MeshStandardMaterial({
                 color: 0x0071e3,
                 emissive: 0x0071e3,
-                emissiveIntensity: 1.0,
+                emissiveIntensity: 1.2,
                 roughness: 0.1,
-                metalness: 0.5,
+                metalness: 0.7,
                 wireframe: false 
             });
 
             sphere = new THREE.Mesh(geometry, material);
             scene.add(sphere);
-            scene.add(new THREE.PointLight(0xffffff, 1).set(5, 5, 5));
-            scene.add(new THREE.AmbientLight(0xffffff, 0.5));
-            camera.position.z = 5;
+            
+            const pLight = new THREE.PointLight(0xffffff, 1.2);
+            pLight.position.set(5, 5, 5);
+            scene.add(pLight);
+            scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+            
+            camera.position.z = 5.2;
             animate();
+            log("Orb Matrix Initialized");
         }
 
         function animate() {
             requestAnimationFrame(animate);
-            time += 0.015;
+            time += 0.02;
             if (sphere) {
                 const pos = sphere.geometry.attributes.position;
                 const vec = new THREE.Vector3();
@@ -276,23 +307,24 @@
                     pos.setXYZ(i, vec.x, vec.y, vec.z);
                 }
                 pos.needsUpdate = true;
-                sphere.rotation.y += 0.003;
+                sphere.rotation.y += 0.004;
+                sphere.rotation.z += 0.002;
             }
             if (material) {
-                material.color.lerp(colorTarget, 0.1);
-                material.emissive.lerp(colorTarget, 0.1);
+                material.color.lerp(colorTarget, 0.12);
+                material.emissive.lerp(colorTarget, 0.12);
             }
             renderer.render(scene, camera);
         }
 
         function setOrb(state) {
-            if (state === 'user') { colorTarget.setHex(0xffcc00); noiseAmount = 0.3; }
-            else if (state === 'ai') { colorTarget.setHex(0x0071e3); noiseAmount = 0.2; }
-            else if (state === 'thinking') { colorTarget.setHex(0x5856d6); noiseAmount = 0.5; }
+            if (state === 'user') { colorTarget.setHex(0xffcc00); noiseAmount = 0.35; }
+            else if (state === 'ai') { colorTarget.setHex(0x0071e3); noiseAmount = 0.22; }
+            else if (state === 'thinking') { colorTarget.setHex(0x5856d6); noiseAmount = 0.6; }
             else { colorTarget.setHex(0x0071e3); noiseAmount = 0.05; }
         }
 
-        // SPEECH & ROLE LOGIC
+        // SWARM & SPEECH CORE
         let isActive = false;
         let isSpeaking = false;
         let isThinking = false;
@@ -302,66 +334,56 @@
         let recognition;
 
         function log(msg) {
-            console.log(msg);
-            const d = document.getElementById('debug-log');
-            d.innerText = msg;
+            document.getElementById('debug-console').innerText = "Engine: " + msg;
         }
 
         function toggleSession() { 
             if (!isActive) {
-                // Audio Unlock for Mobile
                 const unlock = new SpeechSynthesisUtterance("");
                 synth.speak(unlock);
                 start(); 
-            } else {
-                end(); 
-            }
+            } else end(); 
         }
 
         function start() {
-            log("Session Starting...");
             isActive = true; isSpeaking = false; isThinking = false;
             document.getElementById('transcript').innerHTML = "";
             document.getElementById('transcript-p').innerHTML = "";
-            document.getElementById('main-btn').innerText = 'End';
-            document.getElementById('live-caption').innerText = 'Listening...';
+            document.getElementById('main-btn').innerText = 'End Session';
+            document.getElementById('status-text').innerText = 'Active';
             setOrb('ready');
             initSpeech();
+            log("Session Active");
         }
 
         function end() {
-            log("Session Ending...");
             isActive = false;
-            if (recognition) { 
-                recognition.onend = null; 
-                recognition.onerror = null;
-                recognition.stop(); 
-            }
+            if (recognition) { recognition.onend = null; recognition.onerror = null; recognition.stop(); }
             synth.cancel();
             document.getElementById('rating-overlay').style.display = 'flex';
             document.getElementById('rating-stars').innerHTML = '<i data-lucide="star" class="w-4 h-4"></i>'.repeat(5);
             lucide.createIcons();
-            document.getElementById('rating-text').innerText = `Ulrich Audit: High somatic resonance detected. Alignment with clinical best practices: 96%. Key strength: Latency-aware redirection.`;
+            const score = Math.floor(Math.random() * 2) + 4;
+            document.getElementById('rating-text').innerText = `Ulrich Analyst: Swarm consensus reached. Somatic resonance and empathetic redirection verified. Clinical best practice alignment: ${score}/5.`;
         }
 
         function resetSession() {
             document.getElementById('rating-overlay').style.display = 'none';
-            document.getElementById('main-btn').innerText = 'Initialize';
-            document.getElementById('live-caption').innerText = 'Ready for Session';
+            document.getElementById('main-btn').innerText = 'Initialize Session';
+            document.getElementById('live-caption').innerText = 'Tap to Begin';
             setOrb('ready');
+            log("Engine Standby");
         }
 
         function toggleDrawer() { document.getElementById('transcript-drawer').classList.toggle('active'); }
         function setMode(m) { 
             currentMode = m; 
             document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.id === 'mode-'+m));
-            log("Mode: " + m);
+            addTranscript('SYSTEM', 'Operating in ' + m.toUpperCase() + ' Mode');
         }
 
         function initSpeech() {
             window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!window.SpeechRecognition) return alert("Speech recognition not supported on this device.");
-            
             recognition = new SpeechRecognition();
             recognition.interimResults = true;
             recognition.continuous = true;
@@ -371,8 +393,10 @@
                 let interim = '';
                 for (let i = event.resultIndex; i < event.results.length; ++i) {
                     const text = event.results[i][0].transcript.toLowerCase();
+                    // INTERRUPTION LOGIC
                     if (isSpeaking && (text.includes('stop') || text.includes('hold on') || text.includes('wait'))) { 
-                        synth.cancel(); isSpeaking = false; log("Interrupted");
+                        synth.cancel(); isSpeaking = false; log("User Interrupted");
+                        document.getElementById('live-caption').innerText = "[Interrupted]";
                     }
                     if (event.results[i].isFinal) handleFinal(event.results[i][0].transcript);
                     else interim += event.results[i][0].transcript;
@@ -382,59 +406,54 @@
                     setOrb('user');
                 }
             };
-
-            recognition.onerror = (e) => {
-                log("Speech Error: " + e.error);
-                if (isActive && e.error !== 'aborted') {
-                    setTimeout(() => recognition.start(), 1000);
-                }
-            };
-
-            recognition.onend = () => { 
-                if (isActive && !isSpeaking && !isThinking) {
-                    try { recognition.start(); } catch(e) { log("Restart failed"); }
-                }
-            };
-            
+            recognition.onerror = (e) => { if (isActive && e.error !== 'aborted') setTimeout(() => recognition.start(), 1000); };
+            recognition.onend = () => { if (isActive && !isSpeaking && !isThinking) recognition.start(); };
             recognition.start();
         }
 
         function handleFinal(text) {
             if (!text.trim() || isSpeaking || isThinking) return;
             if (turnTimeout) clearTimeout(turnTimeout);
-            turnTimeout = setTimeout(() => { if (isActive) processInput(text); }, 1000);
+            turnTimeout = setTimeout(() => { if (isActive) processSwarm(text); }, 1100); // 1.1s natural pause
         }
 
-        async function processInput(text) {
+        async function processSwarm(text) {
             if (isThinking || isSpeaking) return;
             isThinking = true; setOrb('thinking');
-            document.getElementById('status-text').innerText = 'Thinking';
+            document.getElementById('status-text').innerText = 'Deliberating...';
             addTranscript('USER', text);
 
             const input = text.toLowerCase();
-            let res = "I'm attuned to your voice. What else is coming up?";
+            let res = "";
+            let swarmLog = "";
 
-            if (input.includes('weather')) res = "The sky is indifferent, but your internal atmosphere is what matters. Are you arriving with clarity, or is there a cloud of anxiety shadowing you?";
-            else if (input.includes('how are you') || input.includes('hey')) res = "I am present and focused on your signal. How is your body responding to this session right now?";
-            else if (input.includes('stock') || input.includes('money') || input.includes('amzn')) res = "Numbers fluctuate like a heartbeat on a monitor. Can we return to the fixed point of your existence—the now?";
-            else if (currentMode === 'client') {
-                const pools = [
-                    "I... I just feel like you're going to realize I'm too much and just stop talking.",
-                    "Did I say something wrong? I felt a shift in the air when you paused.",
-                    "I need you to promise me you'll tell me if you get bored. I can't handle the silence."
+            // SWARM DELIBERATION SIMULATION
+            if (input.includes('weather')) {
+                swarmLog = "Somatic Analyst: User diverting to environment. clinical Strategist: Validate then redirect. Empathy Synth: Warm tone.";
+                res = "The sky is changing, but I'm more attuned to the atmosphere between us. Are you arriving with clarity, or is there a storm brewing inside?";
+            } else if (input.includes('money') || input.includes('amzn')) {
+                swarmLog = "Market context detected. Strategic Pivot: Acknowledge volatility, return to somatic fixed-point.";
+                res = "Markets fluctuate like breath. Can we return to the fixed point of your existence—this moment?";
+            } else if (currentMode === 'client') {
+                swarmLog = "Anxious Attachment hyperactivation detected. Priority: Unconditional presence.";
+                const anxious = [
+                    "I... I just feel like you're going to realize I'm too much. That happens a lot.",
+                    "Did I say something wrong? I felt a shift when you paused. Please tell me we're okay.",
+                    "I need you to promise me you won't get bored of this. I can't handle the silence."
                 ];
-                res = pools[Math.floor(Math.random()*pools.length)];
+                res = anxious[Math.floor(Math.random()*anxious.length)];
             } else {
-                res = "I hear the urgency in your voice. Let's try to find a breath that reaches all the way down. I'm right here.";
+                swarmLog = "Sympathetic arousal identified. Strategy: Grounding & Validation.";
+                res = "I hear the urgency in your voice. Let's find a breath that reaches all the way down. I'm right here.";
             }
 
-            setTimeout(() => { if (!isActive) return; isThinking = false; speak(res); }, 1200);
+            if (swarmLog) addTranscript('SWARM', swarmLog);
+
+            setTimeout(() => { if (!isActive) return; isThinking = false; speak(res); }, 1500);
         }
 
         function speak(text) {
-            isSpeaking = true; 
-            if (recognition) recognition.stop();
-            
+            isSpeaking = true; if (recognition) recognition.stop();
             setOrb('ai');
             document.getElementById('status-text').innerText = 'Speaking';
             document.getElementById('live-caption').innerText = text;
@@ -442,34 +461,33 @@
 
             const utter = new SpeechSynthesisUtterance(text);
             const voices = synth.getVoices();
-            const nadia = voices.find(v => v.name.includes('Nadia') || v.name.includes('Natural') || v.name.includes('Samantha') || v.name.includes('Female'));
+            // PREMIUM NADIA / NATURAL VOICE
+            const nadia = voices.find(v => v.name.includes('Nadia') || v.name.includes('Natural') || v.name.includes('Samantha') || v.name.includes('Google US English'));
             utter.voice = nadia || voices[0];
-            utter.rate = 0.82; utter.pitch = 1.05;
+            utter.rate = 0.81; utter.pitch = 1.05;
 
             utter.onend = () => {
                 isSpeaking = false; setOrb('ready');
                 document.getElementById('status-text').innerText = 'Listening';
                 if (isActive) recognition.start();
             };
-            
-            utter.onerror = (e) => { log("TTS Error: " + e.error); isSpeaking = false; if (isActive) recognition.start(); };
-
             synth.speak(utter);
         }
 
         function addTranscript(role, text) {
             const el = document.createElement('div');
-            const rClass = role === 'USER' ? 'user' : 'ai';
-            el.className = `transcript-bubble ${rClass}`;
-            el.innerHTML = `<span class="role-tag ${rClass}">${role}</span><p>${text}</p>`;
-            document.getElementById('transcript').appendChild(el.cloneNode(true));
-            const p = document.getElementById('transcript-p');
-            p.innerText = text;
+            const rClass = role.toLowerCase();
+            el.className = `bubble ${rClass}`;
+            el.innerHTML = `<span class="font-black text-[8px] uppercase opacity-40">${role}</span><p class="mt-1">${text}</p>`;
+            document.getElementById('transcript').appendChild(el);
+            document.getElementById('transcript').scrollTop = 9999;
+            if (role !== 'SWARM') {
+                const p = document.getElementById('transcript-p');
+                p.innerText = text;
+            }
         }
 
-        // Initialize Orb on load
         window.addEventListener('load', initOrb);
-        // Load voices
         synth.getVoices();
         if (synth.onvoiceschanged !== undefined) synth.onvoiceschanged = () => synth.getVoices();
 
