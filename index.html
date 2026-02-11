@@ -393,6 +393,10 @@
                 <i data-lucide="trending-up" class="hidden md:block w-4 h-4"></i>
                 <span class="btn-text">Strategy</span>
             </button>
+            <button onclick="switchTab('specialists')" id="btn-specialists" class="px-8 py-3 rounded-2xl text-xs font-bold text-gray-500 transition-all hover:text-black flex items-center gap-2">
+                <i data-lucide="users" class="hidden md:block w-4 h-4"></i>
+                <span class="btn-text">Specialists</span>
+            </button>
             <button onclick="switchTab('system')" id="btn-system" class="px-8 py-3 rounded-2xl text-xs font-bold text-gray-500 transition-all hover:text-black flex items-center gap-2">
                 <i data-lucide="terminal" class="hidden md:block w-4 h-4"></i>
                 <span class="btn-text">Terminal</span>
@@ -1209,7 +1213,88 @@
             </div>
         </div>
 
-        <div id="tab-system" class="tab-content hidden animate-reveal space-y-10">
+        <div id="tab-specialists" class="tab-content hidden animate-reveal space-y-16">
+            <header class="text-center max-w-2xl mx-auto space-y-4">
+                <span class="timestamp text-blue-600 font-bold">[SPECIALIST_LAYER: ACTIVE]</span>
+                <h2 class="text-5xl font-black text-black tracking-tighter italic uppercase">The Digital Specialists</h2>
+                <p class="text-lg text-gray-500 font-medium">A dedicated layer of agentic expertise, trained to protect and scale the Richers Empire.</p>
+            </header>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
+                <!-- Klaus: Legal -->
+                <div class="glass p-10 space-y-6 border-black/[0.03] group hover:border-blue-600/20 transition-all">
+                    <div class="w-14 h-14 bg-black rounded-2xl flex items-center justify-center text-white">
+                        <i data-lucide="shield-check" class="w-7 h-7"></i>
+                    </div>
+                    <div class="space-y-2">
+                        <h3 class="text-xl font-black uppercase italic">Klaus</h3>
+                        <p class="text-[10px] text-blue-600 font-bold uppercase tracking-widest">Legal Sentinel</p>
+                    </div>
+                    <p class="text-xs text-gray-500 font-medium leading-relaxed">Expert in OAR 833, BOLI compliance, and Counseling Compact reciprocity. Ironclad liability mitigation.</p>
+                    <div class="pt-4 border-t border-black/5">
+                        <span class="text-[9px] font-black text-gray-400 uppercase">Status: Guarding</span>
+                    </div>
+                </div>
+
+                <!-- Günter: Tax -->
+                <div class="glass p-10 space-y-6 border-black/[0.03] group hover:border-emerald-600/20 transition-all">
+                    <div class="w-14 h-14 bg-emerald-600 rounded-2xl flex items-center justify-center text-white">
+                        <i data-lucide="pie-chart" class="w-7 h-7"></i>
+                    </div>
+                    <div class="space-y-2">
+                        <h3 class="text-xl font-black uppercase italic">Günter</h3>
+                        <p class="text-[10px] text-emerald-600 font-bold uppercase tracking-widest">Tax Architect</p>
+                    </div>
+                    <p class="text-xs text-gray-500 font-medium leading-relaxed">Managing S-Corp arbitrage, Form 2553 election, and R&D compute deductions. Net-flow optimization.</p>
+                    <div class="pt-4 border-t border-black/5">
+                        <span class="text-[9px] font-black text-gray-400 uppercase">Status: Optimizing</span>
+                    </div>
+                </div>
+
+                <!-- Ximena: Marketing -->
+                <div class="glass p-10 space-y-6 border-black/[0.03] group hover:border-pink-600/20 transition-all">
+                    <div class="w-14 h-14 bg-pink-600 rounded-2xl flex items-center justify-center text-white">
+                        <i data-lucide="sparkles" class="w-7 h-7"></i>
+                    </div>
+                    <div class="space-y-2">
+                        <h3 class="text-xl font-black uppercase italic">Ximena</h3>
+                        <p class="text-[10px] text-pink-600 font-bold uppercase tracking-widest">Marketing Oracle</p>
+                    </div>
+                    <p class="text-xs text-gray-500 font-medium leading-relaxed">GEO Mastery and somatic lead-gen. Maintaining the "Bright OS" high-premium aesthetic ecosystem.</p>
+                    <div class="pt-4 border-t border-black/5">
+                        <span class="text-[9px] font-black text-gray-400 uppercase">Status: Scaling</span>
+                    </div>
+                </div>
+
+                <!-- Mutter: Assistant -->
+                <div class="glass p-10 space-y-6 border-black/[0.03] group hover:border-purple-600/20 transition-all">
+                    <div class="w-14 h-14 bg-purple-600 rounded-2xl flex items-center justify-center text-white">
+                        <i data-lucide="calendar" class="w-7 h-7"></i>
+                    </div>
+                    <div class="space-y-2">
+                        <h3 class="text-xl font-black uppercase italic">Mutter</h3>
+                        <p class="text-[10px] text-purple-600 font-bold uppercase tracking-widest">Imperial Coordinator</p>
+                    </div>
+                    <p class="text-xs text-gray-500 font-medium leading-relaxed">Nurturing schedule integrity, reminder loops, and somatic well-being check-ins for Franz.</p>
+                    <div class="pt-4 border-t border-black/5">
+                        <span class="text-[9px] font-black text-gray-400 uppercase">Status: Coordinating</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="max-w-4xl mx-auto glass p-12 bg-gray-50/50 border-black/[0.03] text-left">
+                <div class="flex items-center gap-6 mb-8">
+                    <div class="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center text-blue-600">
+                        <i data-lucide="network" class="w-6 h-6"></i>
+                    </div>
+                    <h4 class="text-2xl font-black italic tracking-tighter uppercase">Ulrich Hive Mind</h4>
+                </div>
+                <div class="prose prose-slate max-w-none text-gray-600 font-medium text-sm leading-relaxed space-y-4">
+                    <p>These specialists are not standalone bots; they are integrated facets of the **Ulrich Engine**. They share a unified context through the `SESSION-STATE.md` HOT RAM protocol, allowing Klaus (Legal) to audit Günter's (Tax) arbitrage strategies in real-time, while Ximena (Marketing) ensures all clinical outputs maintain the premium design language.</p>
+                    <p>As the Empire scales, I will deploy dozens more of these digital employees into the specialist layer—automating everything fromMMIS billing to international clinic acquisitions.</p>
+                </div>
+            </div>
+        </div>
             <div class="glass p-16 space-y-12">
                 <div class="flex justify-between items-center border-b border-black/5 pb-10">
                     <h2 class="text-sm font-bold uppercase tracking-[0.3em] text-gray-400">System Telemetry</h2>
@@ -1434,6 +1519,7 @@
         <a href="javascript:void(0)" onclick="mobileSwitchTab('dispatch')" class="mobile-menu-link">Dispatch</a>
         <a href="javascript:void(0)" onclick="mobileSwitchTab('labs')" class="mobile-menu-link">Labs</a>
         <a href="javascript:void(0)" onclick="mobileSwitchTab('strategy')" class="mobile-menu-link">Strategy</a>
+        <a href="javascript:void(0)" onclick="mobileSwitchTab('specialists')" class="mobile-menu-link">Specialists</a>
         <a href="javascript:void(0)" onclick="mobileSwitchTab('system')" class="mobile-menu-link">Terminal</a>
     </div>
 
