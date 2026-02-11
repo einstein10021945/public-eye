@@ -229,16 +229,13 @@
             mount.appendChild(renderer.domElement);
 
             const geometry = new THREE.IcosahedronGeometry(2, 40);
-            material = new THREE.MeshPhysicalMaterial({
-                color: 0xffffff,
-                metalness: 0.1,
-                roughness: 0.1,
-                transmission: 0.9,
-                thickness: 0.5,
-                ior: 1.5,
+            material = new THREE.MeshStandardMaterial({
+                color: 0x0071e3,
+                metalness: 0.6,
+                roughness: 0.2,
                 emissive: 0x0071e3,
-                emissiveIntensity: 0.6,
-                wireframe: false
+                emissiveIntensity: 1.0,
+                wireframe: true // Switching back to wireframe for "Cool" factor + visibility
             });
 
             sphere = new THREE.Mesh(geometry, material);
@@ -269,6 +266,7 @@
             position.needsUpdate = true;
             
             sphere.rotation.y += 0.005;
+            material.color.lerp(colorTarget, 0.05);
             material.emissive.lerp(colorTarget, 0.05);
 
             renderer.render(scene, camera);
