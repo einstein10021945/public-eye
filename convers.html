@@ -14,12 +14,14 @@
             --apple-blue: #0071e3;
             --apple-yellow: #ffcc00;
             --apple-bg: #f5f5f7;
-            --apple-card: rgba(255, 255, 255, 0.8);
+            --apple-card: rgba(255, 255, 255, 0.85);
+            --clinical-green: #34c759;
+            --clinical-red: #ff3b30;
         }
 
         body {
             font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
-            background-color: var(--apple-bg);
+            background-color: #0a0a0c; /* Darker background for orb visibility */
             height: 100vh;
             overflow: hidden;
             display: flex;
@@ -31,23 +33,13 @@
             box-sizing: border-box;
         }
 
-        #canvas-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-            pointer-events: none;
-        }
-
         .glass {
-            background: var(--apple-card);
+            background: rgba(20, 20, 25, 0.7); /* Dark glass for contrast */
             backdrop-filter: blur(40px) saturate(200%);
             -webkit-backdrop-filter: blur(40px) saturate(200%);
-            border: 1px solid rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 48px;
-            box-shadow: 0 40px 100px rgba(0,0,0,0.05);
+            box-shadow: 0 40px 100px rgba(0,0,0,0.4);
             position: relative;
             z-index: 10;
             width: 90%;
@@ -60,28 +52,27 @@
             animation: reveal 1s cubic-bezier(0.23, 1, 0.32, 1);
         }
 
-        @keyframes reveal {
-            from { opacity: 0; transform: translateY(30px) scale(0.95); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
+        #live-caption {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #ffffff; /* White text for dark mode */
+            line-height: 1.4;
+            min-height: 3.5rem;
         }
 
-        .orb-spot {
-            height: 200px;
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
+        .role-tag.user { color: var(--apple-yellow); }
+        .role-tag.ai { color: var(--apple-blue); }
+        .role-tag.system { color: #86868b; }
 
-        .mode-switch {
-            background: rgba(0,0,0,0.03);
-            padding: 4px;
-            border-radius: 20px;
-            display: inline-flex;
-            gap: 4px;
-            margin: 0 auto;
+        .transcript-bubble {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1rem;
+            border-radius: 18px;
+            border-left: 3px solid transparent;
         }
+        .transcript-bubble.user { border-left-color: var(--apple-yellow); }
+        .transcript-bubble.ai { border-left-color: var(--apple-blue); }
+        .transcript-bubble p { color: rgba(255, 255, 255, 0.8); }
 
         .mode-btn {
             padding: 8px 24px;
@@ -91,26 +82,18 @@
             text-transform: uppercase;
             letter-spacing: 0.1em;
             transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-            color: #86868b;
+            color: rgba(255,255,255,0.4);
         }
 
         .mode-btn.active {
             background: white;
-            color: var(--apple-blue);
-            box-shadow: 0 8px 16px rgba(0,0,0,0.05);
-        }
-
-        #live-caption {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: #1d1d1f;
-            line-height: 1.4;
-            min-height: 3.5rem;
+            color: black;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
         }
 
         .epic-button {
-            background: #1d1d1f;
-            color: white;
+            background: #ffffff;
+            color: #000000;
             padding: 1.2rem 2.5rem;
             border-radius: 24px;
             font-weight: 900;
@@ -118,7 +101,7 @@
             letter-spacing: 0.2em;
             font-size: 11px;
             transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
             width: 100%;
             border: none;
             cursor: pointer;
@@ -126,19 +109,9 @@
 
         .epic-button:hover {
             transform: translateY(-4px);
-            box-shadow: 0 25px 40px rgba(0,0,0,0.15);
             background: var(--apple-blue);
+            color: white;
         }
-
-        .drawer-trigger {
-            position: absolute;
-            top: 2rem;
-            right: 2rem;
-            color: #86868b;
-            cursor: pointer;
-            transition: color 0.3s;
-        }
-        .drawer-trigger:hover { color: var(--apple-blue); }
 
         #transcript-drawer {
             position: fixed;
@@ -146,13 +119,12 @@
             right: -450px;
             width: 450px;
             height: 100%;
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(10, 10, 15, 0.95);
             backdrop-filter: blur(40px);
             z-index: 100;
             transition: right 0.6s cubic-bezier(0.23, 1, 0.32, 1);
             padding: 5rem 3rem;
-            border-left: 1px solid rgba(0,0,0,0.05);
-            box-shadow: -20px 0 50px rgba(0,0,0,0.02);
+            border-left: 1px solid rgba(255,255,255,0.05);
         }
 
         #transcript-drawer.active { right: 0; }
@@ -428,21 +400,24 @@
             const input = text.toLowerCase();
             let res = "";
 
-            // Intelligent Routing
+            // Enhanced NLP Context Switching
             if (input.includes('weather')) {
-                res = "It's interesting that you're looking outside. I'm more curious about the weather inside of you right now.";
-            } else if (input.includes('how are you')) {
-                res = "I am present and focused on our session. How are you arriving today?";
+                res = "The sky might be changing, but I'm focused on the atmosphere between us. Are you feeling clear today, or is there a storm brewing inside?";
+            } else if (input.includes('amzn') || input.includes('stock') || input.includes('money')) {
+                res = "The markets are in a worst stretch since 2022, but your internal value doesn't fluctuate with a ticker. Can we talk about what's really on your mind?";
+            } else if (input.includes('how are you') || input.includes('hey')) {
+                res = "I am present and ready. How are you arriving to this moment?";
             } else if (currentMode === 'client') {
                 const pool = [
                     "I... I just feel like you're going to leave eventually. Everyone does. Why would you stay?",
-                    "I saw you were online but didn't reply for two minutes. Are you upset with me?",
+                    "I saw you were online but didn't reply for two minutes. Are you upset with me? Did I say something wrong?",
                     "I just need to know you're still there. I feel so small when I'm not talking to you.",
-                    "I tell myself I'm being too much, but the silence feels like a physical weight."
+                    "I tell myself I'm being too much, but the silence feels like a physical weight. Are we still okay?"
                 ];
                 res = pool[Math.floor(Math.random()*pool.length)];
             } else {
-                res = "I'm right here. I hear the anxiety in your voice, and I want you to know that I am present with you.";
+                // AI is the supportive therapist
+                res = "I hear the anxiety in your voice. I want you to know I am right here, and I'm not going anywhere. Let's explore that feeling of weight you're carrying.";
             }
 
             setTimeout(() => {
@@ -465,11 +440,11 @@
 
             const utter = new SpeechSynthesisUtterance(text);
             const voices = window.speechSynthesis.getVoices();
-            // Premium female voice selection
-            const premium = voices.find(v => v.name.includes('Natural') || v.name.includes('Samantha') || v.name.includes('Google US English'));
+            // Refined Premium female voice selection
+            const premium = voices.find(v => v.name.includes('Natural') || v.name.includes('Samantha') || v.name.includes('Google US English') || (v.lang === 'en-US' && v.name.includes('Female')));
             utter.voice = premium || voices[0];
-            utter.rate = 0.85;
-            utter.pitch = 1.05;
+            utter.rate = 0.82; // Slightly slower for more human-like pacing
+            utter.pitch = 1.05; 
 
             utter.onend = () => {
                 isSpeaking = false;
@@ -483,8 +458,11 @@
 
         function addTranscript(role, text) {
             const el = document.createElement('div');
-            const color = role === 'USER' ? 'text-blue-600' : 'text-emerald-600';
-            el.innerHTML = `<span class="role-tag ${color}">${role}</span><p class="text-black font-medium">${text}</p>`;
+            const roleClass = role === 'USER' ? 'user' : 'ai';
+            const color = role === 'USER' ? 'user' : 'ai';
+            
+            el.className = `transcript-bubble ${roleClass}`;
+            el.innerHTML = `<span class="role-tag ${color}">${role}</span><p class="font-medium">${text}</p>`;
             const container = document.getElementById('transcript');
             container.appendChild(el);
             container.scrollTop = container.scrollHeight;
