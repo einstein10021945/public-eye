@@ -133,6 +133,33 @@
         }
         .transcript-container::-webkit-scrollbar { display: none; }
 
+        .somatic-meter {
+            height: 4px;
+            background: rgba(0,0,0,0.03);
+            border-radius: 10px;
+            overflow: hidden;
+            width: 100%;
+            max-width: 200px;
+            margin: 0 auto;
+        }
+        .somatic-level {
+            height: 100%;
+            width: 0%;
+            background: var(--apple-blue);
+            transition: width 0.1s ease;
+        }
+
+        .insight-card {
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 1rem;
+            border-radius: 20px;
+            font-size: 10px;
+            text-align: left;
+            display: none;
+        }
+        .insight-card.active { display: block; }
+
         .epic-button {
             background: #1d1d1f;
             color: white;
@@ -196,7 +223,19 @@
             <div class="relative z-10 space-y-3">
                 <p id="status-text" class="text-[10px] font-black uppercase tracking-[0.4em] text-gray-400">System Ready</p>
                 <h2 id="live-caption" class="text-xl font-bold text-black max-w-xs leading-tight">Tap to begin session</h2>
+                
+                <div class="somatic-meter">
+                    <div id="somatic-level" class="somatic-level"></div>
+                </div>
             </div>
+        </div>
+
+        <div id="insight-box" class="insight-card">
+            <div class="flex items-center gap-2 mb-2">
+                <i data-lucide="brain-circuit" class="w-3 h-3 text-blue-600"></i>
+                <span class="font-black uppercase tracking-widest text-[8px]">Clinical Insight</span>
+            </div>
+            <p id="insight-text" class="text-gray-600 font-medium"></p>
         </div>
 
         <div class="transcript-container space-y-4 text-xs text-gray-500 font-bold uppercase tracking-widest">
@@ -288,44 +327,72 @@
             recognition.continuous = true;
 
             recognition.onresult = (event) => {
-                const transcript = Array.from(event.results)
-                    .map(result => result[0])
-                    .map(result => result.transcript)
-                    .join('');
-                
-                document.getElementById('live-caption').innerText = transcript;
-                
-                if (event.results[0].isFinal) {
-                    processInput(transcript);
+                let interimTranscript = '';
+                for (let i = event.resultIndex; i < event.results.length; ++i) {
+                    if (event.results[i].isFinal) {
+                        const finalTranscript = event.results[i][0].transcript;
+                        if (finalTranscript.trim()) {
+                            processInput(finalTranscript);
+                        }
+                    } else {
+                        interimTranscript += event.results[i][0].transcript;
+                    }
                 }
+                
+                if (interimTranscript) {
+                    document.getElementById('live-caption').innerText = interimTranscript;
+                    simulateSomatic(true);
+                }
+            };
+
+            recognition.onerror = (event) => {
+                console.error("Speech error", event.error);
+                if (event.error === 'no-speech') simulateSomatic(false);
             };
 
             recognition.start();
         }
 
+        function simulateSomatic(active) {
+            const level = active ? Math.floor(Math.random() * 60) + 40 : 0;
+            document.getElementById('somatic-level').style.width = level + '%';
+            if (active) {
+                document.getElementById('status-orb').style.transform = `scale(${1 + level/100})`;
+            }
+        }
+
         async function processInput(text) {
+            if (isSpeaking) return; // Prevent loop during TTS
+            
             document.getElementById('status-orb').classList.remove('listening');
             document.getElementById('status-orb').classList.add('thinking');
             document.getElementById('status-text').innerText = 'Thinking';
             addTranscript('USER', text);
 
-            // In a real build, this hits the Python backend. 
-            // For the demo, we simulate a response based on the new Anxious Attachment training.
+            // Simulate insight generation
+            if (currentMode === 'therapist') {
+                const insights = [
+                    "Detected vocal tremor: High sympathetic arousal.",
+                    "Rapid speech rate identified: Signs of flight response.",
+                    "Word choice clusters: Focus on external validation."
+                ];
+                document.getElementById('insight-box').classList.add('active');
+                document.getElementById('insight-text').innerText = insights[Math.floor(Math.random() * insights.length)];
+            }
+
             setTimeout(() => {
                 let response = "";
                 if (currentMode === 'client') {
-                    // AI is the anxious patient
                     const anxiousResponses = [
                         "I... I just feel like you're going to leave eventually. Everyone does. Why would you stay?",
-                        "I saw you were online but didn't reply for two minutes. Are you upset with me? Did I say something wrong?",
-                        "I just need to know you're still there. I feel so small when I'm not talking to you. Can you promise you won't get bored?",
-                        "I tell myself I'm being too much, but the silence feels like a physical weight. Are we still okay?",
-                        "I find myself constantly checking my phone. It's like I'm waiting for a sign that I still matter to you."
+                        "I saw you were online but didn't reply for two minutes. Are you upset with me?",
+                        "I just need to know you're still there. I feel so small when I'm not talking to you.",
+                        "I tell myself I'm being too much, but the silence feels like a weight.",
+                        "Are you still listening? I feel like I'm boring you."
                     ];
                     response = anxiousResponses[Math.floor(Math.random() * anxiousResponses.length)];
                 } else {
-                    // AI is the supportive therapist
-                    response = "I'm right here. I hear the anxiety in your voice, and I want you to know that I am present with you. Let's explore where that feeling of being 'too much' is living in your body right now.";
+                    response = "I'm right here. I hear the tension in your breath. Let's try to ground that energy together.";
                 }
                 
                 speak(response);
@@ -334,19 +401,27 @@
                 document.getElementById('status-orb').classList.remove('thinking');
                 document.getElementById('status-orb').classList.add('listening');
                 document.getElementById('status-text').innerText = 'Listening';
+                simulateSomatic(false);
             }, 1800);
         }
 
+        let isSpeaking = false;
         function speak(text) {
+            isSpeaking = true;
+            if (recognition) recognition.stop(); // Stop listening while talking to avoid feedback loop
+
             const utterance = new SpeechSynthesisUtterance(text);
-            // Attractive/Natural Female Voice Tuning
             utterance.rate = 0.85; 
             utterance.pitch = 1.1; 
             const voices = window.speechSynthesis.getVoices();
-            // Try to find a high-quality female voice on the system
             const femaleVoice = voices.find(v => v.name.includes('Female') || v.name.includes('Google US English') || v.name.includes('Samantha'));
             if (femaleVoice) utterance.voice = femaleVoice;
             
+            utterance.onend = () => {
+                isSpeaking = false;
+                if (isSessionActive) recognition.start(); // Resume listening
+            };
+
             window.speechSynthesis.speak(utterance);
         }
 
