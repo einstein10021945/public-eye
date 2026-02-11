@@ -19,12 +19,15 @@
         body {
             font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            height: 100vh;
-            overflow: hidden;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+            overscroll-behavior-y: none;
         }
 
         .glass {
@@ -34,23 +37,40 @@
             border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 40px;
             box-shadow: 0 40px 100px rgba(0,0,0,0.05);
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            position: relative;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .orb-container {
+            position: relative;
+            height: 250px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .orb {
-            width: 150px;
-            height: 150px;
+            width: 120px;
+            height: 120px;
             border-radius: 50%;
             background: radial-gradient(circle, var(--apple-blue) 0%, transparent 70%);
-            filter: blur(20px);
+            filter: blur(15px);
             opacity: 0.3;
-            transition: all 0.5s ease;
+            transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+            position: absolute;
         }
 
         .orb.listening {
-            transform: scale(1.5);
+            transform: scale(1.6);
             opacity: 0.8;
             background: radial-gradient(circle, #ff3b30 0%, transparent 70%);
-            animation: pulse 2s infinite;
+            animation: pulse 2s infinite cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .orb.thinking {
@@ -59,106 +79,123 @@
         }
 
         @keyframes pulse {
-            0% { transform: scale(1.2); opacity: 0.6; }
-            50% { transform: scale(1.8); opacity: 0.9; }
-            100% { transform: scale(1.2); opacity: 0.6; }
+            0% { transform: scale(1.3); opacity: 0.5; }
+            50% { transform: scale(1.9); opacity: 0.8; }
+            100% { transform: scale(1.3); opacity: 0.5; }
         }
 
         @keyframes rotate {
-            from { transform: rotate(0deg) scale(1.2); }
-            to { transform: rotate(360deg) scale(1.2); }
+            from { transform: rotate(0deg) scale(1.4); }
+            to { transform: rotate(360deg) scale(1.4); }
         }
 
         .mode-switch {
             background: rgba(0,0,0,0.05);
             padding: 4px;
-            border-radius: 20px;
+            border-radius: 24px;
             display: flex;
             gap: 4px;
+            margin: 0 auto;
         }
 
         .mode-btn {
-            padding: 8px 24px;
-            border-radius: 16px;
-            font-size: 12px;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 11px;
             font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 0.1em;
-            transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+            letter-spacing: 0.15em;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            color: #86868b;
         }
 
         .mode-btn.active {
             background: white;
             color: var(--apple-blue);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.06);
         }
 
         .transcript-container {
-            max-height: 200px;
+            height: 120px;
             overflow-y: auto;
-            mask-image: linear-gradient(to bottom, transparent, black 20%, black 80%, transparent);
+            mask-image: linear-gradient(to bottom, transparent, black 30%, black 70%, transparent);
+            padding: 0 10px;
+            scrollbar-width: none;
         }
+        .transcript-container::-webkit-scrollbar { display: none; }
 
         .epic-button {
             background: #1d1d1f;
             color: white;
-            padding: 1rem 2rem;
-            border-radius: 24px;
+            padding: 1.2rem 2.4rem;
+            border-radius: 30px;
             font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 0.2em;
-            font-size: 11px;
-            transition: all 0.4s ease;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            letter-spacing: 0.25em;
+            font-size: 10px;
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            width: 100%;
         }
 
         .epic-button:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 30px rgba(0,0,0,0.15);
+            transform: translateY(-6px);
+            box-shadow: 0 25px 40px rgba(0,0,0,0.15);
+            background: var(--apple-blue);
         }
         
-        .epic-button:active {
-            transform: scale(0.95);
+        .epic-button:active { transform: scale(0.96); }
+
+        @media (max-width: 480px) {
+            .glass { padding: 2rem 1.5rem; gap: 1.5rem; }
+            .orb-container { height: 180px; }
+            .orb { width: 100px; height: 100px; }
+            .transcript-container { height: 100px; }
+            h1 { font-size: 1.5rem !important; }
+            h2 { font-size: 1.25rem !important; }
         }
 
     </style>
 </head>
-<body class="p-6">
+<body class="p-4">
     
-    <div class="glass p-12 w-full max-w-2xl text-center space-y-12 relative overflow-hidden">
+    <div class="glass p-10 text-center relative animate-reveal">
         
-        <header class="flex flex-col items-center gap-4">
-            <div class="flex items-center gap-3">
-                <i data-lucide="mic-2" class="text-blue-600 w-5 h-5"></i>
-                <h1 class="text-3xl font-black italic tracking-tighter uppercase">Convers <span class="text-blue-600">AI</span></h1>
+        <header class="space-y-6">
+            <div class="flex items-center justify-center gap-3">
+                <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-600/20">
+                    <i data-lucide="mic-2" class="text-white w-5 h-5"></i>
+                </div>
+                <h1 class="text-2xl font-black italic tracking-tighter uppercase">Convers <span class="text-blue-600">AI</span></h1>
             </div>
+            
             <div class="mode-switch">
-                <button onclick="setMode('client')" id="mode-client" class="mode-btn active">Client Mode</button>
-                <button onclick="setMode('therapist')" id="mode-therapist" class="mode-btn">Therapist Mode</button>
+                <button onclick="setMode('client')" id="mode-client" class="mode-btn active">Patient</button>
+                <button onclick="setMode('therapist')" id="mode-therapist" class="mode-btn">Therapist</button>
             </div>
         </header>
 
-        <div class="flex justify-center items-center py-10">
+        <div class="orb-container">
             <div id="status-orb" class="orb"></div>
-            <div class="absolute text-center space-y-2">
-                <p id="status-text" class="text-xs font-black uppercase tracking-[0.3em] text-gray-400">Ready</p>
-                <h2 id="live-caption" class="text-2xl font-bold text-black max-w-sm">Tap to begin session</h2>
+            <div class="relative z-10 space-y-3">
+                <p id="status-text" class="text-[10px] font-black uppercase tracking-[0.4em] text-gray-400">System Ready</p>
+                <h2 id="live-caption" class="text-xl font-bold text-black max-w-xs leading-tight">Tap to begin session</h2>
             </div>
         </div>
 
-        <div class="transcript-container space-y-4 px-6 text-sm text-gray-500 font-medium">
+        <div class="transcript-container space-y-4 text-xs text-gray-500 font-bold uppercase tracking-widest">
             <div id="transcript"></div>
         </div>
 
-        <div class="flex justify-center gap-6">
+        <div class="px-4">
             <button onclick="toggleSession()" id="main-btn" class="epic-button">
-                Start Conversation
+                Initialize Session
             </button>
         </div>
 
-        <footer class="pt-8 border-t border-black/5">
-            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                Sovereign Model // Powered by Piper & Llama 3
+        <footer class="pt-6 border-t border-black/5">
+            <p class="text-[9px] font-black text-gray-400 uppercase tracking-[0.3em]">
+                SOTA Voice Architecture // Kokoro-82M Native
             </p>
         </footer>
     </div>
