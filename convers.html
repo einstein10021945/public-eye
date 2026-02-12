@@ -36,13 +36,14 @@
             color: white;
         }
 
-        /* FIXED ORB VIEWPORT: Always 300px centered */
+        /* FIXED ORB VIEWPORT: Always constrained for precision */
         #orb-mount {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 300px;
+            width: 100%;
+            max-width: 300px; /* Constrained for Desktop */
             height: 300px;
             z-index: 1;
             display: flex;
@@ -243,8 +244,11 @@
 
         function initOrb() {
             if (renderer) return; 
+            log("Mounting Somatic Matrix...");
+            
             const mount = document.getElementById('orb-mount');
-            const size = 300; // FIXED SIZE AS REQUESTED
+            // Starting point: 300x300 for desktop mastery
+            const size = 300; 
 
             scene = new THREE.Scene();
             camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
@@ -267,6 +271,7 @@
 
             camera.position.z = 5.2;
             animate();
+            log("Matrix Online (300px Base)");
         }
 
         function animate() {
