@@ -535,7 +535,9 @@
         function filterBlog(category) {
             // Update Chip UI
             document.querySelectorAll('.category-chip').forEach(btn => {
-                if (btn.textContent.toLowerCase() === category || (category === 'all' && btn.textContent === 'All')) {
+                // Check if the button's onclick attribute contains the category
+                const onclickVal = btn.getAttribute('onclick');
+                if (onclickVal && onclickVal.includes(`'${category}'`)) {
                     btn.classList.add('bg-black', 'text-white', 'border-black');
                     btn.classList.remove('bg-white', 'text-gray-500', 'border-gray-200');
                 } else {
@@ -546,10 +548,17 @@
 
             // Filter Articles
             const posts = document.querySelectorAll('.blog-post');
+            let found = false;
             posts.forEach(post => {
-                if (category === 'all' || post.getAttribute('data-category') === category) {
+                const postCategory = post.getAttribute('data-category');
+                if (category === 'all' || postCategory === category) {
                     post.classList.remove('hidden');
+                    // Reset animation
+                    post.style.animation = 'none';
+                    post.offsetHeight; /* trigger reflow */
+                    post.style.animation = null; 
                     post.classList.add('animate-slide-up');
+                    found = true;
                 } else {
                     post.classList.add('hidden');
                     post.classList.remove('animate-slide-up');
@@ -559,9 +568,9 @@
             // Deep Linking for Filter
             const currentHash = window.location.hash.split('?')[0];
             if (category !== 'all') {
-                history.pushState(null, null, `${currentHash}?filter=${category}`);
+                history.replaceState(null, null, `${currentHash}?filter=${category}`);
             } else {
-                history.pushState(null, null, currentHash);
+                history.replaceState(null, null, currentHash);
             }
         }
 
