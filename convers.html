@@ -276,7 +276,11 @@
 
             sphere = new THREE.Mesh(geometry, material);
             scene.add(sphere);
-            scene.add(new THREE.PointLight(0xffffff, 2.0).set(10, 10, 10));
+
+            const light = new THREE.PointLight(0xffffff, 2.0);
+            light.position.set(10, 10, 10);
+            scene.add(light);
+
             scene.add(new THREE.AmbientLight(0xffffff, 0.6));
 
             camera.position.z = 6.5; // Adjusted distance for full screen
