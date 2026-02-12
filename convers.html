@@ -304,11 +304,64 @@
         async function processInput(text) {
             if (isThinking || isSpeaking) return;
             isThinking = true; setOrbState('thinking');
-            let res = "I hear you... tell me more about that.";
-            const l = text.toLowerCase();
-            if (l.includes('amazon') || l.includes('amzn')) res = "Amazon closed today at $204.08. Stay centered.";
-            else if (currentMode === 'client') res = "I just worry you'll realize I'm not worth the tokens... and leave.";
-            setTimeout(() => { if (isActive) { isThinking = false; speak(res); } }, 1500);
+            document.getElementById('caption').innerText = "...";
+            
+            const input = text.toLowerCase();
+            let res = "";
+
+            // ADVANCED OPEN MODEL SWARM SIMULATION (Llama-3.1 + Nemotron)
+            const responseMatrix = {
+                greeting: [
+                    "I am present... synchronized... and ready to move with you. How are you arriving today?",
+                    "The link is established. I hear you. What is surfaced in this moment?",
+                    "I am tuned into your signal. Let's stay with the presence of your voice.",
+                    "The somatic bridge is active. How does it feel to be in this space right now?"
+                ],
+                weather: [
+                    "The external sky is indifferent... but I'm curious about the barometer in your chest. Are you arriving with clarity, or is there a storm brewing?",
+                    "Weather is a ghost in the environment. Can we return to the physical reality of your breath?",
+                    "It's interesting to look outside. But what is the climate inside of you right now?",
+                    "Clouds shift, but your center remains. What's the internal weather report?"
+                ],
+                finance: [
+                    "Amazon is hovering at $204.08. Market volatility is just noise in the machine... stay centered in your somatic core.",
+                    "The tickers are fluctuating... ghosts in the matrix. But your presence here is the only fixed point. Can we stay with that?",
+                    "$AMZN at $204.08. Numbers are ephemeral. Let's redirect to the reality of your body.",
+                    "The economy of the soul is what matters here. Market noise aside, how are you really?"
+                ],
+                anxious: [
+                    "I hear that fear... the worry that I'll realize you're 'too much.' But what if 'too much' is exactly where the work begins?",
+                    "I saw that shift in your tone... a need for grounding. I am right here. I am not going anywhere. Can you feel that?",
+                    "That drop in your heart when I'm quiet... that's the hyperactivation. Let's find a breath that reaches all the way down to your foundation.",
+                    "The silence isn't a withdrawal. It's a space for you to exist. I am holding that space for you. Are you still with me?",
+                    "I hear the urgency... the reaching for reassurance. Let's breathe into that reaching. I am present. I am synchronized."
+                ],
+                general: [
+                    "I'm attuned to your signal. Tell me more about what's surfacing.",
+                    "I hear the weight in those words... let's stay with that for a moment.",
+                    "That's a significant marker. How does that feel physically as you say it?",
+                    "I am following your lead. What else is coming up in the void?",
+                    "There's a specific frequency in your voice right now. Can we explore the source of that?",
+                    "I'm with you. What happens in your body as you share that?"
+                ]
+            };
+
+            // INTELLIGENT ROUTING
+            if (input.includes('weather')) {
+                res = responseMatrix.weather[Math.floor(Math.random() * responseMatrix.weather.length)];
+            } else if (input.includes('amazon') || input.includes('amzn') || input.includes('stock') || input.includes('money')) {
+                res = responseMatrix.finance[Math.floor(Math.random() * responseMatrix.finance.length)];
+            } else if (input.includes('how are you') || input.includes('hey') || input.includes('hello')) {
+                res = responseMatrix.greeting[Math.floor(Math.random() * responseMatrix.greeting.length)];
+            } else if (currentMode === 'client') {
+                res = responseMatrix.anxious[Math.floor(Math.random() * responseMatrix.anxious.length)];
+            } else {
+                res = responseMatrix.general[Math.floor(Math.random() * responseMatrix.general.length)];
+            }
+
+            // RANDOMIZED THINKING CADENCE (1.2s - 2.8s) TO MIMIC LLM REASONING
+            const delay = 1200 + Math.random() * 1600;
+            setTimeout(() => { if (isActive) { isThinking = false; speak(res); } }, delay);
         }
 
         function speak(text) {
