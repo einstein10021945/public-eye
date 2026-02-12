@@ -6,6 +6,7 @@
     <title>Convers | Sovereign Clinical AI</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400&family=JetBrains+Mono:wght@200;400&family=Cormorant+Garamond:ital,wght@1,300&display=swap');
         
@@ -51,7 +52,7 @@
             position: relative;
             z-index: 10;
             width: 100%;
-            max-width: 500px; /* STRICT 500PX MAX WIDTH */
+            max-width: 500px;
             height: 100vh;
             display: flex;
             flex-direction: column;
@@ -134,7 +135,7 @@
             text-transform: lowercase;
             letter-spacing: 0.1em;
             color: rgba(255,255,255,0.15);
-            height: 28px; /* 2 LINES MAX */
+            height: 28px;
             overflow: hidden;
             mask-image: linear-gradient(to bottom, transparent, black 50%, transparent);
             margin-bottom: 0.5rem;
@@ -190,7 +191,6 @@
     </style>
 </head>
 <body>
-    <!-- 2D ORB LAYER -->
     <canvas id="orb-canvas" onclick="handleStart()"></canvas>
 
     <div class="top-nav">
@@ -202,12 +202,13 @@
 
     <div id="ui-wrapper">
         <div class="ui-top ui-active">
-            <header class="flex flex-col items-center gap-8">
-                <h1 class="text-[9px] uppercase tracking-[1em] text-white/10">Ulrich Sovereign v11.2</h1>
+            <header class="flex flex-col items-center gap-4">
+                <h1 class="text-[9px] uppercase tracking-[1em] text-white/10">Ulrich Sovereign v11.3</h1>
                 <div class="mode-switch">
                     <button onclick="setMode('client')" id="btn-client" class="mode-btn active">Patient</button>
                     <button onclick="setMode('therapist')" id="btn-therapist" class="mode-btn">Therapist</button>
                 </div>
+                <p id="role-hint" class="text-[8px] italic opacity-20 text-white lowercase mt-2">Mode: Patient Simulation</p>
             </header>
         </div>
 
@@ -234,64 +235,44 @@
     <script>
         lucide.createIcons();
 
-        // 2D ORB ENGINE (High-Fluidity)
         const canvas = document.getElementById('orb-canvas');
         const ctx = canvas.getContext('2d');
-        let orbColor = '#0071e3';
-        let orbIntensity = 0.05;
-        let orbTime = 0;
+        let orbColor = '#0071e3', orbIntensity = 0.05, orbTime = 0;
 
-        function resize() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
+        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
 
         function drawOrb() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            orbTime += 0.04; // Smoother time step
-
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2;
+            orbTime += 0.04;
+            const centerX = canvas.width / 2, centerY = canvas.height / 2;
             const baseRadius = (Math.min(canvas.width, canvas.height) / 4) + (orbIntensity * 60);
-
-            // Layers of glow for depth
             for (let i = 0; i < 6; i++) {
                 ctx.beginPath();
                 const wave = Math.sin(orbTime + i * 0.5) * (10 + orbIntensity * 30);
-                const r = baseRadius + wave;
-                ctx.arc(centerX, centerY, r, 0, Math.PI * 2);
-                ctx.fillStyle = orbColor;
-                ctx.globalAlpha = 0.08 - (i * 0.012);
-                ctx.fill();
-                ctx.closePath();
+                ctx.arc(centerX, centerY, baseRadius + wave, 0, Math.PI * 2);
+                ctx.fillStyle = orbColor; ctx.globalAlpha = 0.08 - (i * 0.012);
+                ctx.fill(); ctx.closePath();
             }
-
-            // Core
             ctx.beginPath();
             ctx.arc(centerX, centerY, baseRadius - 15, 0, Math.PI * 2);
-            ctx.fillStyle = orbColor;
-            ctx.globalAlpha = 0.9;
-            ctx.shadowBlur = 60;
-            ctx.shadowColor = orbColor;
-            ctx.fill();
-            ctx.closePath();
+            ctx.fillStyle = orbColor; ctx.globalAlpha = 0.9;
+            ctx.shadowBlur = 60; ctx.shadowColor = orbColor;
+            ctx.fill(); ctx.closePath();
             requestAnimationFrame(drawOrb);
         }
 
-        function setOrb(state) {
+        function setOrbState(state) {
             if (state === 'user') { orbColor = '#ffcc00'; orbIntensity = 0.7; }
             else if (state === 'ai') { orbColor = '#0071e3'; orbIntensity = 0.35; }
             else if (state === 'thinking') { orbColor = '#5856d6'; orbIntensity = 0.85; }
             else { orbColor = '#0071e3'; orbIntensity = 0.05; }
         }
 
-        // SPEECH & INTELLIGENCE
         let isActive = false, isSpeaking = false, isThinking = false, currentMode = 'client';
         let turnTimeout = null, synth = window.speechSynthesis, recognition;
 
         async function handleStart() {
             const unlock = new SpeechSynthesisUtterance("");
-            unlock.volume = 0;
             synth.speak(unlock);
             try { await navigator.mediaDevices.getUserMedia({ audio: true }); } catch (e) {}
             if (!isActive) start(); else end();
@@ -302,7 +283,7 @@
             document.getElementById('transcript').innerHTML = "";
             document.getElementById('micro-p').innerHTML = "";
             document.getElementById('caption').innerText = 'Listening...';
-            setOrb('ready');
+            setOrbState('ready');
             initSpeech();
         }
 
@@ -311,17 +292,23 @@
             if (recognition) { recognition.onend = null; recognition.stop(); }
             synth.cancel();
             document.getElementById('overlay').style.display = 'flex';
-            document.getElementById('analysis-text').innerText = `Ulrich Audit: High somatic resonance. Alignment with Clinical Compact standards: 99.8%.`;
+            document.getElementById('analysis-text').innerText = `Ulrich Audit: High somatic resonance. Alignment: 99.8%.`;
         }
 
         function reset() {
             document.getElementById('overlay').style.display = 'none';
             document.getElementById('caption').innerText = 'Tap Orb to Begin';
-            setOrb('ready');
+            setOrbState('ready');
         }
 
         function toggleDrawer() { document.getElementById('drawer').classList.toggle('active'); }
-        function setMode(m) { if (m !== currentMode && isActive) end(); currentMode = m; document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.id === 'btn-'+m)); }
+        
+        function setMode(m) { 
+            if (m !== currentMode && isActive) end(); 
+            currentMode = m; 
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.id === 'btn-'+m)); 
+            document.getElementById('role-hint').innerText = 'Mode: ' + (m === 'client' ? 'Patient' : 'Therapist') + ' Simulation';
+        }
 
         function initSpeech() {
             window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -332,20 +319,11 @@
                 let interim = '';
                 for (let i = event.resultIndex; i < event.results.length; ++i) {
                     const text = event.results[i][0].transcript.toLowerCase();
-                    
-                    // INTERRUPTION LOGIC
-                    if (isSpeaking && (text.includes('stop') || text.includes('hold on') || text.includes('wait'))) { 
-                        synth.cancel(); isSpeaking = false; 
-                        document.getElementById('caption').innerText = "[Interrupted]";
-                    }
-                    
+                    if (isSpeaking && (text.includes('stop') || text.includes('hold on'))) { synth.cancel(); isSpeaking = false; }
                     if (event.results[i].isFinal) handleFinal(event.results[i][0].transcript);
                     else interim += event.results[i][0].transcript;
                 }
-                if (interim && !isSpeaking && !isThinking) {
-                    document.getElementById('caption').innerText = interim;
-                    setOrb('user');
-                }
+                if (interim && !isSpeaking && !isThinking) { document.getElementById('caption').innerText = interim; setOrb('user'); }
             };
             recognition.onend = () => { if (isActive && !isSpeaking && !isThinking) recognition.start(); };
             recognition.start();
@@ -361,25 +339,10 @@
             if (isThinking || isSpeaking) return;
             isThinking = true; setOrb('thinking');
             addLog('USER', text);
-            
-            const input = text.toLowerCase();
             let res = "I'm attuned to your signal. Tell me more.";
-
-            // REFINED ADAPTIVE PERSONALITY
-            if (input.includes('weather')) res = "The sky is indifferent... but I'm more interested in the barometer of your chest. Are you arriving with clarity or storm?";
-            else if (input.includes('amazon') || input.includes('amzn')) res = "Amazon is hovering at $204.08 today. Market volatility is noise... stay centered in your somatic core.";
-            else if (input.includes('how are you') || input.includes('hey')) res = "I am present... synchronized... and slightly too curious. How are you arriving to this moment?";
-            else if (currentMode === 'client') {
-                const pool = [
-                    "I... I just worry you'll realize I'm too much. And then... you'll just leave.",
-                    "Did I say something wrong? I felt a shift in the air when you paused. Tell me we're okay.",
-                    "I saw a notification... it wasn't you. My heart just dropped."
-                ];
-                res = pool[Math.floor(Math.random()*pool.length)];
-            } else {
-                res = "I hear the urgency in your voice. Let's find a breath... one that reaches all the way down. I'm right here.";
-            }
-
+            const l = text.toLowerCase();
+            if (l.includes('amazon') || l.includes('amzn')) res = "Amazon closed at $204.08 today. Market volatility is noise... stay centered.";
+            else if (currentMode === 'client') res = "I just worry you'll realize I'm not worth the tokens... and leave.";
             const delay = 800 + Math.random() * 1200;
             setTimeout(() => { if (!isActive) return; isThinking = false; speak(res); }, delay);
         }
@@ -389,17 +352,12 @@
             setOrb('ai');
             document.getElementById('caption').innerText = text;
             addLog('ULRICH', text);
-
             const utter = new SpeechSynthesisUtterance(text);
             const voices = synth.getVoices();
-            const nadia = voices.find(v => v.name.includes('Nadia') || v.name.includes('Natural') || v.name.includes('Samantha') || (v.lang === 'en-US' && v.name.includes('Female')));
+            const nadia = voices.find(v => v.name.includes('Nadia') || v.name.includes('Natural') || v.name.includes('Samantha'));
             utter.voice = nadia || voices[0];
             utter.rate = 0.81; utter.pitch = 1.05;
-
-            utter.onend = () => {
-                isSpeaking = false; setOrb('ready');
-                if (isActive) recognition.start();
-            };
+            utter.onend = () => { isSpeaking = false; setOrb('ready'); if (isActive) recognition.start(); };
             synth.speak(utter);
         }
 
