@@ -440,8 +440,28 @@
                     console.warn("Backend unavailable, using fallback simulation.");
                     // FALLBACK SIMULATION (For UI Testing)
                     await new Promise(r => setTimeout(r, 1500)); // Fake think time
-                    if (currentMode === 'client') responseText = "I... I feel a tightness in my chest when you say that. It feels like I'm shrinking.";
-                    else responseText = "Ulrich here. Your tone was too directive. You bypassed their dorsal shutdown. Slow down. Titrate the intervention.";
+                    
+                    const clientResponses = [
+                        "I... I feel a tightness in my chest when you say that. It feels like I'm shrinking.",
+                        "My hands are getting cold. I just want to disappear right now.",
+                        "It's like a buzzing in my ears. I can't really hear what you're saying.",
+                        "I feel like a little kid again. Scared. Alone.",
+                        "My stomach is in knots. Is this what panic feels like?"
+                    ];
+                    
+                    const therapistResponses = [
+                        "Ulrich here. Your tone was too directive. You bypassed their dorsal shutdown. Slow down.",
+                        "Audit: You missed the somatic cue. They mentioned 'tightness'. Ask where that lives in their body.",
+                        "Critique: Good pause, but you stepped in too early. Let the silence do the work.",
+                        "Observation: The patient is dissociating. Bring them back to the here-and-now with sensory grounding.",
+                        "Ulrich: That was a cognitive question. They are in a somatic state. Ask what they feel, not what they think."
+                    ];
+
+                    if (currentMode === 'client') {
+                        responseText = clientResponses[Math.floor(Math.random() * clientResponses.length)];
+                    } else {
+                        responseText = therapistResponses[Math.floor(Math.random() * therapistResponses.length)];
+                    }
                 }
 
                 if (isActive) { isThinking = false; speak(responseText); }
@@ -458,12 +478,25 @@
             isSpeaking = true; if (recognition) recognition.stop();
             setOrbState('ai');
             document.getElementById('caption').innerText = text;
+            
             const utter = new SpeechSynthesisUtterance(text);
-            const voices = synth.getVoices();
-            // Try to find a good voice
-            const preferred = voices.find(v => v.name.includes('Samantha')) || voices.find(v => v.name.includes('Google US English')) || voices[0];
+            
+            // robust voice loading
+            let availableVoices = synth.getVoices();
+            if (availableVoices.length === 0) {
+                 // Try again if voices weren't ready
+                 setTimeout(() => speak(text), 100);
+                 return;
+            }
+
+            // Try to find a good voice (Samantha > Google US > Microsoft Zira > Default)
+            const preferred = availableVoices.find(v => v.name.includes('Samantha')) || 
+                              availableVoices.find(v => v.name.includes('Google US English')) || 
+                              availableVoices.find(v => v.name.includes('Zira')) ||
+                              availableVoices[0];
+            
             utter.voice = preferred;
-            utter.rate = 0.9;
+            utter.rate = 0.9; // Slightly slower for therapeutic effect
             utter.pitch = 1.0;
             
             utter.onend = () => { isSpeaking = false; setOrbState('ready'); if (isActive) recognition.start(); };
@@ -474,7 +507,10 @@
         window.addEventListener('load', () => { 
             lucide.createIcons(); 
             initOrb(); 
-            // Pre-load voices
+            // Pre-load voices trigger
+            if (speechSynthesis.onvoiceschanged !== undefined) {
+                speechSynthesis.onvoiceschanged = () => synth.getVoices();
+            }
             synth.getVoices();
         });
     </script>
