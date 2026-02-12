@@ -283,6 +283,16 @@
             <!-- VIEW: DISPATCH (Blog) -->
             <div id="view-dispatch" class="view-section hidden animate-slide-up">
                 <h2 class="text-3xl font-bold mb-8">Mission Logs</h2>
+                
+                <!-- Category Filter -->
+                <div class="flex flex-wrap gap-2 mb-10 overflow-x-auto no-scrollbar pb-2">
+                    <button onclick="filterBlog('all')" class="px-4 py-1.5 rounded-full bg-black text-white text-xs font-bold uppercase tracking-wider hover:bg-gray-800 transition-colors">All</button>
+                    <button onclick="filterBlog('scaling')" class="px-4 py-1.5 rounded-full bg-white border border-gray-200 text-gray-500 text-xs font-bold uppercase tracking-wider hover:text-black hover:border-black transition-colors">Scaling</button>
+                    <button onclick="filterBlog('capital')" class="px-4 py-1.5 rounded-full bg-white border border-gray-200 text-gray-500 text-xs font-bold uppercase tracking-wider hover:text-black hover:border-black transition-colors">Capital</button>
+                    <button onclick="filterBlog('philosophy')" class="px-4 py-1.5 rounded-full bg-white border border-gray-200 text-gray-500 text-xs font-bold uppercase tracking-wider hover:text-black hover:border-black transition-colors">Philosophy</button>
+                    <button onclick="filterBlog('demos')" class="px-4 py-1.5 rounded-full bg-white border border-gray-200 text-gray-500 text-xs font-bold uppercase tracking-wider hover:text-black hover:border-black transition-colors">Demos</button>
+                </div>
+
                 <div class="space-y-8 max-w-4xl">
                     
                     <!-- Article 1: Ulrich Identity -->
