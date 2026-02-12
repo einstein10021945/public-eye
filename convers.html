@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Convers | Sovereign Clinical Matrix</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link rel="stylesheet" href="css/convers.css">
+</head>
+<body>
+    <div id="orb-mount" onclick="handleStart()"></div>
+
+    <a href="index.html" class="os-back ui-element">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+        Back
+    </a>
+
+    <div class="ui-layer">
+        <div class="ui-top ui-element">
+            <header class="flex flex-col items-center">
+                <div class="mode-switch">
+                    <button onclick="setMode('client')" id="btn-client" class="mode-btn active">Patient</button>
+                    <button onclick="setMode('therapist')" id="btn-therapist" class="mode-btn">Therapist</button>
+                </div>
+                <p id="role-hint" class="role-indicator">Mode: Patient Simulation</p>
+            </header>
+        </div>
+
+        <div class="ui-bottom ui-element">
+            <div class="micro-log" id="micro-p">System Matrix Ready</div>
+            <h2 id="caption">Tap Orb to Begin</h2>
+        </div>
+    </div>
+
+    <a href="docs.html" class="docs-link ui-element">System Architecture & Config</a>
+
+    <div id="analysis" class="ui-element space-y-8">
+        <h3 class="text-white text-3xl italic tracking-tighter uppercase">Analysis</h3>
+        <p id="analysis-text" class="text-white/40 text-sm leading-relaxed max-w-sm"></p>
+        <button onclick="reset()" class="bg-blue-600 text-white px-8 py-3 rounded-full text-xs font-black uppercase tracking-widest ui-active">Continue</button>
+    </div>
+
+    <script src="js/convers.js"></script>
+</body>
+</html>

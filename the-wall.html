@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Wall | Somatic Regulation Engine v1.0</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
+        body { 
+            margin: 0; 
+            overflow: hidden; 
+            background: #000; 
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: white;
+        }
+        #p5-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .ui-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .interactive {
+            pointer-events: auto;
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(40px) saturate(150%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 32px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+        @keyframes subtle-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.1); }
+            50% { box-shadow: 0 0 40px rgba(59, 130, 246, 0.2); }
+        }
+        .active-glow {
+            animation: subtle-glow 4s ease-in-out infinite;
+        }
+        @keyframes breath {
+            0%, 100% { transform: scale(1); opacity: 0.3; }
+            50% { transform: scale(1.1); opacity: 0.6; }
+        }
+        .breathing-bg {
+            animation: breath 8s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+    <div id="p5-container"></div>
+    
+    <div class="ui-layer flex flex-col justify-between p-10">
+        <div class="flex justify-between items-start">
+            <div class="glass p-8 active-glow">
+                <h1 class="text-3xl font-black tracking-tighter italic">THE WALL</h1>
+                <p class="text-[10px] font-bold text-blue-400 uppercase tracking-[0.4em]">Somatic Regulation v1.1</p>
+            </div>
+            <div class="glass p-8 text-right active-glow">
+                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Telemetry</p>
+                <p id="state-display" class="text-xl font-bold text-emerald-400 transition-all duration-500">REGULATED</p>
+            </div>
+        </div>
+
+        <div class="flex flex-col items-center gap-6">
+            <div id="instruction" class="text-2xl font-light tracking-wide text-white/80 transition-all duration-1000">
+                Place your hand on the sensor.
+            </div>
+            <div class="flex gap-4">
+                <button onclick="resetEngine()" class="interactive glass px-8 py-4 text-xs font-bold uppercase tracking-widest hover:bg-white/10 transition-all">Reset Sync</button>
+                <button onclick="exitApp()" class="interactive glass px-8 py-4 text-xs font-bold uppercase tracking-widest hover:bg-red-500/20 transition-all">Exit OS</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let particles = [];
+        let state = 'waiting'; // waiting, inhale, hold, exhale
+        let timer = 0;
+        let scaleVal = 1;
+        let targetScale = 1;
+        let pulseColor;
+
+        function setup() {
+            const canvas = createCanvas(windowWidth, windowHeight);
+            canvas.parent('p5-container');
+            for(let i = 0; i < 100; i++) {
+                particles.push(new Particle());
+            }
+            pulseColor = color(59, 130, 246); // blue-500
+        }
+
+        function draw() {
+            background(0, 15); // Motion blur effect
+            
+            // Logic for breathing cycle
+            updateBreathing();
+
+            // Render particles
+            particles.forEach(p => {
+                p.update(state, scaleVal);
+                p.show();
+            });
+
+            // Central pulse
+            noFill();
+            strokeWeight(2);
+            let alpha = map(scaleVal, 1, 2.5, 50, 255);
+            stroke(red(pulseColor), green(pulseColor), blue(pulseColor), alpha);
+            ellipse(width/2, height/2, 300 * scaleVal);
+            
+            strokeWeight(0.5);
+            ellipse(width/2, height/2, 350 * scaleVal);
+        }
+
+        function updateBreathing() {
+            timer += deltaTime / 1000;
+
+            if (state === 'waiting') {
+                targetScale = 1;
+                if (mouseIsPressed || (touches.length > 0)) {
+                    state = 'inhale';
+                    timer = 0;
+                }
+            } else if (state === 'inhale') {
+                document.getElementById('instruction').innerText = "Inhale slowly...";
+                document.getElementById('instruction').style.transform = "scale(1.1)";
+                document.getElementById('state-display').innerText = "UP-REGULATING";
+                document.getElementById('state-display').className = "text-xl font-bold text-blue-400";
+                pulseColor = color(59, 130, 246);
+                targetScale = 2.5;
+                if (timer > 4) { state = 'hold'; timer = 0; }
+                if (!mouseIsPressed && (touches.length === 0)) resetEngine();
+            } else if (state === 'hold') {
+                document.getElementById('instruction').innerText = "Hold...";
+                targetScale = 2.6;
+                if (timer > 4) { state = 'exhale'; timer = 0; }
+                if (!mouseIsPressed && (touches.length === 0)) resetEngine();
+            } else if (state === 'exhale') {
+                document.getElementById('instruction').innerText = "Exhale and release...";
+                document.getElementById('instruction').style.transform = "scale(1.0)";
+                document.getElementById('state-display').innerText = "DOWN-REGULATING";
+                document.getElementById('state-display').className = "text-xl font-bold text-emerald-400";
+                pulseColor = color(16, 185, 129); // emerald-500
+                targetScale = 1;
+                if (timer > 6) { state = 'waiting'; timer = 0; }
+                if (!mouseIsPressed && (touches.length === 0)) resetEngine();
+            }
+
+            scaleVal = lerp(scaleVal, targetScale, 0.03); // Smoother lerp
+        }
+
+        function resetEngine() {
+            state = 'waiting';
+            timer = 0;
+            document.getElementById('instruction').innerText = "Place your hand on the sensor.";
+            document.getElementById('state-display').innerText = "READY";
+            document.getElementById('state-display').className = "text-xl font-bold text-white/50";
+        }
+
+        function exitApp() {
+            window.location.href = 'index.html';
+        }
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+            reset() {
+                this.pos = createVector(random(width), random(height));
+                this.vel = createVector(random(-0.5, 0.5), random(-0.5, 0.5));
+                this.size = random(1, 3);
+            }
+            update(state, s) {
+                let center = createVector(width/2, height/2);
+                let dir = p5.Vector.sub(center, this.pos);
+                let dist = dir.mag();
+                
+                if (state === 'inhale') {
+                    dir.setMag(0.1 * s);
+                    this.vel.add(dir);
+                } else if (state === 'exhale') {
+                    dir.setMag(-0.05 * s);
+                    this.vel.add(dir);
+                }
+                
+                this.pos.add(this.vel);
+                this.vel.limit(2);
+
+                if (this.pos.x < 0 || this.pos.x > width || this.pos.y < 0 || this.pos.y > height) {
+                    this.reset();
+                }
+            }
+            show() {
+                noStroke();
+                fill(255, 150);
+                ellipse(this.pos.x, this.pos.y, this.size);
+            }
+        }
+
+        function windowResized() {
+            resizeCanvas(windowWidth, windowHeight);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+RewriteEngine On
+
+# Disable Caching for HTML/JSON/JS
+<FilesMatch "\.(html|htm|js|css|json)$">
+    FileETag None
+    <IfModule mod_headers.c>
+        Header unset ETag
+        Header set Cache-Control "max-age=0, no-cache, no-store, must-revalidate"
+        Header set Pragma "no-cache"
+        Header set Expires "Wed, 11 Jan 1984 05:00:00 GMT"
+    </IfModule>
+</FilesMatch>
+
+# Remove .html extension
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}\.html -f
+RewriteRule ^(.*)$ $1.html [L]
+
+# Custom Slugs
+RewriteRule ^convers$ convers.html [L]
+RewriteRule ^convers-v2$ convers-v2.html [L]
+RewriteRule ^architecture$ docs.html [L]
+RewriteRule ^patient$ convers.html?mode=client [QSA,L]
+RewriteRule ^therapist$ convers.html?mode=therapist [QSA,L]
+
+# Force HTTPS
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]

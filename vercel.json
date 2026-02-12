@@ -1,0 +1,10 @@
+{
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/convers", "destination": "/convers.html" },
+    { "source": "/architecture", "destination": "/docs.html" },
+    { "source": "/patient", "destination": "/convers.html?mode=client" },
+    { "source": "/therapist", "destination": "/convers.html?mode=therapist" },
+    { "source": "/:slug", "destination": "/:slug.html" }
+  ]
+}
