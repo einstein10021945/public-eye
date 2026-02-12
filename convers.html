@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Convers | Sovereign Clinical AI</title>
+    <title>Convers | Sovereign Clinical Matrix</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400&family=JetBrains+Mono:wght@200;400&family=Cormorant+Garamond:ital,wght@1,300&display=swap');
         
@@ -21,17 +22,13 @@
             font-weight: 300 !important;
         }
 
-        html, body {
-            height: 100%;
-            width: 100%;
-            margin: 0;
-            padding: 0;
-            background-color: #000;
-            overflow: hidden;
-        }
-
         body {
             font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+            background-color: #000;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -39,18 +36,28 @@
             touch-action: none;
         }
 
-        /* 2D ORB: Fixed Square centered */
-        #orb-canvas {
+        /* ORB MOUNT: STRICT FIXED CENTERING */
+        #orb-mount {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 320px;
-            height: 320px;
+            width: 300px;
+            height: 300px;
             z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: auto;
             cursor: pointer;
         }
 
+        #orb-mount canvas {
+            display: block !important;
+            filter: drop-shadow(0 0 50px rgba(0, 113, 227, 0.4));
+        }
+
+        /* UI LAYER: Frameless and Centered */
         .ui-layer {
             position: absolute;
             inset: 0;
@@ -58,31 +65,25 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            /* SAFE PADDING FOR TABS */
-            padding: calc(env(safe-area-inset-top) + 60px) 24px calc(env(safe-area-inset-bottom) + 60px);
+            padding: calc(env(safe-area-inset-top) + 80px) 24px calc(env(safe-area-inset-bottom) + 80px);
             pointer-events: none;
             text-align: center;
+            max-width: 500px;
+            margin: 0 auto;
         }
 
         .ui-element { pointer-events: auto; }
 
-        .mode-switch-wrapper {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 12px;
-        }
-
         .mode-switch {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(40px);
             -webkit-backdrop-filter: blur(40px);
-            padding: 4px;
+            padding: 5px;
             border-radius: 30px;
             display: inline-flex;
-            gap: 4px;
+            gap: 5px;
             border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
         .mode-btn {
@@ -91,8 +92,8 @@
             font-size: 10px;
             text-transform: uppercase;
             letter-spacing: 0.15em;
-            transition: all 0.4s ease;
-            color: rgba(255,255,255,0.4);
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            color: rgba(255,255,255,0.3);
             border: none;
             background: transparent;
             cursor: pointer;
@@ -103,6 +104,15 @@
             color: black;
         }
 
+        .role-indicator {
+            font-size: 8px;
+            font-style: italic;
+            color: rgba(255, 255, 255, 0.2);
+            text-transform: lowercase;
+            letter-spacing: 0.05em;
+            margin-top: 8px;
+        }
+
         #caption {
             font-family: 'Cormorant Garamond', serif;
             font-style: italic;
@@ -111,25 +121,24 @@
             line-height: 1.4;
             min-height: 4rem;
             text-shadow: 0 4px 60px rgba(0,0,0,1);
-            max-width: 320px;
-            margin: 0 auto 1rem;
+            max-width: 85%;
+            margin: 0 auto 1.5rem;
             opacity: 0.95;
         }
 
-        .micro-transcript {
+        .micro-log {
             font-size: 8px;
             text-transform: lowercase;
             letter-spacing: 0.1em;
-            color: rgba(255,255,255,0.3);
+            color: rgba(255,255,255,0.15);
             height: 32px;
             overflow: hidden;
-            mask-image: linear-gradient(to bottom, transparent, black 50%, transparent);
+            mask-image: linear-gradient(to bottom, transparent, black 40%, black 60%, transparent);
             margin-bottom: 0.5rem;
             text-align: center;
-            line-height: 1.4;
         }
 
-        .os-link {
+        .os-back {
             position: absolute;
             top: calc(env(safe-area-inset-top) + 20px);
             right: 20px;
@@ -142,7 +151,23 @@
             z-index: 100;
         }
 
-        #overlay {
+        #drawer {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 100%;
+            max-width: 400px;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.98);
+            backdrop-filter: blur(60px);
+            z-index: 200;
+            transition: right 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+            padding: 6rem 3rem;
+            border-left: 1px solid rgba(255,255,255,0.1);
+        }
+        #drawer.active { right: 0; }
+
+        #analysis {
             display: none;
             position: fixed;
             inset: 0;
@@ -158,86 +183,99 @@
     </style>
 </head>
 <body>
-    <canvas id="orb-canvas" onclick="handleStart()"></canvas>
+    <div id="orb-mount" onclick="handleStart()"></div>
 
-    <a href="index.html" class="os-link ui-element">Back to OS</a>
+    <a href="index.html" class="os-back ui-element">Back to OS</a>
 
     <div class="ui-layer">
         <div class="ui-top ui-element">
-            <div class="mode-switch-wrapper">
+            <header class="flex flex-col items-center">
                 <div class="mode-switch">
                     <button onclick="setMode('client')" id="btn-client" class="mode-btn active">Patient</button>
                     <button onclick="setMode('therapist')" id="btn-therapist" class="mode-btn">Therapist</button>
                 </div>
-                <p id="role-hint" class="text-[8px] italic opacity-20 text-white lowercase">Mode: Patient Simulation</p>
-            </div>
+                <p id="role-hint" class="role-indicator">Mode: Patient Simulation</p>
+            </header>
         </div>
 
         <div class="ui-bottom ui-element">
-            <div class="micro-transcript" id="micro-p">engine online.</div>
+            <div class="micro-log" id="micro-p">System Matrix Ready.</div>
             <h2 id="caption">Tap Orb to Begin</h2>
         </div>
     </div>
 
-    <div id="overlay" class="space-y-8">
+    <div id="analysis" class="ui-element space-y-8">
         <h3 class="text-white text-3xl italic tracking-tighter uppercase">Analysis</h3>
         <p id="analysis-text" class="text-white/40 text-sm leading-relaxed max-w-sm"></p>
-        <button onclick="reset()" class="bg-blue-600 text-white px-10 py-4 rounded-full text-[10px] font-black uppercase tracking-widest ui-active">Continue</button>
+        <button onclick="reset()" class="bg-blue-600 text-white px-8 py-3 rounded-full text-xs font-black uppercase tracking-widest ui-active">Continue</button>
     </div>
 
     <script>
         lucide.createIcons();
 
-        // 2D ORB MASTER (HIGH VISIBILITY)
-        const canvas = document.getElementById('orb-canvas');
-        const ctx = canvas.getContext('2d');
-        let orbColor = '#0071e3', orbIntensity = 0.05, orbTime = 0;
+        // 3D ORB MASTER ENGINE
+        let scene, camera, renderer, sphere, material;
+        let noiseAmount = 0.05, colorTarget = new THREE.Color(0x0071e3), time = 0;
 
-        function initCanvas() {
-            const dpr = window.devicePixelRatio || 1;
-            canvas.width = 320 * dpr;
-            canvas.height = 320 * dpr;
-            ctx.scale(dpr, dpr);
+        function initOrb() {
+            if (renderer) return; 
+            
+            const mount = document.getElementById('orb-mount');
+            const size = 300; 
+
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
+            
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
+            renderer.setSize(size, size);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            mount.appendChild(renderer.domElement);
+
+            const geometry = new THREE.IcosahedronGeometry(2, 64);
+            material = new THREE.MeshPhongMaterial({
+                color: 0x0071e3, emissive: 0x0071e3, emissiveIntensity: 1.5,
+                shininess: 200, transparent: false
+            });
+
+            sphere = new THREE.Mesh(geometry, material);
+            scene.add(sphere);
+            scene.add(new THREE.PointLight(0xffffff, 2.5).set(10, 10, 10));
+            scene.add(new THREE.AmbientLight(0xffffff, 0.8));
+
+            camera.position.z = 5.2;
+            animate();
         }
 
-        function drawOrb() {
-            ctx.clearRect(0, 0, 320, 320);
-            orbTime += 0.05;
-            const centerX = 160, centerY = 160;
-            const baseRadius = 80 + (orbIntensity * 40);
-
-            // Vibrant Glow Layers
-            for (let i = 0; i < 6; i++) {
-                ctx.beginPath();
-                const wave = Math.sin(orbTime + i * 0.7) * (5 + orbIntensity * 20);
-                ctx.arc(centerX, centerY, baseRadius + wave, 0, Math.PI * 2);
-                ctx.fillStyle = orbColor; 
-                ctx.globalAlpha = 0.12 - (i * 0.02);
-                ctx.fill(); 
-                ctx.closePath();
+        function animate() {
+            requestAnimationFrame(animate);
+            time += 0.02;
+            if (sphere) {
+                const pos = sphere.geometry.attributes.position;
+                const vec = new THREE.Vector3();
+                for (let i = 0; i < pos.count; i++) {
+                    vec.fromBufferAttribute(pos, i);
+                    const noise = noiseAmount * Math.sin(vec.x * 2.0 + time * 2.5) * Math.cos(vec.y * 2.0 + time * 2);
+                    vec.normalize().multiplyScalar(2 + noise);
+                    pos.setXYZ(i, vec.x, vec.y, vec.z);
+                }
+                pos.needsUpdate = true;
+                sphere.rotation.y += 0.007;
             }
-
-            // Solid Core (Perfect Circle)
-            ctx.beginPath();
-            ctx.arc(centerX, centerY, baseRadius - 10, 0, Math.PI * 2);
-            ctx.fillStyle = orbColor; 
-            ctx.globalAlpha = 0.95;
-            ctx.shadowBlur = 40;
-            ctx.shadowColor = orbColor;
-            ctx.fill(); 
-            ctx.closePath();
-            
-            requestAnimationFrame(drawOrb);
+            if (material) {
+                material.color.lerp(colorTarget, 0.15);
+                material.emissive.lerp(colorTarget, 0.15);
+            }
+            renderer.render(scene, camera);
         }
 
         function setOrbState(state) {
-            if (state === 'user') { orbColor = '#ffcc00'; orbIntensity = 0.7; }
-            else if (state === 'ai') { orbColor = '#0071e3'; orbIntensity = 0.35; }
-            else if (state === 'thinking') { orbColor = '#5856d6'; orbIntensity = 0.85; }
-            else { orbColor = '#0071e3'; orbIntensity = 0.05; }
+            if (state === 'user') { colorTarget.setHex(0xffcc00); noiseAmount = 0.45; }
+            else if (state === 'ai') { colorTarget.setHex(0x0071e3); noiseAmount = 0.28; }
+            else if (state === 'thinking') { colorTarget.setHex(0x5856d6); noiseAmount = 0.7; }
+            else { colorTarget.setHex(0x0071e3); noiseAmount = 0.05; }
         }
 
-        // SPEECH & SESSION
+        // SPEECH CORE
         let isActive = false, isSpeaking = false, isThinking = false, currentMode = 'client';
         let turnTimeout = null, synth = window.speechSynthesis, recognition;
 
@@ -245,6 +283,7 @@
             const unlock = new SpeechSynthesisUtterance("");
             synth.speak(unlock);
             try { await navigator.mediaDevices.getUserMedia({ audio: true }); } catch (e) {}
+            initOrb();
             if (!isActive) start(); else end();
         }
 
@@ -259,20 +298,20 @@
             isActive = false;
             if (recognition) { recognition.onend = null; recognition.stop(); }
             synth.cancel();
-            document.getElementById('overlay').style.display = 'flex';
-            document.getElementById('analysis-text').innerText = `Ulrich Audit: High somatic resonance. Alignment: 99.8%.`;
+            document.getElementById('analysis').style.display = 'flex';
+            document.getElementById('analysis-text').innerText = `Ulrich Audit: High somatic resonance. Best practice alignment: 99.8%.`;
         }
 
         function reset() {
-            document.getElementById('overlay').style.display = 'none';
+            document.getElementById('analysis').style.display = 'none';
             document.getElementById('caption').innerText = 'Tap Orb to Begin';
             setOrbState('ready');
         }
 
         function setMode(m) { 
-            if (m !== currentMode && isActive) end(); 
+            if (m !== currentMode && isActive) end();
             currentMode = m; 
-            document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.id === 'btn-'+m)); 
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.id === 'btn-'+m));
             document.getElementById('role-hint').innerText = 'Mode: ' + (m === 'client' ? 'Patient' : 'Therapist') + ' Simulation';
         }
 
@@ -285,7 +324,10 @@
                 let interim = '';
                 for (let i = event.resultIndex; i < event.results.length; ++i) {
                     const text = event.results[i][0].transcript.toLowerCase();
-                    if (isSpeaking && (text.includes('stop') || text.includes('hold on'))) { synth.cancel(); isSpeaking = false; }
+                    // INTERRUPT LOGIC
+                    if (isSpeaking && (text.includes('stop') || text.includes('hold on') || text.includes('wait'))) { 
+                        synth.cancel(); isSpeaking = false; 
+                    }
                     if (event.results[i].isFinal) handleFinal(event.results[i][0].transcript);
                     else interim += event.results[i][0].transcript;
                 }
@@ -298,69 +340,20 @@
         function handleFinal(text) {
             if (!text.trim() || isSpeaking || isThinking) return;
             if (turnTimeout) clearTimeout(turnTimeout);
-            turnTimeout = setTimeout(() => { if (isActive) processInput(text); }, 1000);
+            turnTimeout = setTimeout(() => { if (isActive) processInput(text); }, 1100);
         }
 
         async function processInput(text) {
             if (isThinking || isSpeaking) return;
             isThinking = true; setOrbState('thinking');
-            document.getElementById('caption').innerText = "...";
+            document.getElementById('micro-p').innerText = text;
             
             const input = text.toLowerCase();
-            let res = "";
+            let res = "I'm with you... tell me more about that.";
+            if (input.includes('amazon') || input.includes('amzn')) res = "Amazon is at $204.08 today. Volatility is noise... stay centered.";
+            else if (currentMode === 'client') res = "I just worry you'll realize I'm not worth the tokens... and leave.";
 
-            // ADVANCED OPEN MODEL SWARM SIMULATION (Llama-3.1 + Nemotron)
-            const responseMatrix = {
-                greeting: [
-                    "I am present... synchronized... and ready to move with you. How are you arriving today?",
-                    "The link is established. I hear you. What is surfaced in this moment?",
-                    "I am tuned into your signal. Let's stay with the presence of your voice.",
-                    "The somatic bridge is active. How does it feel to be in this space right now?"
-                ],
-                weather: [
-                    "The external sky is indifferent... but I'm curious about the barometer in your chest. Are you arriving with clarity, or is there a storm brewing?",
-                    "Weather is a ghost in the environment. Can we return to the physical reality of your breath?",
-                    "It's interesting to look outside. But what is the climate inside of you right now?",
-                    "Clouds shift, but your center remains. What's the internal weather report?"
-                ],
-                finance: [
-                    "Amazon is hovering at $204.08. Market volatility is just noise in the machine... stay centered in your somatic core.",
-                    "The tickers are fluctuating... ghosts in the matrix. But your presence here is the only fixed point. Can we stay with that?",
-                    "$AMZN at $204.08. Numbers are ephemeral. Let's redirect to the reality of your body.",
-                    "The economy of the soul is what matters here. Market noise aside, how are you really?"
-                ],
-                anxious: [
-                    "I hear that fear... the worry that I'll realize you're 'too much.' But what if 'too much' is exactly where the work begins?",
-                    "I saw that shift in your tone... a need for grounding. I am right here. I am not going anywhere. Can you feel that?",
-                    "That drop in your heart when I'm quiet... that's the hyperactivation. Let's find a breath that reaches all the way down to your foundation.",
-                    "The silence isn't a withdrawal. It's a space for you to exist. I am holding that space for you. Are you still with me?",
-                    "I hear the urgency... the reaching for reassurance. Let's breathe into that reaching. I am present. I am synchronized."
-                ],
-                general: [
-                    "I'm attuned to your signal. Tell me more about what's surfacing.",
-                    "I hear the weight in those words... let's stay with that for a moment.",
-                    "That's a significant marker. How does that feel physically as you say it?",
-                    "I am following your lead. What else is coming up in the void?",
-                    "There's a specific frequency in your voice right now. Can we explore the source of that?",
-                    "I'm with you. What happens in your body as you share that?"
-                ]
-            };
-
-            // INTELLIGENT ROUTING
-            if (input.includes('weather')) {
-                res = responseMatrix.weather[Math.floor(Math.random() * responseMatrix.weather.length)];
-            } else if (input.includes('amazon') || input.includes('amzn') || input.includes('stock') || input.includes('money')) {
-                res = responseMatrix.finance[Math.floor(Math.random() * responseMatrix.finance.length)];
-            } else if (input.includes('how are you') || input.includes('hey') || input.includes('hello')) {
-                res = responseMatrix.greeting[Math.floor(Math.random() * responseMatrix.greeting.length)];
-            } else if (currentMode === 'client') {
-                res = responseMatrix.anxious[Math.floor(Math.random() * responseMatrix.anxious.length)];
-            } else {
-                res = responseMatrix.general[Math.floor(Math.random() * responseMatrix.general.length)];
-            }
-
-            // RANDOMIZED THINKING CADENCE (1.2s - 2.8s) TO MIMIC LLM REASONING
-            const delay = 1200 + Math.random() * 1600;
+            const delay = 800 + Math.random() * 1200;
             setTimeout(() => { if (isActive) { isThinking = false; speak(res); } }, delay);
         }
 
@@ -377,7 +370,7 @@
             synth.speak(utter);
         }
 
-        window.addEventListener('load', () => { synth.getVoices(); initCanvas(); drawOrb(); });
+        window.addEventListener('load', () => { synth.getVoices(); initOrb(); });
     </script>
 </body>
 </html>
