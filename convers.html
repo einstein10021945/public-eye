@@ -36,14 +36,24 @@
             color: white;
         }
 
-        /* ORB MOUNT: Fixed to center, always visible */
+        #app-viewport {
+            width: 100%;
+            max-width: 900px;
+            height: 100%;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ORB MOUNT: Full height/width background layer */
         #orb-mount {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 350px;
-            height: 350px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             z-index: 1;
             display: flex;
             align-items: center;
@@ -54,40 +64,37 @@
 
         #orb-mount canvas {
             display: block !important;
-            opacity: 1 !important;
-            visibility: visible !important;
+            filter: drop-shadow(0 0 30px rgba(0, 113, 227, 0.4));
         }
 
-        .interface-layer {
-            position: relative;
-            z-index: 10;
+        /* UI LAYER: Floating over the orb */
+        .ui-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            max-width: 900px;
+            z-index: 10;
+            padding: calc(env(safe-area-inset-top) + 30px) 30px calc(env(safe-area-inset-bottom) + 40px);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            padding: calc(env(safe-area-inset-top) + 20px) 20px calc(env(safe-area-inset-bottom) + 30px);
             pointer-events: none;
         }
 
-        .ui-top, .ui-bottom {
-            pointer-events: auto;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            flex-shrink: 0;
-        }
+        .ui-element { pointer-events: auto; }
 
         .mode-switch {
             background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(30px);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
             padding: 4px;
             border-radius: 24px;
             display: inline-flex;
             gap: 4px;
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.15);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            margin: 0 auto;
         }
 
         .mode-btn {
@@ -97,7 +104,7 @@
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 0.15em;
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
             color: rgba(255,255,255,0.4);
         }
 
@@ -107,14 +114,14 @@
         }
 
         #live-caption {
-            font-size: 1.25rem;
+            font-size: 1.3rem;
             font-weight: 700;
             text-align: center;
             color: #ffffff;
             line-height: 1.4;
             min-height: 4rem;
-            text-shadow: 0 4px 40px rgba(0,0,0,1);
-            max-width: 85%;
+            text-shadow: 0 4px 50px rgba(0,0,0,1);
+            max-width: 80%;
             margin: 0 auto 1.5rem;
         }
 
@@ -123,8 +130,8 @@
             font-weight: 400;
             text-transform: lowercase;
             letter-spacing: 0.12em;
-            color: rgba(255,255,255,0.2);
-            height: 32px;
+            color: rgba(255,255,255,0.15);
+            height: 40px;
             overflow: hidden;
             mask-image: linear-gradient(to bottom, transparent, black 50%, transparent);
             margin-bottom: 0.5rem;
@@ -134,24 +141,30 @@
         .epic-button {
             background: #ffffff;
             color: #000000;
-            padding: 1.25rem 3.5rem;
+            padding: 1.25rem 4rem;
             border-radius: 40px;
             font-weight: 900;
             text-transform: uppercase;
             letter-spacing: 0.3em;
             font-size: 11px;
-            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
             border: none;
             cursor: pointer;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+            box-shadow: 0 25px 60px rgba(0,0,0,0.8);
+            -webkit-tap-highlight-color: transparent;
         }
 
-        .epic-button:hover { background: var(--apple-blue); color: white; }
+        .epic-button:hover { 
+            background: var(--apple-blue); 
+            color: white; 
+            transform: translateY(-5px) scale(1.02); 
+            box-shadow: 0 35px 80px rgba(0, 113, 227, 0.4);
+        }
 
         .drawer-trigger {
             position: absolute;
-            top: calc(env(safe-area-inset-top) + 25px);
-            right: 25px;
+            top: calc(env(safe-area-inset-top) + 30px);
+            right: 30px;
             color: rgba(255,255,255,0.3);
             cursor: pointer;
             z-index: 100;
@@ -169,13 +182,13 @@
             backdrop-filter: blur(60px);
             z-index: 200;
             transition: right 0.6s cubic-bezier(0.23, 1, 0.32, 1);
-            padding: 5rem 2.5rem;
+            padding: 6rem 3rem;
             border-left: 1px solid rgba(255,255,255,0.1);
         }
         #drawer.active { right: 0; }
 
         .bubble {
-            padding: 1.25rem;
+            padding: 1.5rem;
             border-radius: 24px;
             margin-bottom: 1.5rem;
             font-size: 14px;
@@ -185,68 +198,65 @@
         .bubble.user { background: rgba(255, 204, 0, 0.08); border-left-color: var(--apple-yellow); color: var(--apple-yellow); }
         .bubble.ai { background: rgba(0, 113, 227, 0.08); border-left-color: var(--apple-blue); color: var(--apple-blue); }
 
-        #analysis-overlay {
+        #overlay {
             display: none;
             position: fixed;
             inset: 0;
             background: rgba(0,0,0,0.99);
             z-index: 300;
-            padding: 4rem 2.5rem;
+            padding: 4rem 3rem;
             flex-direction: column;
             justify-content: center;
             text-align: left;
             backdrop-filter: blur(40px);
             pointer-events: auto;
         }
-
-        @media (max-width: 480px) {
-            #orb-mount { width: 300px; height: 300px; }
-            #live-caption { font-size: 1.1rem; }
-        }
     </style>
 </head>
 <body>
 
-    <!-- PERSISTENT ORB (Always Background) -->
-    <div id="orb-mount" onclick="handleStart()"></div>
+    <div id="app-viewport">
+        <!-- 3D ORB BACKGROUND LAYER -->
+        <div id="orb-mount" class="ui-element" onclick="handleStart()"></div>
 
-    <div class="interface-layer">
-        <div class="drawer-trigger" onclick="toggleDrawer()">
-            <i data-lucide="menu" class="w-7 h-7"></i>
-        </div>
+        <div class="ui-layer">
+            <div class="drawer-trigger ui-element" onclick="toggleDrawer()">
+                <i data-lucide="menu" class="w-7 h-7"></i>
+            </div>
 
-        <div class="ui-top">
-            <header class="space-y-4">
-                <h1 class="text-[9px] font-black uppercase tracking-[0.5em] text-white/20">Ulrich Matrix v6.1</h1>
-                <div class="mode-switch">
-                    <button onclick="setMode('client')" id="mode-client" class="mode-btn active">Patient</button>
-                    <button onclick="setMode('therapist')" id="mode-therapist" class="mode-btn">Therapist</button>
+            <div class="ui-top ui-element">
+                <header class="flex flex-col items-center gap-6">
+                    <h1 class="text-[10px] font-black uppercase tracking-[0.7em] text-white/20">Ulrich Convers v6.2</h1>
+                    <div class="mode-switch">
+                        <button onclick="setMode('client')" id="mode-client" class="mode-btn active">Patient</button>
+                        <button onclick="setMode('therapist')" id="mode-therapist" class="mode-btn">Therapist</button>
+                    </div>
+                </header>
+            </div>
+
+            <div class="ui-bottom ui-element pb-12">
+                <div class="micro-transcript" id="transcript-p">engine active...</div>
+                <h2 id="live-caption">Tap Orb to Begin</h2>
+                <div class="pt-10">
+                    <button onclick="handleStart()" id="main-btn" class="epic-button">
+                        Initialize Session
+                    </button>
                 </div>
-            </header>
-        </div>
-
-        <div class="ui-bottom">
-            <div class="micro-transcript" id="transcript-p">waiting for signal...</div>
-            <h2 id="live-caption">Tap Orb to Begin</h2>
-            <div class="pt-8">
-                <button onclick="handleStart()" id="main-btn" class="epic-button">
-                    Initialize
-                </button>
             </div>
         </div>
-    </div>
 
-    <div id="analysis-overlay" class="space-y-8">
-        <h3 class="text-white text-4xl font-black italic uppercase tracking-tighter">Analysis</h3>
-        <div id="rating-stars" class="flex gap-2 text-yellow-400"></div>
-        <p id="rating-text" class="text-white/40 text-sm leading-relaxed font-medium"></p>
-        <button onclick="resetSession()" class="epic-button bg-blue-600 text-white">Continue</button>
+        <div id="overlay" class="space-y-8">
+            <h3 class="text-white text-4xl font-black italic uppercase tracking-tighter">Analysis</h3>
+            <div id="rating-stars" class="flex gap-2 text-yellow-400"></div>
+            <p id="rating-text" class="text-white/40 text-sm leading-relaxed font-medium max-w-sm"></p>
+            <button onclick="resetSession()" class="epic-button bg-blue-600 text-white">New Session</button>
+        </div>
     </div>
 
     <div id="drawer">
         <div class="flex justify-between items-center mb-10">
-            <h3 class="text-white text-lg font-black uppercase tracking-[0.4em]">Log</h3>
-            <button onclick="toggleDrawer()" class="text-white/20 hover:text-white"><i data-lucide="x" class="w-8 h-8"></i></button>
+            <h3 class="text-white text-lg font-black uppercase tracking-[0.4em]">Imperial Matrix Log</h3>
+            <button onclick="toggleDrawer()" class="text-white/20 hover:text-white ui-element"><i data-lucide="x" class="w-8 h-8"></i></button>
         </div>
         <div id="transcript" class="overflow-y-auto h-[85%] space-y-4 pr-2"></div>
     </div>
@@ -254,7 +264,7 @@
     <script>
         lucide.createIcons();
 
-        // 3D ORB ENGINE (Visibility Fixed)
+        // 3D ORB ENGINE (Robust Restoration)
         let scene, camera, renderer, sphere, material;
         let noiseAmount = 0.05;
         let colorTarget = new THREE.Color(0x0071e3);
@@ -262,32 +272,49 @@
 
         function initOrb() {
             if (renderer) return; 
-            const mount = document.getElementById('orb-mount');
             
+            const mount = document.getElementById('orb-mount');
+            const w = mount.clientWidth;
+            const h = mount.clientHeight;
+
             scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
+            camera = new THREE.PerspectiveCamera(75, w / h, 0.1, 1000);
             
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
-            renderer.setSize(mount.offsetWidth, mount.offsetHeight);
+            renderer.setSize(w, h);
             renderer.setPixelRatio(window.devicePixelRatio);
             mount.appendChild(renderer.domElement);
 
             const geometry = new THREE.IcosahedronGeometry(2, 64);
             material = new THREE.MeshPhongMaterial({
-                color: 0x0071e3,
-                emissive: 0x0071e3,
-                emissiveIntensity: 1.0,
-                shininess: 150,
-                transparent: false
+                color: 0x0071e3, emissive: 0x0071e3, emissiveIntensity: 1.2,
+                shininess: 150, transparent: false
             });
 
             sphere = new THREE.Mesh(geometry, material);
             scene.add(sphere);
-            scene.add(new THREE.PointLight(0xffffff, 2.5).set(5, 5, 5));
+            scene.add(new THREE.PointLight(0xffffff, 2.5).set(10, 10, 10));
             scene.add(new THREE.AmbientLight(0xffffff, 0.8));
 
             camera.position.z = 5.2;
+            
+            updateScale();
             animate();
+        }
+
+        function updateScale() {
+            if (!sphere) return;
+            const mount = document.getElementById('orb-mount');
+            const w = mount.clientWidth;
+            const h = mount.clientHeight;
+            const dim = Math.min(w, h);
+            const scale = (dim / 400) * 1.1; 
+            sphere.scale.set(scale, scale, scale);
+            if (renderer) {
+                renderer.setSize(w, h);
+                camera.aspect = w / h;
+                camera.updateProjectionMatrix();
+            }
         }
 
         function animate() {
@@ -319,7 +346,7 @@
             else { colorTarget.setHex(0x0071e3); noiseAmount = 0.05; }
         }
 
-        // SESSION CORE
+        // SPEECH & ROLE CORE
         let isActive = false, isSpeaking = false, isThinking = false, currentMode = 'client', turnTimeout = null;
         let synth = window.speechSynthesis, recognition;
 
@@ -335,7 +362,7 @@
             isActive = true; isSpeaking = false; isThinking = false;
             document.getElementById('main-btn').innerText = 'End';
             document.getElementById('live-caption').innerText = 'Listening...';
-            setOrbState('ready');
+            setOrb('ready');
             initSpeech();
         }
 
@@ -343,17 +370,17 @@
             isActive = false;
             if (recognition) { recognition.onend = null; recognition.stop(); }
             synth.cancel();
-            document.getElementById('analysis-overlay').style.display = 'flex';
+            document.getElementById('overlay').style.display = 'flex';
             document.getElementById('rating-stars').innerHTML = '<i data-lucide="star"></i>'.repeat(5);
             lucide.createIcons();
             document.getElementById('rating-text').innerText = `Ulrich Audit: High somatic resonance. Best practice alignment: 99.8%.`;
         }
 
         function resetSession() {
-            document.getElementById('analysis-overlay').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
             document.getElementById('main-btn').innerText = 'Initialize';
             document.getElementById('live-caption').innerText = 'Tap Orb to Begin';
-            setOrbState('ready');
+            setOrb('ready');
         }
 
         function toggleDrawer() { document.getElementById('drawer').classList.toggle('active'); }
@@ -372,7 +399,7 @@
                     if (event.results[i].isFinal) handleFinal(event.results[i][0].transcript);
                     else interim += event.results[i][0].transcript;
                 }
-                if (interim && !isSpeaking && !isThinking) { document.getElementById('live-caption').innerText = interim; setOrbState('user'); }
+                if (interim && !isSpeaking && !isThinking) { document.getElementById('live-caption').innerText = interim; setOrb('user'); }
             };
             recognition.onend = () => { if (isActive && !isSpeaking && !isThinking) recognition.start(); };
             recognition.start();
@@ -388,7 +415,7 @@
             if (isThinking || isSpeaking) return;
             isThinking = true; setOrb('thinking');
             addTranscript('USER', text);
-            let res = "I'm with you. What else is surfacing?";
+            let res = "I hear you. Tell me more.";
             const low = text.toLowerCase();
             if (low.includes('amazon') || low.includes('amzn')) res = "Amazon closed today at $204.08. Market volatility is noise; stay centered.";
             else if (currentMode === 'client') res = "I just worry you'll realize I'm too much and leave.";
@@ -402,8 +429,8 @@
             addTranscript('ULRICH', text);
             const utter = new SpeechSynthesisUtterance(text);
             const voices = synth.getVoices();
-            const premium = voices.find(v => v.name.includes('Nadia') || v.name.includes('Natural') || v.name.includes('Samantha') || v.name.includes('Premium'));
-            utter.voice = premium || voices[0];
+            const nadia = voices.find(v => v.name.includes('Nadia') || v.name.includes('Natural') || v.name.includes('Samantha') || v.name.includes('Premium'));
+            utter.voice = nadia || voices[0];
             utter.rate = 0.82;
             utter.onend = () => { isSpeaking = false; setOrb('ready'); if (isActive) recognition.start(); };
             synth.speak(utter);
@@ -417,6 +444,7 @@
             document.getElementById('transcript-p').innerText = text;
         }
 
+        window.addEventListener('resize', updateScale);
         window.addEventListener('load', () => { synth.getVoices(); initOrb(); });
     </script>
 </body>
