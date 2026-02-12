@@ -124,20 +124,6 @@
             text-align: center;
         }
 
-        .epic-button {
-            background: #ffffff;
-            color: #000000;
-            padding: 1.3rem 4rem;
-            border-radius: 40px;
-            text-transform: uppercase;
-            letter-spacing: 0.3em;
-            font-size: 11px;
-            transition: all 0.4s ease;
-            border: none;
-            cursor: pointer;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
-        }
-
         .drawer-btn {
             position: absolute;
             top: calc(env(safe-area-inset-top) + 20px);
@@ -214,7 +200,7 @@
         <div class="ui-layer">
             <div class="ui-top ui-element">
                 <header class="flex flex-col items-center gap-8">
-                    <h1 class="text-[9px] uppercase tracking-[1em] text-white/10">Ulrich Master Convers v11.0</h1>
+                    <h1 class="text-[9px] uppercase tracking-[1em] text-white/10">Ulrich Master Convers v11.1</h1>
                     <div class="mode-switch">
                         <button onclick="setMode('client')" id="btn-client" class="mode-btn active">Patient</button>
                         <button onclick="setMode('therapist')" id="btn-therapist" class="mode-btn">Therapist</button>
@@ -225,11 +211,6 @@
             <div class="ui-bottom ui-element">
                 <div class="micro-transcript" id="micro-p">handshaking...</div>
                 <h2 id="live-caption">Tap Orb to Begin</h2>
-                <div class="pt-8">
-                    <button onclick="handleStart()" id="main-btn" class="epic-button">
-                        Initialize
-                    </button>
-                </div>
             </div>
         </div>
     </div>
@@ -237,7 +218,7 @@
     <div id="overlay" class="space-y-8">
         <h3 class="text-white text-3xl italic tracking-tighter uppercase">Analysis</h3>
         <p id="analysis-text" class="text-white/40 text-sm leading-relaxed max-w-sm"></p>
-        <button onclick="reset()" class="epic-button bg-blue-600 text-white">Continue</button>
+        <button onclick="reset()" class="bg-blue-600 text-white px-8 py-3 rounded-full text-xs font-black uppercase tracking-widest">Continue</button>
     </div>
 
     <div id="drawer">
@@ -319,7 +300,8 @@
 
         function start() {
             isActive = true; isSpeaking = false; isThinking = false;
-            document.getElementById('main-btn').innerText = 'End';
+            document.getElementById('transcript').innerHTML = "";
+            document.getElementById('micro-p').innerHTML = "";
             document.getElementById('live-caption').innerText = 'Listening...';
             setOrbState('ready');
             initSpeech();
@@ -331,19 +313,18 @@
             if (recognition) { recognition.onend = null; recognition.stop(); }
             synth.cancel();
             document.getElementById('overlay').style.display = 'flex';
-            document.getElementById('analysis-text').innerText = `Ulrich Audit: Exceptional resonance. Pacing 0.82 verified. Alignment: 99.8%.`;
+            document.getElementById('analysis-text').innerText = `Ulrich Audit: Exceptional resonance. Pacing 0.82 verified. Target role: ${currentMode.toUpperCase()}. Alignment: 99.8%.`;
             log("Analysis Ready");
         }
 
         function reset() {
             document.getElementById('overlay').style.display = 'none';
-            document.getElementById('main-btn').innerText = 'Initialize';
             document.getElementById('live-caption').innerText = 'Tap Orb to Begin';
             setOrbState('ready');
         }
 
         function toggleDrawer() { document.getElementById('drawer').classList.toggle('active'); }
-        function setMode(m) { if (m !== currentMode && isActive) end(); currentMode = m; document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.id === 'btn-'+m)); }
+        function setMode(m) { if (m !== currentMode && isActive) end(); currentMode = m; document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.id === 'mode-'+m)); }
 
         function initSpeech() {
             window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
