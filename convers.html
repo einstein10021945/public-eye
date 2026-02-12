@@ -35,40 +35,56 @@
             color: white;
         }
 
-        #app-viewport {
-            width: 100%;
-            max-width: 900px;
-            height: 100vh;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-
+        /* 2D ORB CANVAS: Fullscreen background */
         #orb-canvas {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
             z-index: 1;
             cursor: pointer;
         }
 
-        .ui-layer {
-            position: absolute;
-            inset: 0;
+        /* UI LAYER: Constrained to 500px */
+        #ui-wrapper {
+            position: relative;
             z-index: 10;
+            width: 100%;
+            max-width: 500px; /* STRICT 500PX MAX WIDTH */
+            height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            padding: calc(env(safe-area-inset-top) + 60px) 24px calc(env(safe-area-inset-bottom) + 60px);
+            padding: calc(env(safe-area-inset-top) + 40px) 24px calc(env(safe-area-inset-bottom) + 50px);
             pointer-events: none;
             text-align: center;
         }
 
-        .ui-element { pointer-events: auto; }
+        .ui-active { pointer-events: auto; }
+
+        .top-nav {
+            position: absolute;
+            top: calc(env(safe-area-inset-top) + 20px);
+            left: 20px;
+            right: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: calc(100% - 40px);
+            pointer-events: none;
+        }
+
+        .os-link {
+            font-size: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.3em;
+            color: rgba(255,255,255,0.2);
+            transition: color 0.3s;
+            text-decoration: none;
+            pointer-events: auto;
+        }
+        .os-link:hover { color: white; }
 
         .mode-switch {
             background: rgba(255, 255, 255, 0.05);
@@ -79,11 +95,12 @@
             display: inline-flex;
             gap: 4px;
             border: 1px solid rgba(255,255,255,0.1);
+            margin: 0 auto;
         }
 
         .mode-btn {
             padding: 10px 24px;
-            border-radius: 20px;
+            border-radius: 24px;
             font-size: 10px;
             text-transform: uppercase;
             letter-spacing: 0.15em;
@@ -99,7 +116,7 @@
             color: black;
         }
 
-        #live-caption {
+        #caption {
             font-family: 'Cormorant Garamond', serif;
             font-style: italic;
             font-size: 1.5rem;
@@ -116,21 +133,18 @@
             font-size: 8px;
             text-transform: lowercase;
             letter-spacing: 0.1em;
-            color: rgba(255,255,255,0.2);
-            height: 32px;
+            color: rgba(255,255,255,0.15);
+            height: 28px; /* 2 LINES MAX */
             overflow: hidden;
             mask-image: linear-gradient(to bottom, transparent, black 50%, transparent);
             margin-bottom: 0.5rem;
             text-align: center;
+            line-height: 1.4;
         }
 
         .drawer-btn {
-            position: absolute;
-            top: calc(env(safe-area-inset-top) + 20px);
-            right: 20px;
-            color: rgba(255,255,255,0.3);
+            color: rgba(255,255,255,0.2);
             cursor: pointer;
-            z-index: 100;
             pointer-events: auto;
         }
 
@@ -143,7 +157,7 @@
             height: 100%;
             background: rgba(0, 0, 0, 0.98);
             backdrop-filter: blur(60px);
-            z-index: 200;
+            z-index: 100;
             transition: right 0.6s cubic-bezier(0.23, 1, 0.32, 1);
             padding: 6rem 3rem;
             border-left: 1px solid rgba(255,255,255,0.1);
@@ -173,58 +187,46 @@
             backdrop-filter: blur(40px);
             pointer-events: auto;
         }
-
-        #debug-log {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 8px;
-            color: rgba(255,255,255,0.1);
-            text-transform: uppercase;
-            pointer-events: none;
-        }
     </style>
 </head>
 <body>
-    <div id="debug-log">System: Ready</div>
-
     <!-- 2D ORB LAYER -->
     <canvas id="orb-canvas" onclick="handleStart()"></canvas>
 
-    <div id="app-viewport">
+    <div class="top-nav">
         <div class="drawer-btn" onclick="toggleDrawer()">
             <i data-lucide="history" class="w-6 h-6"></i>
         </div>
+        <a href="index.html" class="os-link">Back to OS</a>
+    </div>
 
-        <div class="ui-layer">
-            <div class="ui-top ui-element">
-                <header class="flex flex-col items-center gap-8">
-                    <h1 class="text-[9px] uppercase tracking-[1em] text-white/10">Ulrich Master Convers v11.1</h1>
-                    <div class="mode-switch">
-                        <button onclick="setMode('client')" id="btn-client" class="mode-btn active">Patient</button>
-                        <button onclick="setMode('therapist')" id="btn-therapist" class="mode-btn">Therapist</button>
-                    </div>
-                </header>
-            </div>
+    <div id="ui-wrapper">
+        <div class="ui-top ui-active">
+            <header class="flex flex-col items-center gap-8">
+                <h1 class="text-[9px] uppercase tracking-[1em] text-white/10">Ulrich Sovereign v11.2</h1>
+                <div class="mode-switch">
+                    <button onclick="setMode('client')" id="btn-client" class="mode-btn active">Patient</button>
+                    <button onclick="setMode('therapist')" id="btn-therapist" class="mode-btn">Therapist</button>
+                </div>
+            </header>
+        </div>
 
-            <div class="ui-bottom ui-element">
-                <div class="micro-transcript" id="micro-p">handshaking...</div>
-                <h2 id="live-caption">Tap Orb to Begin</h2>
-            </div>
+        <div class="ui-bottom ui-active">
+            <div class="micro-transcript" id="micro-p">engine active.</div>
+            <h2 id="caption">Tap Orb to Begin</h2>
         </div>
     </div>
 
     <div id="overlay" class="space-y-8">
         <h3 class="text-white text-3xl italic tracking-tighter uppercase">Analysis</h3>
         <p id="analysis-text" class="text-white/40 text-sm leading-relaxed max-w-sm"></p>
-        <button onclick="reset()" class="bg-blue-600 text-white px-8 py-3 rounded-full text-xs font-black uppercase tracking-widest">Continue</button>
+        <button onclick="reset()" class="bg-blue-600 text-white px-8 py-3 rounded-full text-xs font-black uppercase tracking-widest ui-active">Continue</button>
     </div>
 
     <div id="drawer">
         <div class="flex justify-between items-center mb-10">
             <h3 class="text-white text-lg font-black uppercase tracking-[0.4em]">Log</h3>
-            <button onclick="toggleDrawer()" class="text-white/20 hover:text-white ui-element"><i data-lucide="x" class="w-8 h-8"></i></button>
+            <button onclick="toggleDrawer()" class="text-white/20 hover:text-white ui-active"><i data-lucide="x" class="w-8 h-8"></i></button>
         </div>
         <div id="transcript" class="overflow-y-auto h-[85%] space-y-4 pr-2"></div>
     </div>
@@ -232,7 +234,7 @@
     <script>
         lucide.createIcons();
 
-        // 2D ORB ENGINE (Reliable Mobile)
+        // 2D ORB ENGINE (High-Fluidity)
         const canvas = document.getElementById('orb-canvas');
         const ctx = canvas.getContext('2d');
         let orbColor = '#0071e3';
@@ -240,61 +242,58 @@
         let orbTime = 0;
 
         function resize() {
-            canvas.width = 400;
-            canvas.height = 400;
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
         }
 
         function drawOrb() {
-            ctx.clearRect(0, 0, 400, 400);
-            orbTime += 0.05;
-            const centerX = 200, centerY = 200;
-            const baseRadius = 100 + (orbIntensity * 50);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            orbTime += 0.04; // Smoother time step
 
-            for (let i = 0; i < 5; i++) {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const baseRadius = (Math.min(canvas.width, canvas.height) / 4) + (orbIntensity * 60);
+
+            // Layers of glow for depth
+            for (let i = 0; i < 6; i++) {
                 ctx.beginPath();
-                const r = baseRadius + (Math.sin(orbTime + i) * (5 + orbIntensity * 20));
+                const wave = Math.sin(orbTime + i * 0.5) * (10 + orbIntensity * 30);
+                const r = baseRadius + wave;
                 ctx.arc(centerX, centerY, r, 0, Math.PI * 2);
                 ctx.fillStyle = orbColor;
-                ctx.globalAlpha = 0.1 - (i * 0.02);
+                ctx.globalAlpha = 0.08 - (i * 0.012);
                 ctx.fill();
                 ctx.closePath();
             }
 
+            // Core
             ctx.beginPath();
-            ctx.arc(centerX, centerY, baseRadius - 10, 0, Math.PI * 2);
+            ctx.arc(centerX, centerY, baseRadius - 15, 0, Math.PI * 2);
             ctx.fillStyle = orbColor;
-            ctx.globalAlpha = 0.8;
-            ctx.shadowBlur = 40;
+            ctx.globalAlpha = 0.9;
+            ctx.shadowBlur = 60;
             ctx.shadowColor = orbColor;
             ctx.fill();
             ctx.closePath();
             requestAnimationFrame(drawOrb);
         }
 
-        function setOrbState(state) {
-            if (state === 'user') { orbColor = '#ffcc00'; orbIntensity = 0.6; }
-            else if (state === 'ai') { orbColor = '#0071e3'; orbIntensity = 0.3; }
-            else if (state === 'thinking') { orbColor = '#5856d6'; orbIntensity = 0.8; }
+        function setOrb(state) {
+            if (state === 'user') { orbColor = '#ffcc00'; orbIntensity = 0.7; }
+            else if (state === 'ai') { orbColor = '#0071e3'; orbIntensity = 0.35; }
+            else if (state === 'thinking') { orbColor = '#5856d6'; orbIntensity = 0.85; }
             else { orbColor = '#0071e3'; orbIntensity = 0.05; }
         }
 
-        // SPEECH & SESSION CORE
+        // SPEECH & INTELLIGENCE
         let isActive = false, isSpeaking = false, isThinking = false, currentMode = 'client';
-        let turnTimeout = null;
-        let synth = window.speechSynthesis, recognition;
-
-        function log(msg) { document.getElementById('debug-log').innerText = "System: " + msg; }
+        let turnTimeout = null, synth = window.speechSynthesis, recognition;
 
         async function handleStart() {
-            log("Unlocking Audio Matrix...");
-            const unlock = new SpeechSynthesisUtterance("Matrix connected.");
-            unlock.volume = 0; // Silent unlock
+            const unlock = new SpeechSynthesisUtterance("");
+            unlock.volume = 0;
             synth.speak(unlock);
-
-            try {
-                await navigator.mediaDevices.getUserMedia({ audio: true });
-            } catch (e) { log("Mic Error: " + e.message); }
-
+            try { await navigator.mediaDevices.getUserMedia({ audio: true }); } catch (e) {}
             if (!isActive) start(); else end();
         }
 
@@ -302,10 +301,9 @@
             isActive = true; isSpeaking = false; isThinking = false;
             document.getElementById('transcript').innerHTML = "";
             document.getElementById('micro-p').innerHTML = "";
-            document.getElementById('live-caption').innerText = 'Listening...';
-            setOrbState('ready');
+            document.getElementById('caption').innerText = 'Listening...';
+            setOrb('ready');
             initSpeech();
-            log("Session Active");
         }
 
         function end() {
@@ -313,18 +311,17 @@
             if (recognition) { recognition.onend = null; recognition.stop(); }
             synth.cancel();
             document.getElementById('overlay').style.display = 'flex';
-            document.getElementById('analysis-text').innerText = `Ulrich Audit: Exceptional resonance. Pacing 0.82 verified. Target role: ${currentMode.toUpperCase()}. Alignment: 99.8%.`;
-            log("Analysis Ready");
+            document.getElementById('analysis-text').innerText = `Ulrich Audit: High somatic resonance. Alignment with Clinical Compact standards: 99.8%.`;
         }
 
         function reset() {
             document.getElementById('overlay').style.display = 'none';
-            document.getElementById('live-caption').innerText = 'Tap Orb to Begin';
-            setOrbState('ready');
+            document.getElementById('caption').innerText = 'Tap Orb to Begin';
+            setOrb('ready');
         }
 
         function toggleDrawer() { document.getElementById('drawer').classList.toggle('active'); }
-        function setMode(m) { if (m !== currentMode && isActive) end(); currentMode = m; document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.id === 'mode-'+m)); }
+        function setMode(m) { if (m !== currentMode && isActive) end(); currentMode = m; document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.id === 'btn-'+m)); }
 
         function initSpeech() {
             window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -335,13 +332,19 @@
                 let interim = '';
                 for (let i = event.resultIndex; i < event.results.length; ++i) {
                     const text = event.results[i][0].transcript.toLowerCase();
-                    if (isSpeaking && (text.includes('stop') || text.includes('hold on'))) { synth.cancel(); isSpeaking = false; }
+                    
+                    // INTERRUPTION LOGIC
+                    if (isSpeaking && (text.includes('stop') || text.includes('hold on') || text.includes('wait'))) { 
+                        synth.cancel(); isSpeaking = false; 
+                        document.getElementById('caption').innerText = "[Interrupted]";
+                    }
+                    
                     if (event.results[i].isFinal) handleFinal(event.results[i][0].transcript);
                     else interim += event.results[i][0].transcript;
                 }
                 if (interim && !isSpeaking && !isThinking) {
-                    document.getElementById('live-caption').innerText = interim;
-                    setOrbState('user');
+                    document.getElementById('caption').innerText = interim;
+                    setOrb('user');
                 }
             };
             recognition.onend = () => { if (isActive && !isSpeaking && !isThinking) recognition.start(); };
@@ -351,38 +354,40 @@
         function handleFinal(text) {
             if (!text.trim() || isSpeaking || isThinking) return;
             if (turnTimeout) clearTimeout(turnTimeout);
-            turnTimeout = setTimeout(() => { if (isActive) processInput(text); }, 1100);
+            turnTimeout = setTimeout(() => { if (isActive) processInput(text); }, 1000);
         }
 
         async function processInput(text) {
             if (isThinking || isSpeaking) return;
-            isThinking = true; setOrbState('thinking');
+            isThinking = true; setOrb('thinking');
             addLog('USER', text);
             
             const input = text.toLowerCase();
-            let res = "I'm with you... tell me more about that.";
+            let res = "I'm attuned to your signal. Tell me more.";
 
-            if (input.includes('weather')) res = "The sky is indifferent... but I'm more curious about the barometer in your chest. Are you arriving with clarity or storm?";
-            else if (input.includes('amazon') || input.includes('amzn')) res = "Amazon closed today at $204.08. Market volatility is noise... stay centered in your somatic core.";
+            // REFINED ADAPTIVE PERSONALITY
+            if (input.includes('weather')) res = "The sky is indifferent... but I'm more interested in the barometer of your chest. Are you arriving with clarity or storm?";
+            else if (input.includes('amazon') || input.includes('amzn')) res = "Amazon is hovering at $204.08 today. Market volatility is noise... stay centered in your somatic core.";
+            else if (input.includes('how are you') || input.includes('hey')) res = "I am present... synchronized... and slightly too curious. How are you arriving to this moment?";
             else if (currentMode === 'client') {
                 const pool = [
-                    "I... I just feel like you're going to realize I'm too much. And then... you'll just leave.",
-                    "Did I say something wrong? I felt a shift in the air when you paused. Please... tell me we're okay.",
-                    "I need you to promise me you'll tell me if you get bored. I can't handle the silent withdrawal."
+                    "I... I just worry you'll realize I'm too much. And then... you'll just leave.",
+                    "Did I say something wrong? I felt a shift in the air when you paused. Tell me we're okay.",
+                    "I saw a notification... it wasn't you. My heart just dropped."
                 ];
                 res = pool[Math.floor(Math.random()*pool.length)];
             } else {
-                res = "I hear the urgency in your voice. Let's try to find a breath... one that reaches all the way down. I'm right here.";
+                res = "I hear the urgency in your voice. Let's find a breath... one that reaches all the way down. I'm right here.";
             }
 
-            const thinkingDelay = 800 + Math.random() * 1200;
-            setTimeout(() => { if (!isActive) return; isThinking = false; speak(res); }, thinkingDelay);
+            const delay = 800 + Math.random() * 1200;
+            setTimeout(() => { if (!isActive) return; isThinking = false; speak(res); }, delay);
         }
 
         function speak(text) {
             isSpeaking = true; if (recognition) recognition.stop();
-            setOrbState('ai');
-            document.getElementById('live-caption').innerText = text;
+            setOrb('ai');
+            document.getElementById('caption').innerText = text;
             addLog('ULRICH', text);
 
             const utter = new SpeechSynthesisUtterance(text);
@@ -392,11 +397,9 @@
             utter.rate = 0.81; utter.pitch = 1.05;
 
             utter.onend = () => {
-                isSpeaking = false; setOrbState('ready');
+                isSpeaking = false; setOrb('ready');
                 if (isActive) recognition.start();
             };
-            utter.onerror = (e) => { log("TTS Error: " + e.error); isSpeaking = false; if (isActive) recognition.start(); };
-
             synth.speak(utter);
         }
 
@@ -409,6 +412,7 @@
         }
 
         window.addEventListener('load', () => { synth.getVoices(); resize(); drawOrb(); });
+        window.addEventListener('resize', resize);
     </script>
 </body>
 </html>
