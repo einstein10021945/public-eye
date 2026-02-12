@@ -1594,19 +1594,52 @@
     <script>
         lucide.createIcons();
 
+        // --- HASH ROUTING LOGIC ---
         function switchTab(tabId) {
+            // 1. Update URL Hash without reload/scroll
+            history.pushState(null, null, `#${tabId}`);
+
+            // 2. Hide all tabs
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
             document.querySelectorAll('nav button').forEach(btn => btn.classList.remove('tab-active', 'text-black'));
             
+            // 3. Show target tab
             const activeTab = document.getElementById('tab-' + tabId);
-            if (activeTab) activeTab.classList.remove('hidden');
+            if (activeTab) {
+                activeTab.classList.remove('hidden');
+                // Re-trigger animation
+                activeTab.classList.remove('animate-reveal');
+                void activeTab.offsetWidth; // Force reflow
+                activeTab.classList.add('animate-reveal');
+            }
             
+            // 4. Update Nav State
             const activeBtn = document.getElementById('btn-' + tabId);
             if (activeBtn) {
                 activeBtn.classList.add('tab-active');
                 activeBtn.classList.add('text-black');
             }
         }
+
+        // Initialize on Load based on URL Hash
+        window.addEventListener('load', () => {
+            const hash = window.location.hash.replace('#', '');
+            const validTabs = ['overview', 'dispatch', 'labs', 'strategy', 'specialists', 'system'];
+            
+            if (validTabs.includes(hash)) {
+                switchTab(hash);
+            } else {
+                // Default to Overview if no hash or invalid
+                switchTab('overview');
+            }
+        });
+
+        // Handle Browser Back/Forward Buttons
+        window.addEventListener('popstate', () => {
+            const hash = window.location.hash.replace('#', '');
+            if (hash) switchTab(hash);
+            else switchTab('overview');
+        });
 
         function filterBlog(category) {
             document.querySelectorAll('.category-chip').forEach(chip => chip.classList.remove('active'));
