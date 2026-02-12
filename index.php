@@ -218,7 +218,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[300px]">
                     
                     <!-- Card 1: Convers AI (Large) -->
-                    <div class="glass-panel rounded-[40px] md:col-span-2 p-10 relative overflow-hidden group cursor-pointer" onclick="window.location.href='/convers.html'">
+                    <div class="glass-panel rounded-[40px] md:col-span-2 p-10 relative overflow-hidden group cursor-pointer" onclick="window.location.href='/convers.php'">
                         <div class="absolute top-0 right-0 p-10 opacity-10 group-hover:opacity-20 transition-opacity">
                             <i data-lucide="mic" class="w-32 h-32 text-blue-600"></i>
                         </div>
@@ -238,7 +238,7 @@
                     </div>
 
                     <!-- Card 2: The Wall -->
-                    <div class="glass-panel rounded-[40px] p-8 flex flex-col justify-between group cursor-pointer bg-black text-white hover:bg-gray-900" onclick="window.location.href='/the-wall.html'">
+                    <div class="glass-panel rounded-[40px] p-8 flex flex-col justify-between group cursor-pointer bg-black text-white hover:bg-gray-900" onclick="window.location.href='/the-wall.php'">
                         <div>
                             <div class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center mb-6">
                                 <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
@@ -264,7 +264,7 @@
                     </div>
 
                     <!-- Card 4: Clinical OS (Wide) -->
-                    <div class="glass-panel rounded-[40px] md:col-span-2 p-10 relative overflow-hidden group cursor-pointer bg-gradient-to-br from-white to-gray-50" onclick="window.location.href='/clinical-os.html'">
+                    <div class="glass-panel rounded-[40px] md:col-span-2 p-10 relative overflow-hidden group cursor-pointer bg-gradient-to-br from-white to-gray-50" onclick="window.location.href='/clinical-os.php'">
                         <div class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
                         <div class="relative z-10">
                             <h3 class="text-3xl font-bold mb-2">Clinical OS</h3>
@@ -354,7 +354,7 @@
             <div id="view-labs" class="view-section hidden animate-slide-up">
                 <h2 class="text-3xl font-bold mb-8">Experimental Labs</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <a href="/convers.html" class="glass-panel p-8 rounded-3xl flex items-center justify-between group hover:bg-blue-50/50">
+                    <a href="/convers.php" class="glass-panel p-8 rounded-3xl flex items-center justify-between group hover:bg-blue-50/50">
                         <div class="flex items-center gap-6">
                             <div class="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center text-blue-600">
                                 <i data-lucide="mic" class="w-8 h-8"></i>
@@ -369,7 +369,7 @@
                         </div>
                     </a>
                     
-                    <a href="/neural-link.html" class="glass-panel p-8 rounded-3xl flex items-center justify-between group hover:bg-purple-50/50">
+                    <a href="/neural-link.php" class="glass-panel p-8 rounded-3xl flex items-center justify-between group hover:bg-purple-50/50">
                         <div class="flex items-center gap-6">
                             <div class="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center text-purple-600">
                                 <i data-lucide="network" class="w-8 h-8"></i>
@@ -384,7 +384,7 @@
                         </div>
                     </a>
 
-                    <a href="/the-wall.html" class="glass-panel p-8 rounded-3xl flex items-center justify-between group hover:bg-emerald-50/50">
+                    <a href="/the-wall.php" class="glass-panel p-8 rounded-3xl flex items-center justify-between group hover:bg-emerald-50/50">
                         <div class="flex items-center gap-6">
                             <div class="w-16 h-16 bg-emerald-100 rounded-2xl flex items-center justify-center text-emerald-600">
                                 <i data-lucide="layout-dashboard" class="w-8 h-8"></i>
@@ -399,7 +399,7 @@
                         </div>
                     </a>
 
-                    <a href="/clinical-os.html" class="glass-panel p-8 rounded-3xl flex items-center justify-between group hover:bg-orange-50/50">
+                    <a href="/clinical-os.php" class="glass-panel p-8 rounded-3xl flex items-center justify-between group hover:bg-orange-50/50">
                         <div class="flex items-center gap-6">
                             <div class="w-16 h-16 bg-orange-100 rounded-2xl flex items-center justify-center text-orange-600">
                                 <i data-lucide="code-2" class="w-8 h-8"></i>

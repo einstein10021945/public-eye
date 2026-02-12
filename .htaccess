@@ -1,7 +1,32 @@
 RewriteEngine On
 
-# Disable Caching for HTML/JSON/JS
-<FilesMatch "\.(html|htm|js|css|json)$">
+# Force HTTPS
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Security Headers
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+    Header set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# Remove .php extension from URL
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}\.php -f
+RewriteRule ^(.*)$ $1.php [L]
+
+# Clean Routing
+RewriteRule ^convers$ convers.php [L]
+RewriteRule ^architecture$ docs.php [L]
+RewriteRule ^wall$ the-wall.php [L]
+RewriteRule ^neural$ neural-link.php [L]
+RewriteRule ^os$ clinical-os.php [L]
+
+# Disable Caching for Development (Optional - remove for prod)
+<FilesMatch "\.(php|html|js|css)$">
     FileETag None
     <IfModule mod_headers.c>
         Header unset ETag
@@ -10,19 +35,3 @@ RewriteEngine On
         Header set Expires "Wed, 11 Jan 1984 05:00:00 GMT"
     </IfModule>
 </FilesMatch>
-
-# Remove .html extension
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteCond %{REQUEST_FILENAME}\.html -f
-RewriteRule ^(.*)$ $1.html [L]
-
-# Custom Slugs
-RewriteRule ^convers$ convers.html [L]
-RewriteRule ^convers-v2$ convers-v2.html [L]
-RewriteRule ^architecture$ docs.html [L]
-RewriteRule ^patient$ convers.html?mode=client [QSA,L]
-RewriteRule ^therapist$ convers.html?mode=therapist [QSA,L]
-
-# Force HTTPS
-RewriteCond %{HTTPS} off
-RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
