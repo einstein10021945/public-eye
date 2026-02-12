@@ -4,16 +4,11 @@ RewriteEngine On
 RewriteCond %{HTTPS} off
 RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
-# Security Headers
-<IfModule mod_headers.c>
-    Header set X-Content-Type-Options "nosniff"
-    Header set X-Frame-Options "SAMEORIGIN"
-    Header set X-XSS-Protection "1; mode=block"
-    Header set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
-    Header set Referrer-Policy "strict-origin-when-cross-origin"
-</IfModule>
+# Redirect .html to .php (301 Permanent)
+RewriteCond %{THE_REQUEST} \s/+(.+)\.html[\s?] [NC]
+RewriteRule ^ /%1.php [R=301,L]
 
-# Remove .php extension from URL
+# Remove .php extension from URL (Internal Rewrite)
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME}\.php -f
 RewriteRule ^(.*)$ $1.php [L]
@@ -25,13 +20,11 @@ RewriteRule ^wall$ the-wall.php [L]
 RewriteRule ^neural$ neural-link.php [L]
 RewriteRule ^os$ clinical-os.php [L]
 
-# Disable Caching for Development (Optional - remove for prod)
-<FilesMatch "\.(php|html|js|css)$">
-    FileETag None
-    <IfModule mod_headers.c>
-        Header unset ETag
-        Header set Cache-Control "max-age=0, no-cache, no-store, must-revalidate"
-        Header set Pragma "no-cache"
-        Header set Expires "Wed, 11 Jan 1984 05:00:00 GMT"
-    </IfModule>
-</FilesMatch>
+# Security Headers
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+    Header set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>

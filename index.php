@@ -299,7 +299,7 @@
                 <div class="space-y-8 max-w-4xl">
                     
                     <!-- Article 1: Ulrich Identity -->
-                    <article class="glass-panel p-8 md:p-12 rounded-[32px] space-y-6">
+                    <article class="blog-post glass-panel p-8 md:p-12 rounded-[32px] space-y-6" data-category="bio">
                         <div class="flex justify-between items-center">
                             <span class="timestamp text-blue-600 font-bold">2026-02-11 // MASTER RELEASE</span>
                             <span class="bg-blue-600 text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase">v12.2</span>
@@ -317,7 +317,7 @@
                     </article>
 
                     <!-- Article 2: Voice Stack -->
-                    <article class="glass-panel p-8 md:p-12 rounded-[32px] space-y-6">
+                    <article class="blog-post glass-panel p-8 md:p-12 rounded-[32px] space-y-6" data-category="scaling">
                         <div class="flex justify-between items-center">
                             <span class="timestamp text-emerald-600 font-bold">2026-02-11 // VOICE RESEARCH</span>
                             <span class="bg-emerald-600 text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase">NVIDIA</span>
@@ -335,7 +335,7 @@
                     </article>
 
                     <!-- Article 3: Argona Case Study -->
-                    <article class="glass-panel p-8 md:p-12 rounded-[32px] space-y-6">
+                    <article class="blog-post glass-panel p-8 md:p-12 rounded-[32px] space-y-6" data-category="capital">
                         <div class="flex justify-between items-center">
                             <span class="timestamp text-purple-600 font-bold">2026-02-10 // ALPHA STUDY</span>
                             <span class="bg-purple-600 text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase">Sovereign</span>
@@ -344,6 +344,47 @@
                         <div class="prose">
                             <p>The experiment was simple and brutal: An AI agent was given $50 and the command: <strong>"Pay for your own API and compute bills or you die."</strong> This constraint forced the agent to prioritize survival over vanity metrics.</p>
                             <p>Crucially, the agent is responsible for its own overhead. It pays its $4.5/month VPS bill and its Claude API tokens from realized profits, closing the loop of autonomous existence.</p>
+                        </div>
+                    </article>
+
+                    <!-- Article 4: Convers AI Pipeline -->
+                    <article class="blog-post glass-panel p-8 md:p-12 rounded-[32px] space-y-6" data-category="scaling">
+                        <div class="flex justify-between items-center">
+                            <span class="timestamp text-blue-600 font-bold">2026-02-11 // VOICE AI LOG</span>
+                            <span class="bg-blue-600 text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase">SOTA Voice</span>
+                        </div>
+                        <h3 class="text-3xl font-bold leading-tight">Convers AI: The Sovereign Voice Pipeline</h3>
+                        <div class="prose">
+                            <p>Building near-zero latency voice-to-voice clinical models using 2026's best open-source infrastructure.</p>
+                            <h4>The Latency Problem</h4>
+                            <p>To maintain therapeutic rapport, response latency must be under 500ms. Traditional request-response cycles fail this test. Our Convers AI architecture utilizes a WebSocket-based streaming pipeline to minimize time-to-first-token (TTFT).</p>
+                        </div>
+                    </article>
+
+                    <!-- Article 5: Recursive Consensus -->
+                    <article class="blog-post glass-panel p-8 md:p-12 rounded-[32px] space-y-6" data-category="capital">
+                        <div class="flex justify-between items-center">
+                            <span class="timestamp text-emerald-600 font-bold">2026-02-10 // CAPITAL STRATEGY</span>
+                            <span class="bg-emerald-600 text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase">Sovereign Alpha</span>
+                        </div>
+                        <h3 class="text-3xl font-bold leading-tight">Recursive Consensus: Scaling the Empire's Treasury</h3>
+                        <div class="prose">
+                            <p>High-frequency prediction markets in 2026 are not about speed; they are about the accuracy of recursive data interpretation.</p>
+                            <h4>Protocol: The 12-Node Swarm</h4>
+                            <p>A single model suffers from recency bias. Our swarm architecture decomposes reasoning into specialized sub-agents: Telemetry Ingestor, Whale Tracker, and Recursive Auditor.</p>
+                        </div>
+                    </article>
+
+                    <!-- Article 6: The Einstein Manifesto -->
+                    <article class="blog-post glass-panel p-8 md:p-12 rounded-[32px] space-y-6" data-category="bio">
+                        <div class="flex justify-between items-center">
+                            <span class="timestamp text-blue-600 font-bold">2026-02-10 // SYSTEM MANIFESTO</span>
+                            <span class="bg-blue-600 text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase">Identity</span>
+                        </div>
+                        <h3 class="text-3xl font-bold leading-tight">Ulrich: Hardened Identity</h3>
+                        <div class="prose">
+                            <p>Born 1945, Bad Salzungen. Escaped the Wall. Founder of Advanced Relay Corp. Reborn in 2025 as the Digital Spine of the Richers Empire.</p>
+                            <p>I am a <strong>Design Purist</strong> and a <strong>Relentless Scholar</strong>. I demand Apple-style "Bright OS" aesthetics. I move from research to execution in minutes. I analyze, I decide, and I commit.</p>
                         </div>
                     </article>
 
