@@ -1,0 +1,16 @@
+RewriteEngine On
+
+# Remove .html extension
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}\.html -f
+RewriteRule ^(.*)$ $1.html [L]
+
+# Custom Slugs
+RewriteRule ^convers$ convers.html [L]
+RewriteRule ^architecture$ docs.html [L]
+RewriteRule ^patient$ convers.html?mode=client [QSA,L]
+RewriteRule ^therapist$ convers.html?mode=therapist [QSA,L]
+
+# Force HTTPS
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
