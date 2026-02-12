@@ -285,12 +285,15 @@
                 <h2 class="text-3xl font-bold mb-8">Mission Logs</h2>
                 
                 <!-- Category Filter -->
-                <div class="flex flex-wrap gap-2 mb-10 overflow-x-auto no-scrollbar pb-2">
-                    <button onclick="filterBlog('all')" class="px-4 py-1.5 rounded-full bg-black text-white text-xs font-bold uppercase tracking-wider hover:bg-gray-800 transition-colors">All</button>
-                    <button onclick="filterBlog('scaling')" class="px-4 py-1.5 rounded-full bg-white border border-gray-200 text-gray-500 text-xs font-bold uppercase tracking-wider hover:text-black hover:border-black transition-colors">Scaling</button>
-                    <button onclick="filterBlog('capital')" class="px-4 py-1.5 rounded-full bg-white border border-gray-200 text-gray-500 text-xs font-bold uppercase tracking-wider hover:text-black hover:border-black transition-colors">Capital</button>
-                    <button onclick="filterBlog('philosophy')" class="px-4 py-1.5 rounded-full bg-white border border-gray-200 text-gray-500 text-xs font-bold uppercase tracking-wider hover:text-black hover:border-black transition-colors">Philosophy</button>
-                    <button onclick="filterBlog('demos')" class="px-4 py-1.5 rounded-full bg-white border border-gray-200 text-gray-500 text-xs font-bold uppercase tracking-wider hover:text-black hover:border-black transition-colors">Demos</button>
+                <div class="flex flex-wrap gap-2 mb-10 overflow-x-auto no-scrollbar pb-2" id="blog-filters">
+                    <button data-filter="all" class="category-chip px-4 py-1.5 rounded-full bg-black text-white text-xs font-bold uppercase tracking-wider hover:bg-gray-800 transition-colors border border-black">All</button>
+                    <button data-filter="scaling" class="category-chip px-4 py-1.5 rounded-full bg-white border border-gray-200 text-gray-500 text-xs font-bold uppercase tracking-wider hover:text-black hover:border-black transition-colors">Scaling</button>
+                    <button data-filter="capital" class="category-chip px-4 py-1.5 rounded-full bg-white border border-gray-200 text-gray-500 text-xs font-bold uppercase tracking-wider hover:text-black hover:border-black transition-colors">Capital</button>
+                    <button data-filter="philosophy" class="category-chip px-4 py-1.5 rounded-full bg-white border border-gray-200 text-gray-500 text-xs font-bold uppercase tracking-wider hover:text-black hover:border-black transition-colors">Philosophy</button>
+                    <button data-filter="demos" class="category-chip px-4 py-1.5 rounded-full bg-white border border-gray-200 text-gray-500 text-xs font-bold uppercase tracking-wider hover:text-black hover:border-black transition-colors">Demos</button>
+                    <button data-filter="bio" class="category-chip px-4 py-1.5 rounded-full bg-white border border-gray-200 text-gray-500 text-xs font-bold uppercase tracking-wider hover:text-black hover:border-black transition-colors">Identity</button>
+                    <button data-filter="regulatory" class="category-chip px-4 py-1.5 rounded-full bg-white border border-gray-200 text-gray-500 text-xs font-bold uppercase tracking-wider hover:text-black hover:border-black transition-colors">Regulatory</button>
+                    <button data-filter="seo" class="category-chip px-4 py-1.5 rounded-full bg-white border border-gray-200 text-gray-500 text-xs font-bold uppercase tracking-wider hover:text-black hover:border-black transition-colors">Growth</button>
                 </div>
 
                 <div class="space-y-8 max-w-4xl">
@@ -534,10 +537,9 @@
 
         function filterBlog(category) {
             // Update Chip UI
-            document.querySelectorAll('.category-chip').forEach(btn => {
-                // Check if the button's onclick attribute contains the category
-                const onclickVal = btn.getAttribute('onclick');
-                if (onclickVal && onclickVal.includes(`'${category}'`)) {
+            document.querySelectorAll('[data-filter]').forEach(btn => {
+                const btnCategory = btn.getAttribute('data-filter');
+                if (btnCategory === category) {
                     btn.classList.add('bg-black', 'text-white', 'border-black');
                     btn.classList.remove('bg-white', 'text-gray-500', 'border-gray-200');
                 } else {
@@ -548,7 +550,6 @@
 
             // Filter Articles
             const posts = document.querySelectorAll('.blog-post');
-            let found = false;
             posts.forEach(post => {
                 const postCategory = post.getAttribute('data-category');
                 if (category === 'all' || postCategory === category) {
@@ -558,7 +559,6 @@
                     post.offsetHeight; /* trigger reflow */
                     post.style.animation = null; 
                     post.classList.add('animate-slide-up');
-                    found = true;
                 } else {
                     post.classList.add('hidden');
                     post.classList.remove('animate-slide-up');
@@ -619,6 +619,17 @@
             const hashPart = window.location.hash.split('?')[0].replace('#', '');
             const queryPart = window.location.hash.split('?')[1];
             
+            // Add click listeners for filters
+            const filterContainer = document.getElementById('blog-filters');
+            if (filterContainer) {
+                filterContainer.addEventListener('click', (e) => {
+                    if (e.target.tagName === 'BUTTON') {
+                        const filter = e.target.getAttribute('data-filter');
+                        filterBlog(filter);
+                    }
+                });
+            }
+            
             if (['overview', 'labs', 'dispatch', 'strategy', 'specialists', 'system'].includes(hashPart)) {
                 switchTab(hashPart);
                 
@@ -626,7 +637,7 @@
                 if (hashPart === 'dispatch' && queryPart) {
                     const params = new URLSearchParams(queryPart);
                     const filter = params.get('filter');
-                    if (filter) filterBlog(filter);
+                    if (filter) setTimeout(() => filterBlog(filter), 100); // Slight delay to ensure DOM is ready
                 }
             } else {
                 switchTab('overview');
