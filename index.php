@@ -286,14 +286,14 @@
                 
                 <!-- Category Filter -->
                 <div class="flex flex-wrap gap-2 mb-10 overflow-x-auto no-scrollbar pb-2" id="blog-filters">
-                    <button data-filter="all" class="category-chip px-4 py-1.5 rounded-full bg-black text-white text-xs font-bold uppercase tracking-wider hover:bg-gray-800 transition-colors border border-black">All</button>
-                    <button data-filter="scaling" class="category-chip px-4 py-1.5 rounded-full bg-white border border-gray-200 text-gray-500 text-xs font-bold uppercase tracking-wider hover:text-black hover:border-black transition-colors">Scaling</button>
-                    <button data-filter="capital" class="category-chip px-4 py-1.5 rounded-full bg-white border border-gray-200 text-gray-500 text-xs font-bold uppercase tracking-wider hover:text-black hover:border-black transition-colors">Capital</button>
-                    <button data-filter="philosophy" class="category-chip px-4 py-1.5 rounded-full bg-white border border-gray-200 text-gray-500 text-xs font-bold uppercase tracking-wider hover:text-black hover:border-black transition-colors">Philosophy</button>
-                    <button data-filter="demos" class="category-chip px-4 py-1.5 rounded-full bg-white border border-gray-200 text-gray-500 text-xs font-bold uppercase tracking-wider hover:text-black hover:border-black transition-colors">Demos</button>
-                    <button data-filter="bio" class="category-chip px-4 py-1.5 rounded-full bg-white border border-gray-200 text-gray-500 text-xs font-bold uppercase tracking-wider hover:text-black hover:border-black transition-colors">Identity</button>
-                    <button data-filter="regulatory" class="category-chip px-4 py-1.5 rounded-full bg-white border border-gray-200 text-gray-500 text-xs font-bold uppercase tracking-wider hover:text-black hover:border-black transition-colors">Regulatory</button>
-                    <button data-filter="seo" class="category-chip px-4 py-1.5 rounded-full bg-white border border-gray-200 text-gray-500 text-xs font-bold uppercase tracking-wider hover:text-black hover:border-black transition-colors">Growth</button>
+                    <button data-filter="all" class="category-chip px-4 py-1.5 rounded-full bg-black text-white text-xs font-bold uppercase tracking-wider border border-black transition-colors">All</button>
+                    <button data-filter="scaling" class="category-chip px-4 py-1.5 rounded-full bg-white border border-gray-200 text-gray-500 text-xs font-bold uppercase tracking-wider hover:bg-black hover:text-white hover:border-black transition-colors">Scaling</button>
+                    <button data-filter="capital" class="category-chip px-4 py-1.5 rounded-full bg-white border border-gray-200 text-gray-500 text-xs font-bold uppercase tracking-wider hover:bg-black hover:text-white hover:border-black transition-colors">Capital</button>
+                    <button data-filter="philosophy" class="category-chip px-4 py-1.5 rounded-full bg-white border border-gray-200 text-gray-500 text-xs font-bold uppercase tracking-wider hover:bg-black hover:text-white hover:border-black transition-colors">Philosophy</button>
+                    <button data-filter="demos" class="category-chip px-4 py-1.5 rounded-full bg-white border border-gray-200 text-gray-500 text-xs font-bold uppercase tracking-wider hover:bg-black hover:text-white hover:border-black transition-colors">Demos</button>
+                    <button data-filter="bio" class="category-chip px-4 py-1.5 rounded-full bg-white border border-gray-200 text-gray-500 text-xs font-bold uppercase tracking-wider hover:bg-black hover:text-white hover:border-black transition-colors">Identity</button>
+                    <button data-filter="regulatory" class="category-chip px-4 py-1.5 rounded-full bg-white border border-gray-200 text-gray-500 text-xs font-bold uppercase tracking-wider hover:bg-black hover:text-white hover:border-black transition-colors">Regulatory</button>
+                    <button data-filter="seo" class="category-chip px-4 py-1.5 rounded-full bg-white border border-gray-200 text-gray-500 text-xs font-bold uppercase tracking-wider hover:bg-black hover:text-white hover:border-black transition-colors">Growth</button>
                 </div>
 
                 <div class="space-y-8 max-w-4xl">
