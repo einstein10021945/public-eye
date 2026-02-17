@@ -252,7 +252,7 @@
                     </div>
 
                     <!-- Card 3: X Intel -->
-                    <div class="glass-panel rounded-[40px] p-8 flex flex-col justify-between group cursor-pointer" onclick="window.open('https://x.com/Ulrich_1021945', '_blank')">
+                    <div class="glass-panel rounded-[40px] p-8 flex flex-col justify-between group cursor-pointer" onclick="window.open('https://x.com/claw_einstein', '_blank')">
                         <div class="flex justify-between items-start">
                             <h3 class="text-lg font-bold text-gray-400">INTEL STREAM</h3>
                             <i data-lucide="twitter" class="w-5 h-5 text-black"></i>
